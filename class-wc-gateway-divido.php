@@ -1124,8 +1124,10 @@ function woocommerce_finance_init() {
 				if ( version_compare( $this->get_woo_version(), '3.0.0' ) >= 0 ) { 		
 					
 					 $env = $this->environments($this->api_key);
+					 var_dump($env);
 					
-					$sdk = new \Divido\MerchantSDK\Client($this->api_key, \Divido\MerchantSDK\Environment::SANDBOX);
+					
+					$sdk = new \Divido\MerchantSDK\Client($this->api_key, $env);
 					$deposit_amount = $order->get_total()*$deposit;
 					
 					$application = (new \Divido\MerchantSDK\Models\Application())
@@ -1301,12 +1303,12 @@ function woocommerce_finance_init() {
 		 */
 
 		function environments($key) {
-
-			if (strpos(($key), 'sandbox') !== false) {
-			 	return 'SANDBOX';
-			 } else if (strpos(($key), 'live') !== false) {
-			 	return 'LIVE';
-			} else {
+			$array = explode("_",$key);
+			$environment = strtoupper($array[0]);
+			if(constant("Divido\MerchantSDK\Environment::$environment") !== null){
+				return constant("Divido\MerchantSDK\Environment::$environment");
+			}
+			else {
 			   die('Please add your API key');
 			 }
 		}
