@@ -1121,7 +1121,10 @@ function woocommerce_finance_init() {
 					//
 				// Create an appication model with the application data.
 
-				if ( version_compare( $this->get_woo_version(), '3.0.0' ) >= 0 ) { 				
+				if ( version_compare( $this->get_woo_version(), '3.0.0' ) >= 0 ) { 		
+					
+					 $env = $this->environments($this->api_key);
+					
 					$sdk = new \Divido\MerchantSDK\Client($this->api_key, \Divido\MerchantSDK\Environment::SANDBOX);
 					$deposit_amount = $order->get_total()*$deposit;
 					
@@ -1157,70 +1160,79 @@ function woocommerce_finance_init() {
 				$result_id = $decode->data->id;
 				$result_redirect = $decode->data->urls->application_url;
 
-				// 	$response = Divido_CreditRequest::create(
-				// 		array(
-				// 			'merchant'     => $this->api_key,
-				// 			'deposit'      => number_format( $order->get_total() * ( $deposit / 100 ), 2, '.', '' ),
-				// 			'finance'      => $finance['id'],
-				// 			'country'      => $order->get_billing_country(),
-				// 			'amount'       => number_format( $order->get_total(), 2, '.', '' ),
-				// 			'products'     => $products,
-				// 			'customer'     => array(
-				// 				'first_name'   => $order->get_billing_first_name(),
-				// 				'last_name'    => $order->get_billing_last_name(),
-				// 				'country'      => $order->get_billing_country(),
-				// 				'postcode'     => $order->get_billing_postcode(),
-				// 				'email'        => $order->get_billing_email(),
-				// 				'phone_number' => $order->get_billing_phone(),
-				// 				'address'      => array(
-				// 					'text'     => $order->get_billing_address_1() . ' ' . $order->get_billing_city() . ' ' . $order->get_billing_postcode(),
-				// 					'postcode' => $order->get_billing_postcode(),
-				// 					'street'   => $order->get_billing_address_1(),
-				// 					'flat'     => $order->get_billing_address_2(),
-				// 					'town'     => $order->get_billing_city(),
-				// 				),
+
+
+				// $response = Divido_CreditRequest::create(
+				// 	array(
+				// 		'merchant'     => $this->api_key,
+				// 		'deposit'      => number_format( $order->get_total() * ( $deposit / 100 ), 2, '.', '' ),
+				// 		'finance'      => $finance['id'],
+				// 		'country'      => $order->billing_country,
+				// 		'amount'       => number_format( $order->get_total(), 2, '.', '' ),
+				// 		'products'     => $products,
+				// 		'customer'     => array(
+				// 			'first_name'   => $order->billing_first_name,
+				// 			'last_name'    => $order->billing_last_name,
+				// 			'country'      => $order->billing_country,
+				// 			'postcode'     => $order->billing_postcode,
+				// 			'email'        => $order->billing_email,
+				// 			'phone_number' => $order->billing_phone,
+				// 			'address'      => array(
+				// 				'text'     => $order->billing_address_1 . ' ' . $order->billing_city . ' ' . $order->billing_postcode,
+				// 				'postcode' => $order->billing_postcode,
+				// 				'street'   => $order->billing_address_1,
+				// 				'flat'     => $order->billing_address_2,
+				// 				'town'     => $order->billing_city,
 				// 			),
-				// 			'metadata'     => array(
-				// 				'order_number' => $order_id,
-				// 			),
-				// 			//'response_url' => admin_url( 'admin-ajax.php' ) . '?action=woocommerce_finance_callback',
-				// 			'redirect_url' => $order->get_checkout_order_received_url(),
-				// 		)
-				// 	);
+				// 		),
+				// 		'metadata'     => array(
+				// 			'order_number' => $order_id,
+				// 		),
+				// 		'response_url' => admin_url( 'admin-ajax.php' ) . '?action=woocommerce_finance_callback',
+				// 		'redirect_url' => $order->get_checkout_order_received_url(),
+				// 	)
+				// );		
+				
 				 } else {
 					//
 					// Version ~2.0.
 					//
-					$response = Divido_CreditRequest::create(
-						array(
-							'merchant'     => $this->api_key,
-							'deposit'      => number_format( $order->get_total() * ( $deposit / 100 ), 2, '.', '' ),
-							'finance'      => $finance['id'],
-							'country'      => $order->billing_country,
-							'amount'       => number_format( $order->get_total(), 2, '.', '' ),
-							'products'     => $products,
-							'customer'     => array(
-								'first_name'   => $order->billing_first_name,
-								'last_name'    => $order->billing_last_name,
-								'country'      => $order->billing_country,
-								'postcode'     => $order->billing_postcode,
-								'email'        => $order->billing_email,
-								'phone_number' => $order->billing_phone,
-								'address'      => array(
-									'text'     => $order->billing_address_1 . ' ' . $order->billing_city . ' ' . $order->billing_postcode,
-									'postcode' => $order->billing_postcode,
-									'street'   => $order->billing_address_1,
-									'flat'     => $order->billing_address_2,
-									'town'     => $order->billing_city,
-								),
-							),
-							'metadata'     => array(
-								'order_number' => $order_id,
-							),
-							'response_url' => admin_url( 'admin-ajax.php' ) . '?action=woocommerce_finance_callback',
-							'redirect_url' => $order->get_checkout_order_received_url(),
-						)
-					);
+
+					$sdk = new \Divido\MerchantSDK\Client($this->api_key, \Divido\MerchantSDK\Environment::SANDBOX);
+					$deposit_amount = $order->get_total()*$deposit;
+					
+					$application = (new \Divido\MerchantSDK\Models\Application())
+					->withCountryId($order->billing_country)
+					->withCurrencyId('GBP')
+					->withLanguageId('en')
+					->withFinancePlanId($finance)
+					->withApplicants([
+						[
+							'firstName' => $order->billing_first_name,
+							'lastName' => $order->billing_last_name,
+							'phoneNumber' => $order->billing_phone,
+							'email' => $order->billing_email,
+						],
+					])
+					->withOrderItems($products)
+					->withDepositAmount($deposit_amount)
+					->withFinalisationRequired(false)
+					->withMerchantReference("")
+					->withUrls([
+						'merchant_redirect_url' => $order->get_checkout_order_received_url(),
+						//'merchant_checkout_url' => 'http://merchant-checkout-url.example.com',
+						'merchant_response_url' => admin_url( 'admin-ajax.php' ) . '?action=woocommerce_finance_callback',
+					])
+					->withMetadata([
+						'order_number' => $order_id,
+					]);
+
+				$response = $sdk->applications()->createApplication($application);
+				$applicationResponseBody = $response->getBody()->getContents();
+				$decode = json_decode($applicationResponseBody);
+				$result_id = $decode->data->id;
+				$result_redirect = $decode->data->urls->application_url;
+				
 				}
 			}
 
@@ -1281,6 +1293,24 @@ function woocommerce_finance_init() {
 			}
 			return $finances;
 		}
+
+		/**
+		 * 
+		 * Define environment function
+		 * 
+		 */
+
+		function environments($key) {
+
+			if (strpos(($key), 'sandbox') !== false) {
+			 	return 'SANDBOX';
+			 } else if (strpos(($key), 'live') !== false) {
+			 	return 'LIVE';
+			} else {
+			   die('Please add your API key');
+			 }
+		}
+
 
 		
 		/**
