@@ -1,0 +1,16 @@
+<!-- TODO: Change attribute names -->
+
+<fieldset id="divido-checkout" class="divido-calculator" data-divido-amount="<?php print $amount; ?>" data-divido-plans="<?php print $plans; ?>">
+<h1>
+        <?php print (isset($this->settings['description'])) ? $this->settings['description']:""; ?>
+    </h1>
+<div id="dividoWidget" data-divido-widget data-divido-plans="<?php print $plans; ?>" data-divido-amount="<?php print $amount; ?>" ></div>
+<script type="text/javascript">
+        jQuery(document).ready(function($) {
+                waitForElementToDisplay('#dividoWidget', 1000);
+        });
+        </script>
+<div class="clear"></div>
+        <p style="font-style:italic;margin-top:10px;"><?php _e( 'You will be redirected to Divido to complete this finance application when you place your order', 'woothemes' ); ?></p>
+</fieldset>
+<?php wp_nonce_field( 'submit-payment-form','submit-payment-form-nonce' ); ?>
