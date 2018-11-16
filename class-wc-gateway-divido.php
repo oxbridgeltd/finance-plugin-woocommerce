@@ -1453,6 +1453,8 @@ function woocommerce_finance_init() {
 
 				$items = [
 					[
+						'name' => 'test',
+						'quantity' => 1,
 						'price' => $order_total*100,
 					],
 				];
