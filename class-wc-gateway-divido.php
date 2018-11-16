@@ -950,7 +950,6 @@ function woocommerce_finance_init() {
 		 */
 		function get_country_code() {
 			global $woocommerce;
-			$kamil = $GET['order_id'];	
 			if ( isset( $_GET['order_id'] ) ) { // Input var okay.
 
 				$order = new WC_Order( sanitize_text_field( wp_unslash( $_GET['order_id'] ) ) ); // Input var okay.
@@ -1045,7 +1044,7 @@ function woocommerce_finance_init() {
 				}
 	
 
-				$deposit = ( isset( $_POST['divido_deposit'] ) && intval( $_POST['divido_deposit'] ) > 0 ) ? sanitize_text_field( wp_unslash( $_POST['divido_deposit'] ) ) : $finance['min_deposit']; // Input var okay.
+				$deposit = ( isset( $_POST['divido_deposit'] ) && intval( $_POST['divido_deposit'] ) > 0 ) ? sanitize_text_field( wp_unslash( $_POST['divido_deposit'] ) ) : $min_deposit; // Input var okay.
 
 				if ( $woocommerce->cart->needs_shipping() ) {
 					$shipping   = $order->get_total_shipping();
@@ -1123,9 +1122,7 @@ function woocommerce_finance_init() {
 
 				if ( version_compare( $this->get_woo_version(), '3.0.0' ) >= 0 ) { 		
 					
-					 $env = $this->environments($this->api_key);
-					 var_dump($env);
-					
+					 $env = $this->environments($this->api_key);					
 					
 					$sdk = new \Divido\MerchantSDK\Client($this->api_key, $env);
 					$deposit_amount = $order->get_total()*$deposit;
@@ -1161,8 +1158,7 @@ function woocommerce_finance_init() {
 				$decode = json_decode($applicationResponseBody);
 				$result_id = $decode->data->id;
 				$result_redirect = $decode->data->urls->application_url;
-
-
+				
 
 				// $response = Divido_CreditRequest::create(
 				// 	array(
@@ -1235,6 +1231,7 @@ function woocommerce_finance_init() {
 				$result_id = $decode->data->id;
 				$result_redirect = $decode->data->urls->application_url;
 				
+				
 				}
 			}
 
@@ -1250,17 +1247,17 @@ function woocommerce_finance_init() {
 				);
 			} else {
 
-				var_dump($finance['id']);
+				var_dump($result_id);
 				die();
 
 
 				$cancel_note = __( 'Finance Payment failed', 'woothemes' ) . ' (Transaction ID: ' . $order_id . '). ' . __( 'Payment was rejected due to an error', 'woothemes' ) . ': "' . $response->error . '". ';
 				$order->add_order_note( $cancel_note );
 				if ( version_compare( $this->get_woo_version(), '2.1.0' ) >= 0 ) {
-					wc_add_notice( __( 'Payment error', 'woothemes' ) . ': ' . $response->error . '' );
+					wc_add_notice( __( 'Payment error', 'woothemes' ) . ': ' . $decode->data->error . '' );
 					
 				} else {
-					$woocommerce->add_error( __( 'Payment error', 'woothemes' ) . ': ' . $response->error . '' );
+					$woocommerce->add_error( __( 'Payment error', 'woothemes' ) . ': ' . $decode->data->error . '' );
 				}
 			}
 		}
@@ -1417,13 +1414,16 @@ function woocommerce_finance_init() {
 		 * @return void
 		 */
 		function send_finance_fulfillment_request( $order_id ) {
+		
 			$name   = get_post_meta( $order_id, '_payment_method', true );
 			$order  = wc_get_order( $order_id );
+			$kamil = $order->get_total();		
+			
 			if ( $name == 'finance') {
 				if ( $this->auto_fulfillment ) {
 					$ref_and_finance = $this->get_ref_finance( $order );
 					$this->logger->debug( 'Finance', 'Autofullfillment selected' . $ref_and_finance['ref'] );
-					$this->set_fulfilled( $ref_and_finance['ref'] );
+					$this->set_fulfilled( $ref_and_finance['ref'], $kamil );
 					$order->add_order_note( 'Finance - Autofulfillment Request Sents.' );
 				} else $this->logger->debug( 'Finance', 'Autofullfillment not set' );
 			} else return false;
@@ -1437,14 +1437,44 @@ function woocommerce_finance_init() {
 		 * @param [string] $tracking_numbers - If there are any tracking numbers to attach we apply here.
 		 * @return void
 		 */
-		function set_fulfilled( $application_id, $shipping_method = null, $tracking_numbers = null ) {
-			$params = array(
-				'application'    => $application_id,
-				'deliveryMethod' => $shipping_method,
-				'trackingNumber' => $tracking_numbers,
-			);
+		function set_fulfilled( $application_id, $order_total, $shipping_method = null, $tracking_numbers = null ) {
+	
+			// $items = array(
+			// 	'name'    => $application_id,
+			// 	'quantity' => $shipping_method,
+			// 	'price' => $order_total*100,
+			// );
 
-			Divido_Activation::activate( $params );
+			//Divido_Activation::activate( $params );
+
+			// First get the application you wish to create an activation for.
+				$application = (new \Divido\MerchantSDK\Models\Application())
+					->withId($application_id);
+
+				$items = [
+					[
+						'price' => $order_total*100,
+					],
+				];
+
+				// Create a new application activation model.
+				$applicationActivation = (new \Divido\MerchantSDK\Models\ApplicationActivation())
+					//->withAmount(18000)
+					->withReference('Order 235509678096')
+					->withComment('Order was delivered to the customer.')
+					->withOrderItems($items)
+					->withDeliveryMethod( $shipping_method)
+					->withTrackingNumber($tracking_numbers);
+
+				// Create a new activation for the application.
+				$sdk = new \Divido\MerchantSDK\Client($this->api_key, \Divido\MerchantSDK\Environment::SANDBOX);
+				$response = $sdk->applicationActivations()->createApplicationActivation($application, $applicationActivation);
+
+				$activationResponseBody = $response->getBody()->getContents();
+
+				var_dump($activationResponseBody);
+				
+		
 		}
 
 	} // end woocommerce_finance.
@@ -1452,4 +1482,5 @@ function woocommerce_finance_init() {
 	global $woocommerce_finance;
 	$woocommerce_finance = new WC_Gateway_Finance();
 }
+
 
