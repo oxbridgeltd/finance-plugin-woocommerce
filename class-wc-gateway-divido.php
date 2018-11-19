@@ -100,8 +100,6 @@ function woocommerce_finance_init() {
 			$this->widget_threshold = ( ! empty( $this->settings['widgetThreshold'] ) ) ? $this->settings['widgetThreshold'] : 250;
 			$this->secret = ( ! empty( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 
-			
-			//Divido::setMerchant( $this->api_key );
 			$sdk = new \Divido\MerchantSDK\Client($this->api_key, \Divido\MerchantSDK\Environment::SANDBOX);
 			
 
@@ -177,11 +175,6 @@ function woocommerce_finance_init() {
 				$plans = $sdk->getAllPlans($requestOptions);
 
 				$plans = $plans->getResources();
-	
-
-				// Divido::setMerchant( $api_key );
-				// $finances = Divido_Finances::all();
-
 
 				set_transient( $transient_name, $plans, 1 * HOUR_IN_SECONDS );
 				//set_transient( $transient_name, $finances, 1 * HOUR_IN_SECONDS );
@@ -225,7 +218,7 @@ function woocommerce_finance_init() {
 		function add_api_to_head() {
 			if ( $this->api_key ) {
 				$key = preg_split( '/\./', $this->api_key );
-				?>/
+				?>
 			<script type='text/javascript'> var dividoKey = '<?php echo esc_attr( strtolower( $key[0] ) ); ?>' </script>
 			<script>// <![CDATA[
 			function waitForElementToDisplay(selector, time) {
@@ -436,9 +429,6 @@ function woocommerce_finance_init() {
 			global $woocommerce;
 
 			$cart = $woocommerce->cart;
-
-			// var_dump($this->api_key);
-			// die();
 		
 			if ( empty( $cart ) ) {
 				return false;
@@ -628,7 +618,7 @@ function woocommerce_finance_init() {
 			</style>
 			<?php
 			// TODO: Change href name to finance_tab
-			echo '<li class="finance_tab"><a href="#divido_tab"><span>' . esc_attr( __( 'Finance', 'wc_finance_product_tab' ) ) . '</span></a></li>';
+			echo '<li class="finance_tab"><a href="#finance_tab"><span>' . esc_attr( __( 'Finance', 'wc_finance_product_tab' ) ) . '</span></a></li>';
 		}
 
 		/**
@@ -659,7 +649,7 @@ function woocommerce_finance_init() {
 			}
 			$finances = $this->get_finances();
 			?>
-			<div id="divido_tab" class="panel woocommerce_options_panel">
+			<div id="finance_tab" class="panel woocommerce_options_panel">
 				<p class="form-field _hide_title_field ">
 					<label for="_available"><?php esc_html_e( 'Available on finance', 'woothemes' ); ?></label>
 
@@ -670,8 +660,13 @@ function woocommerce_finance_init() {
 				<p class="form-field _hide_title_field" id="selectedFinance" style="display:none;">
 					<label for="_hide_title"><?php esc_html_e( 'Selected plans', 'woothemes' ); ?></label>
 
-					<?php foreach ( $finances as $finance ) { ?>
-						<input type="checkbox" class="checkbox" name="_tab_finances[]" id="finances_<?php print $finance['id']; ?>" value="<?php print $finance['id']; ?>" <?php print ( in_array( $finance['id'], $tab_data[0]['finances'], true ) ) ? 'checked' : ''; ?>> &nbsp;<?php print $finance['text']; ?><br  style="clear:both;" />
+					<?php foreach ( $finances as $finance => $value ) {
+						
+						
+
+						?>
+						
+						<input type="checkbox" class="checkbox" name="_tab_finances[]" id="finances_<?php print $finance; ?>" value="<?php print $finance; ?>" <?php print ( in_array( $finance, $tab_data[0]['finances'], true ) ) ? 'checked' : ''; ?>> &nbsp;<?php print $value['description']; ?><br  style="clear:both;" />
 					<?php } ?>
 				</p>
 			</div>
@@ -1114,6 +1109,7 @@ function woocommerce_finance_init() {
 					);
 				}
 				
+				//TODO: Backend need to add shared secret to SDK
 				// // Set secret.
 				// if ( '' !== $this->secret ) {
 				// 	Divido::setSharedSecret( $this->secret );
@@ -1126,8 +1122,7 @@ function woocommerce_finance_init() {
 
 				if ( version_compare( $this->get_woo_version(), '3.0.0' ) >= 0 ) { 		
 					
-					 $env = $this->environments($this->api_key);					
-					
+					$env = $this->environments($this->api_key);					
 					$sdk = new \Divido\MerchantSDK\Client($this->api_key, $env);
 					$deposit_amount = $order->get_total()*$deposit;
 					
@@ -1156,7 +1151,7 @@ function woocommerce_finance_init() {
 					->withMerchantReference("")
 					->withUrls([
 						'merchant_redirect_url' => $order->get_checkout_order_received_url(),
-						//'merchant_checkout_url' => 'http://merchant-checkout-url.example.com',
+						'merchant_checkout_url' => wc_get_checkout_url(),
 						'merchant_response_url' => admin_url( 'admin-ajax.php' ) . '?action=woocommerce_finance_callback',
 					])
 					->withMetadata([
@@ -1188,6 +1183,12 @@ function woocommerce_finance_init() {
 							'lastName' => $order->billing_last_name,
 							'phoneNumber' => $order->billing_phone,
 							'email' => $order->billing_email,
+							'addresses' => array([
+								'postcode' => $order->get_billing_postcode,
+								'street'   => $order->get_billing_address_1,
+								'town'     => $order->get_billing_city,
+					
+							]),
 						
 						],
 					])
@@ -1197,7 +1198,7 @@ function woocommerce_finance_init() {
 					->withMerchantReference("")
 					->withUrls([
 						'merchant_redirect_url' => $order->get_checkout_order_received_url(),
-						//'merchant_checkout_url' => 'http://merchant-checkout-url.example.com',
+						'merchant_checkout_url' => wc_get_checkout_url(),
 						'merchant_response_url' => admin_url( 'admin-ajax.php' ) . '?action=woocommerce_finance_callback',
 					])
 					->withMetadata([
@@ -1253,8 +1254,6 @@ function woocommerce_finance_init() {
 			}
 			$response = $this->finance_options; // array 
 			$finances = array();
-			// var_dump($response);
-			// die();
 
 			if ( true ) {
 		
@@ -1393,16 +1392,16 @@ function woocommerce_finance_init() {
 		 * @return void
 		 */
 		function send_finance_fulfillment_request( $order_id ) {
-		
+			
+			$wc_order_id = (string)$order_id;
 			$name   = get_post_meta( $order_id, '_payment_method', true );
 			$order  = wc_get_order( $order_id );
-			$order_total = $order->get_total();		
-			
+			$order_total = $order->get_total();	
 			if ( $name == 'finance') {
 				if ( $this->auto_fulfillment ) {
 					$ref_and_finance = $this->get_ref_finance( $order );
 					$this->logger->debug( 'Finance', 'Autofullfillment selected' . $ref_and_finance['ref'] );
-					$this->set_fulfilled( $ref_and_finance['ref'], $order_total );
+					$this->set_fulfilled( $ref_and_finance['ref'], $order_total, $wc_order_id, $product_name, $product_quantity );
 					$order->add_order_note( 'Finance - Autofulfillment Request Sents.' );
 				} else $this->logger->debug( 'Finance', 'Autofullfillment not set' );
 			} else return false;
@@ -1416,7 +1415,7 @@ function woocommerce_finance_init() {
 		 * @param [string] $tracking_numbers - If there are any tracking numbers to attach we apply here.
 		 * @return void
 		 */
-		function set_fulfilled( $application_id, $order_total, $shipping_method = null, $tracking_numbers = null ) {
+		function set_fulfilled( $application_id, $order_total, $order_id, $shipping_method = null, $tracking_numbers = null ) {
 	
 			// $items = array(
 			// 	'name'    => $application_id,
@@ -1432,15 +1431,14 @@ function woocommerce_finance_init() {
 
 				$items = [
 					[
-						'name' => 'test',
-						'quantity' => 1,
+						'name' =>  "Order id: $order_id",
+						'quantity' =>  1,
 						'price' => $order_total*100,
 					],
 				];
 
 				// Create a new application activation model.
 				$applicationActivation = (new \Divido\MerchantSDK\Models\ApplicationActivation())
-					//->withAmount(18000)
 					->withReference('Order 235509678096')
 					->withComment('Order was delivered to the customer.')
 					->withOrderItems($items)
