@@ -395,8 +395,9 @@ function woocommerce_finance_init() {
 		 * @return float
 		 */
 		public function is_available( $product = false ) {
+			
 
-			if ( 'yes' !== $this->settings['enabled'] ) {
+			if ( 'yes' !== $this->settings['enabled'] || $this->api_key == '') {
 			
 				return false;
 			}
@@ -435,6 +436,9 @@ function woocommerce_finance_init() {
 			global $woocommerce;
 
 			$cart = $woocommerce->cart;
+
+			// var_dump($this->api_key);
+			// die();
 		
 			if ( empty( $cart ) ) {
 				return false;
@@ -583,11 +587,11 @@ function woocommerce_finance_init() {
 			{
 				$append_price = '';
 				if ( ! empty( $this->append_price ) ) {
-					$append_price = 'data-finance-suffix="' . $this->append_price . '" ';
+					$append_price = 'data-divido-suffix="' . $this->append_price . '" ';
 				}
 				$prepend_price = '';
 				if ( ! empty( $this->prepend_price ) ) {
-					$prepend_price = ' data-finance-prefix="' . $this->prepend_price . '" ';
+					$prepend_price = ' data-divido-prefix="' . $this->prepend_price . '" ';
 				}
 
 				$plans = $this->get_product_plans( $product );
@@ -1138,6 +1142,12 @@ function woocommerce_finance_init() {
 							'lastName' => $order->get_billing_last_name(),
 							'phoneNumber' => $order->get_billing_phone(),
 							'email' => $order->get_billing_email(),
+							'addresses' => array([
+								'postcode' => $order->get_billing_postcode(),
+								'street'   => $order->get_billing_address_1(),
+								'town'     => $order->get_billing_city(),
+
+							]),
 						],
 					])
 					->withOrderItems($products)
@@ -1158,39 +1168,7 @@ function woocommerce_finance_init() {
 				$decode = json_decode($applicationResponseBody);
 				$result_id = $decode->data->id;
 				$result_redirect = $decode->data->urls->application_url;
-				
-
-				// $response = Divido_CreditRequest::create(
-				// 	array(
-				// 		'merchant'     => $this->api_key,
-				// 		'deposit'      => number_format( $order->get_total() * ( $deposit / 100 ), 2, '.', '' ),
-				// 		'finance'      => $finance['id'],
-				// 		'country'      => $order->billing_country,
-				// 		'amount'       => number_format( $order->get_total(), 2, '.', '' ),
-				// 		'products'     => $products,
-				// 		'customer'     => array(
-				// 			'first_name'   => $order->billing_first_name,
-				// 			'last_name'    => $order->billing_last_name,
-				// 			'country'      => $order->billing_country,
-				// 			'postcode'     => $order->billing_postcode,
-				// 			'email'        => $order->billing_email,
-				// 			'phone_number' => $order->billing_phone,
-				// 			'address'      => array(
-				// 				'text'     => $order->billing_address_1 . ' ' . $order->billing_city . ' ' . $order->billing_postcode,
-				// 				'postcode' => $order->billing_postcode,
-				// 				'street'   => $order->billing_address_1,
-				// 				'flat'     => $order->billing_address_2,
-				// 				'town'     => $order->billing_city,
-				// 			),
-				// 		),
-				// 		'metadata'     => array(
-				// 			'order_number' => $order_id,
-				// 		),
-				// 		'response_url' => admin_url( 'admin-ajax.php' ) . '?action=woocommerce_finance_callback',
-				// 		'redirect_url' => $order->get_checkout_order_received_url(),
-				// 	)
-				// );		
-				
+	
 				 } else {
 					//
 					// Version ~2.0.
@@ -1210,6 +1188,7 @@ function woocommerce_finance_init() {
 							'lastName' => $order->billing_last_name,
 							'phoneNumber' => $order->billing_phone,
 							'email' => $order->billing_email,
+						
 						],
 					])
 					->withOrderItems($products)
@@ -1417,13 +1396,13 @@ function woocommerce_finance_init() {
 		
 			$name   = get_post_meta( $order_id, '_payment_method', true );
 			$order  = wc_get_order( $order_id );
-			$kamil = $order->get_total();		
+			$order_total = $order->get_total();		
 			
 			if ( $name == 'finance') {
 				if ( $this->auto_fulfillment ) {
 					$ref_and_finance = $this->get_ref_finance( $order );
 					$this->logger->debug( 'Finance', 'Autofullfillment selected' . $ref_and_finance['ref'] );
-					$this->set_fulfilled( $ref_and_finance['ref'], $kamil );
+					$this->set_fulfilled( $ref_and_finance['ref'], $order_total );
 					$order->add_order_note( 'Finance - Autofulfillment Request Sents.' );
 				} else $this->logger->debug( 'Finance', 'Autofullfillment not set' );
 			} else return false;
