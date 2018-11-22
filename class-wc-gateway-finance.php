@@ -428,17 +428,23 @@ function woocommerce_finance_init() {
 
 			// In Cart.
 			global $woocommerce;
-
+			$settings = $this->settings;
+			$threshold = $this->cart_threshold; 			
 			$cart = $woocommerce->cart;
-		
+			
 			if ( empty( $cart ) ) {
 				return false;
 			}
-
-			if ( $this->cart_threshold > $cart->subtotal ) {
+			if ( $threshold > $cart->subtotal ) {
 				return false;
-
 			}
+			if( 'all' === $settings['productSelect'] ) {
+				return true;
+			}
+			if ( 'price' === $settings['productSelect'] ) { 
+			if($cart->subtotal < $settings['priceSelection']) {
+				return false;
+			}}
 
 			$checkout_finance_options = $this->get_checkout_plans();
 			if ( ! $checkout_finance_options ) {
@@ -756,6 +762,7 @@ function woocommerce_finance_init() {
 		
 				$options = array();
 
+				//TODO: Condition to return true
 				if (true) {
 					foreach ( $finance as $key => $descriptions ) {
 						$options[ $key ] = $descriptions;
@@ -1242,6 +1249,7 @@ function woocommerce_finance_init() {
 				}
 			}
 
+			//TODO condition to return true
 			if ( true ) {
 
 				update_post_meta( $order_id, '_finance_reference', $result_id );
@@ -1281,7 +1289,7 @@ function woocommerce_finance_init() {
 			}
 			$response = $this->finance_options; // array 
 			$finances = array();
-
+			//TODO Condition to return true
 			if ( true ) {
 		
 				foreach ( $response as $_finance ) {
