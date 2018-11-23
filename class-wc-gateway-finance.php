@@ -45,7 +45,7 @@ function woocommerce_finance_init() {
 		 *
 		 * @var array  $avaiable_countries A hardcoded array of countries.
 		 */
-		public $avaiable_countries = array( 'GB' );
+		public $avaiable_countries = array( 'GB', 'SE', 'NO', 'DK');
 
 		/**
 		 * Api Key
@@ -61,6 +61,7 @@ function woocommerce_finance_init() {
 		 *
 		 * @return void
 		 */
+
 		function __construct() {
 			
 			$this->id           = 'finance';
@@ -87,7 +88,7 @@ function woocommerce_finance_init() {
 
 			// Get setting values.
 			$this->title            = ( ! empty( $this->settings['title'] ) ) ? $this->settings['title'] : 'Pay in instalments ';
-			$this->calculator_theme = ( ! empty( $this->settings['calculatorTheme'] ) ) ? $this->settings['calculatorTheme'] : 'blue';
+			$this->calculator_theme = ( ! empty( $this->settings['calculatorTheme'] ) ) ? $this->settings['calculatorTheme'] : 'enabled';
 			$this->show_widget      = ( ! empty( $this->settings['showWidget'] ) ) ? $this->settings['showWidget'] : true;
 			$this->description      = ( ! empty( $this->settings['description'] ) ) ? $this->settings['description'] : '';
 			$this->enabled          = ( ! empty( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : false;
@@ -97,11 +98,13 @@ function woocommerce_finance_init() {
 			$this->cart_threshold   = ( ! empty( $this->settings['cartThreshold'] ) ) ? $this->settings['cartThreshold'] : 250;
 			$this->auto_fulfillment = ( ! empty( $this->settings['autoFulfillment'] ) ) ? $this->settings['autoFulfillment'] : false;
 			$this->widget_threshold = ( ! empty( $this->settings['widgetThreshold'] ) ) ? $this->settings['widgetThreshold'] : 250;
-			$this->secret = ( ! empty( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
+			$this->secret 			= ( ! empty( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 
-			$env = $this->environments($this->api_key);					
+
+			if($this->api != null){
+			$env = $this->environments($this->api_key);	
 			$sdk = new \Divido\MerchantSDK\Client($this->api_key, $env);
-			
+			}
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) ); // Version 2.0 Hook.
 
 			// product settings.
@@ -215,6 +218,7 @@ function woocommerce_finance_init() {
 		 * 
 		 * TODO: change the name of dividoKey
 		 */
+		
 		function add_api_to_head() {
 			if ( $this->api_key ) {
 				$key = preg_split( '/\./', $this->api_key );
@@ -876,9 +880,9 @@ function woocommerce_finance_init() {
 							'calculatorTheme' => array(
 								'title'   => __( 'Show Calculator Widget', 'woothemes' ),
 								'type'    => 'select',
-								'default' => 'blue',
+								'default' => 'enabled',
 								'options' => array(
-									'blue'     => __( 'Yes', 'woothemes' ),
+									'enabled'     => __( 'Yes', 'woothemes' ),
 									'disabled' => __( 'No', 'woothemes' ),
 								),
 							),
@@ -1260,11 +1264,8 @@ function woocommerce_finance_init() {
 					'result'   => 'success',
 					'redirect' => $result_redirect,
 				);
+				
 			} else {
-
-				var_dump($result_id);
-				die();
-
 
 				$cancel_note = __( 'Finance Payment failed', 'woothemes' ) . ' (Transaction ID: ' . $order_id . '). ' . __( 'Payment was rejected due to an error', 'woothemes' ) . ': "' . $response->error . '". ';
 				$order->add_order_note( $cancel_note );
@@ -1319,7 +1320,7 @@ function woocommerce_finance_init() {
 				return constant("Divido\MerchantSDK\Environment::$environment");
 			}
 			else {
-			   die('Please add your API key');
+			   return false;
 			 }
 		}
 
@@ -1438,7 +1439,7 @@ function woocommerce_finance_init() {
 					$this->logger->debug( 'Finance', 'Autofullfillment selected' . $ref_and_finance['ref'] );
 					$this->set_fulfilled( $ref_and_finance['ref'], $order_total, $wc_order_id, $product_name, $product_quantity );
 					$order->add_order_note( 'Finance - Autofulfillment Request Sents.' );
-				} else $this->logger->debug( 'Finance', 'Autofullfillment not set' );
+				} else $this->logger->debug( 'Finance', 'Autofulfillment not set' );
 			} else return false;
 		}
 
@@ -1466,10 +1467,8 @@ function woocommerce_finance_init() {
 
 				// Create a new application activation model.
 				$applicationActivation = (new \Divido\MerchantSDK\Models\ApplicationActivation())
-					->withReference('Order 235509678096')
-					->withComment('Order was delivered to the customer.')
 					->withOrderItems($items)
-					->withDeliveryMethod( $shipping_method)
+					->withDeliveryMethod($shipping_method)
 					->withTrackingNumber($tracking_numbers);
 
 				// Create a new activation for the application.
@@ -1478,10 +1477,6 @@ function woocommerce_finance_init() {
 				$response = $sdk->applicationActivations()->createApplicationActivation($application, $applicationActivation);
 
 				$activationResponseBody = $response->getBody()->getContents();
-
-				var_dump($activationResponseBody);
-				
-		
 		}
 
 	} // end woocommerce_finance.
