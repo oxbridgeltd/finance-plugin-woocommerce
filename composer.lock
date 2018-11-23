@@ -57,12 +57,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:DividoFinancialServices/php-merchant-sdk.git",
-                "reference": "57f99198d32eae3b8526593b6a3296466e784af5"
+                "reference": "2d733f293fe2e02fa9137f0c23f46deb1f1d3885"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DividoFinancialServices/php-merchant-sdk/zipball/57f99198d32eae3b8526593b6a3296466e784af5",
-                "reference": "57f99198d32eae3b8526593b6a3296466e784af5",
+                "url": "https://api.github.com/repos/DividoFinancialServices/php-merchant-sdk/zipball/2d733f293fe2e02fa9137f0c23f46deb1f1d3885",
+                "reference": "2d733f293fe2e02fa9137f0c23f46deb1f1d3885",
                 "shasum": ""
             },
             "require": {
@@ -102,7 +102,7 @@
                 "source": "https://github.com/DividoFinancialServices/php-merchant-sdk/tree/master",
                 "issues": "https://github.com/DividoFinancialServices/php-merchant-sdk/issues"
             },
-            "time": "2018-10-02T13:03:09+00:00"
+            "time": "2018-11-22T14:13:47+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -110,12 +110,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "51cb9063b8e07c2aa1e52f343de63ed08d822135"
+                "reference": "b309ed9ad49331e5bf90a86e175286498190a3da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/51cb9063b8e07c2aa1e52f343de63ed08d822135",
-                "reference": "51cb9063b8e07c2aa1e52f343de63ed08d822135",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/b309ed9ad49331e5bf90a86e175286498190a3da",
+                "reference": "b309ed9ad49331e5bf90a86e175286498190a3da",
                 "shasum": ""
             },
             "require": {
@@ -126,7 +126,7 @@
             "require-dev": {
                 "ext-curl": "*",
                 "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.4 || ^7.0",
-                "psr/log": "^1.0"
+                "psr/log": "^1.1"
             },
             "suggest": {
                 "psr/log": "Required for using the Log middleware"
@@ -138,12 +138,12 @@
                 }
             },
             "autoload": {
-                "files": [
-                    "src/functions_include.php"
-                ],
                 "psr-4": {
                     "GuzzleHttp\\": "src/"
-                }
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -167,7 +167,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2018-11-03T10:47:53+00:00"
+            "time": "2018-11-21T17:36:52+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -226,12 +226,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "23e7d3812a82bdbff4a5cb8e4628bcc06eec5d68"
+                "reference": "18fa36860bbb2133b259233b9aaa0efb85277dd9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/23e7d3812a82bdbff4a5cb8e4628bcc06eec5d68",
-                "reference": "23e7d3812a82bdbff4a5cb8e4628bcc06eec5d68",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/18fa36860bbb2133b259233b9aaa0efb85277dd9",
+                "reference": "18fa36860bbb2133b259233b9aaa0efb85277dd9",
                 "shasum": ""
             },
             "require": {
@@ -285,7 +285,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2018-11-01T01:48:29+00:00"
+            "time": "2018-11-19T17:50:46+00:00"
         },
         {
             "name": "psr/http-message",
@@ -343,12 +343,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "3490ba5925e6dcbe6de950c5c6b8dce9f6e96eda"
+                "reference": "c4421fcac1edd5a324fda73e589a5cf96e52ffd0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/3490ba5925e6dcbe6de950c5c6b8dce9f6e96eda",
-                "reference": "3490ba5925e6dcbe6de950c5c6b8dce9f6e96eda",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/c4421fcac1edd5a324fda73e589a5cf96e52ffd0",
+                "reference": "c4421fcac1edd5a324fda73e589a5cf96e52ffd0",
                 "shasum": ""
             },
             "require": {
@@ -357,7 +357,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "1.1.x-dev"
                 }
             },
             "autoload": {
@@ -382,7 +382,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2018-04-03T15:59:15+00:00"
+            "time": "2018-11-21T13:42:00+00:00"
         },
         {
             "name": "ralouphie/getallheaders",

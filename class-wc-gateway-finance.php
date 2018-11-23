@@ -1,14 +1,14 @@
 <?php
 
 /**
- * TODO: Change Name for to a specific lender 
- * 
+ * TODO: Change Name for to a specific lender
+ *
  *  Finance
  *
- * @package WordPress
- * @author Divido <support@divido.com>
+ * @package   WordPress
+ * @author    Divido <support@divido.com>
  * @copyright 2018 Divido Financial Services
- * @license MIT
+ * @license   MIT
  *
  * Plugin Name: Finance payment Gateway for WooCommerce
  * Plugin URI: https://www.divido.com
@@ -30,10 +30,10 @@ add_action( 'plugins_loaded', 'woocommerce_finance_init', 0 );
  * @return void
  */
 function woocommerce_finance_init() {
-
 	if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
-		return; }
-		require_once WP_PLUGIN_DIR . '/' . plugin_basename( dirname( __FILE__ ) ) . '/vendor/autoload.php';
+		return;
+	}
+	include_once WP_PLUGIN_DIR . '/' . plugin_basename( dirname( __FILE__ ) ) . '/vendor/autoload.php';
 
 	/**
 	 * Finance Payment Gateway class
@@ -45,7 +45,7 @@ function woocommerce_finance_init() {
 		 *
 		 * @var array  $avaiable_countries A hardcoded array of countries.
 		 */
-		public $avaiable_countries = array( 'GB', 'SE', 'NO', 'DK');
+		public $avaiable_countries = array( 'GB', 'SE', 'NO', 'DK' );
 
 		/**
 		 * Api Key
@@ -53,7 +53,7 @@ function woocommerce_finance_init() {
 		 * @var string $api_key The Finance Api Key.
 		 */
 		public $api_key;
-		
+
 		/**
 		 * Plugin Class Constructor
 		 *
@@ -61,9 +61,8 @@ function woocommerce_finance_init() {
 		 *
 		 * @return void
 		 */
-
 		function __construct() {
-			
+
 			$this->id           = 'finance';
 			$this->method_title = __( 'Finance', 'woothemes' );
 			$this->icon         = WP_PLUGIN_URL . '/' . plugin_basename( dirname( __FILE__ ) ) . '/images/finance-small.png';
@@ -98,12 +97,11 @@ function woocommerce_finance_init() {
 			$this->cart_threshold   = ( ! empty( $this->settings['cartThreshold'] ) ) ? $this->settings['cartThreshold'] : 250;
 			$this->auto_fulfillment = ( ! empty( $this->settings['autoFulfillment'] ) ) ? $this->settings['autoFulfillment'] : false;
 			$this->widget_threshold = ( ! empty( $this->settings['widgetThreshold'] ) ) ? $this->settings['widgetThreshold'] : 250;
-			$this->secret 			= ( ! empty( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
+			$this->secret           = ( ! empty( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 
-
-			if($this->api != null){
-			$env = $this->environments($this->api_key);	
-			$sdk = new \Divido\MerchantSDK\Client($this->api_key, $env);
+			if ( $this->api != null ) {
+				$env = $this->environments( $this->api_key );
+				$sdk = new \Divido\MerchantSDK\Client( $this->api_key, $env );
 			}
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) ); // Version 2.0 Hook.
 
@@ -124,9 +122,9 @@ function woocommerce_finance_init() {
 			}
 			if ( 'disabled' !== $this->show_widget ) {
 				add_action( 'woocommerce_single_product_summary', array( $this, 'product_widget' ), 15 );
-				
+
 			}
-			
+
 			// order admin page (making sure it only adds once).
 			global $finances_set_admin_order_display;
 
@@ -155,14 +153,14 @@ function woocommerce_finance_init() {
 		 *
 		 * Calls Finance endpoint to return all finances for merchant
 		 *
-		 * @param [string] $api_key The Finance Api Key.
-		 * @param boolean  $reload An optional parameter to say if the finances endpoint should be called again.
+		 * @param  [string] $api_key The Finance Api Key.
+		 * @param  boolean  $reload  An optional parameter to say if the finances endpoint should be called again.
 		 * @return array
 		 */
 		function get_all_finances( $api_key, $reload = true ) {
-			
-			$env = $this->environments($api_key);					
-			$sdk = new \Divido\MerchantSDK\Client($api_key, $env);
+
+			$env            = $this->environments( $api_key );
+			$sdk            = new \Divido\MerchantSDK\Client( $api_key, $env );
 			$finances       = false;
 			$transient_name = 'finances';
 
@@ -172,40 +170,36 @@ function woocommerce_finance_init() {
 
 			if ( false === $finances ) {
 
-				$requestOptions = (new \Divido\MerchantSDK\Handlers\ApiRequestOptions());
+				$requestOptions = ( new \Divido\MerchantSDK\Handlers\ApiRequestOptions() );
 
-			   //Retrieve all finance plans for the merchant.
-				$plans = $sdk->getAllPlans($requestOptions);
+				  // Retrieve all finance plans for the merchant.
+				$plans = $sdk->getAllPlans( $requestOptions );
 
 				$plans = $plans->getResources();
 
 				set_transient( $transient_name, $plans, 1 * HOUR_IN_SECONDS );
-				//set_transient( $transient_name, $finances, 1 * HOUR_IN_SECONDS );
-				return $plans;
-				//return $finances;
-			}
 
-		//	Retrieve all finance plans for the merchant.
-	
+				return $plans;
+
+			}
 		}
-		
 
 		/**
 		 * Enque Add Finance styles and scripts
-		 * 
+		 *
 		 * @return void
 		 */
 		function enqueue() {
-			if ( $this->api_key && is_product()||is_checkout()) {
-				$key = preg_split( '/\./', $this->api_key );
+			if ( $this->api_key && is_product() || is_checkout() ) {
+				$key      = preg_split( '/\./', $this->api_key );
 				$protocol = ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http'; // Input var okay.
-				//TODO: Change the endpoint for the calculator once ready
+				// TODO: Change the endpoint for the calculator once ready
 				wp_register_script( 'woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/calculator/v2.1/production/js/template.divido.js', false, false, true );
-				wp_register_script('woocoomerce-finance-gateway-calculator_price_update', plugins_url( '', __FILE__ ) . '/js/widget_price_update.js');
+				wp_register_script( 'woocoomerce-finance-gateway-calculator_price_update', plugins_url( '', __FILE__ ) . '/js/widget_price_update.js' );
 				wp_register_style( 'woocommerce-finance-gateway-style', plugins_url( '', __FILE__ ) . '/css/style.css' );
 				wp_enqueue_style( 'woocommerce-finance-gateway-style' );
 				wp_enqueue_script( 'woocommerce-finance-gateway-calculator' );
-				wp_enqueue_script('woocoomerce-finance-gateway-calculator_price_update');
+				wp_enqueue_script( 'woocoomerce-finance-gateway-calculator_price_update' );
 			}
 		}
 
@@ -215,10 +209,9 @@ function woocommerce_finance_init() {
 		 * We need to add some specific js to the head of the page to ensure the element reloads
 		 *
 		 * @return void
-		 * 
+		 *
 		 * TODO: change the name of dividoKey
 		 */
-		
 		function add_api_to_head() {
 			if ( $this->api_key ) {
 				$key = preg_split( '/\./', $this->api_key );
@@ -245,18 +238,16 @@ function woocommerce_finance_init() {
 
 </script>
 
-			<?php
+				<?php
 			}
 		}
-
-			
 
 		/**
 		 * Helper function to display save data in Admin
 		 *
 		 * Display the extra data in the order admin panel.
 		 *
-		 * @param [object] $order The Order view.
+		 * @param  [object] $order The Order view.
 		 * @return void
 		 */
 		function display_order_data_in_admin( $order ) {
@@ -270,7 +261,6 @@ function woocommerce_finance_init() {
 				echo '<p class="form-field form-field-wide"><strong>' . esc_attr( __( 'Finance Finance' ) ) . ':</strong><br />' . esc_html( $ref_and_finance['finance'] ) . '</p>';
 			}
 		}
-
 
 		/**
 		 * Callback The callback function listens to calls from Finance
@@ -307,7 +297,7 @@ function woocommerce_finance_init() {
 
 					if ( isset( $finance_reference[0] ) && $finance_reference[0] === $data_json->proposal ) {
 
-						$order         = new WC_Order( $data_json->metadata->order_number );
+						$order          = new WC_Order( $data_json->metadata->order_number );
 						$finance_amount = get_post_meta( $data_json->metadata->order_number, '_finance_amount' );
 
 						// Check if the requested amount matched order amount.
@@ -319,18 +309,18 @@ function woocommerce_finance_init() {
 							$this->send_json();
 						} else {
 							// Amount matches, update status.
-							//TODO: Review Logging error
+							// TODO: Review Logging error
 							if ( 'DECLINED' === $data_json->status ) {
-								$order->update_status( 'failed' );
-								$this->send_json();
+									$order->update_status( 'failed' );
+									$this->send_json();
 							} elseif ( 'SIGNED' === $data_json->status ) {
-								$this->logger->error( 'Finance', 'processing' );
-								$order->update_status( 'processing', $data_json->application );
-								$this->send_json();
+									$this->logger->error( 'Finance', 'processing' );
+									$order->update_status( 'processing', $data_json->application );
+									$this->send_json();
 							} elseif ( 'READY' === $data_json->status ) {
-								$order->add_order_note( 'Finance status: ' . $data_json->status );
-								$order->payment_complete();
-								$this->send_json();
+									$order->add_order_note( 'Finance status: ' . $data_json->status );
+									$order->payment_complete();
+									$this->send_json();
 							}
 						}
 						// Log status to order.
@@ -344,7 +334,7 @@ function woocommerce_finance_init() {
 		/**
 		 * Add Financec payment methods using filter woocommerce_payment_gateways
 		 *
-		 * @param array $methods Array of payment methods.
+		 * @param  array $methods Array of payment methods.
 		 * @return array
 		 */
 		public function add_method( $methods ) {
@@ -352,10 +342,10 @@ function woocommerce_finance_init() {
 				$methods[] = 'WC_Gateway_Finance';
 			} else {
 				$is_available = $this->is_available();
-				
+
 				if ( $is_available ) {
 					$methods[] = 'WC_Gateway_Finance';
-					
+
 				}
 			}
 			return $methods;
@@ -374,7 +364,8 @@ function woocommerce_finance_init() {
 		private function get_price_including_tax( $product, $args ) {
 			if ( version_compare( WC_VERSION, '2.7', '<' ) ) {
 				$args = wp_parse_args(
-					$args, array(
+					$args,
+					array(
 						'qty'   => '1',
 						'price' => '',
 					)
@@ -382,7 +373,7 @@ function woocommerce_finance_init() {
 				return $product->get_price_including_tax( $args['qty'], $args['price'] );
 			} else {
 				return wc_get_price_including_tax( $product, $args );
-				
+
 			}
 		}
 
@@ -393,10 +384,9 @@ function woocommerce_finance_init() {
 		 * @return float
 		 */
 		public function is_available( $product = false ) {
-			
 
-			if ( 'yes' !== $this->settings['enabled'] || $this->api_key == '') {
-			
+			if ( 'yes' !== $this->settings['enabled'] || $this->api_key == '' ) {
+
 				return false;
 			}
 
@@ -424,7 +414,7 @@ function woocommerce_finance_init() {
 				} elseif ( 'selection' === $this->settings['productSelect'] ) {
 					return false;
 				} elseif ( 'all' === $this->settings['productSelect'] ) {
-					return true;
+					   return true;
 				}
 
 				return false;
@@ -432,32 +422,33 @@ function woocommerce_finance_init() {
 
 			// In Cart.
 			global $woocommerce;
-			$settings = $this->settings;
-			$threshold = $this->cart_threshold; 			
-			$cart = $woocommerce->cart;
-			
+			$settings  = $this->settings;
+			$threshold = $this->cart_threshold;
+			$cart      = $woocommerce->cart;
+
 			if ( empty( $cart ) ) {
 				return false;
 			}
 			if ( $threshold > $cart->subtotal ) {
 				return false;
 			}
-			if( 'all' === $settings['productSelect'] ) {
+			if ( 'all' === $settings['productSelect'] ) {
 				return true;
 			}
-			if ( 'price' === $settings['productSelect'] ) { 
-			if($cart->subtotal < $settings['priceSelection']) {
-				return false;
-			}}
+			if ( 'price' === $settings['productSelect'] ) {
+				if ( $cart->subtotal < $settings['priceSelection'] ) {
+					return false;
+				}
+			}
 
 			$checkout_finance_options = $this->get_checkout_plans();
 			if ( ! $checkout_finance_options ) {
 				return false;
-				
+
 			}
 
 			return true;
-			
+
 		}
 
 		/**
@@ -479,7 +470,7 @@ function woocommerce_finance_init() {
 				$product = $item['data'];
 
 				$finances = $this->getProductFinanceOptions( $product );
-				
+
 				if ( ! $finances && ! is_array( $finances ) ) {
 					return false;
 				}
@@ -493,7 +484,7 @@ function woocommerce_finance_init() {
 		/**
 		 * Get Product specific finance optitons.
 		 *
-		 * @param object $product Product Instance.
+		 * @param  object $product Product Instance.
 		 * @return array|false
 		 */
 		public function getProductFinanceOptions( $product ) {
@@ -533,9 +524,9 @@ function woocommerce_finance_init() {
 		 */
 		public function get_checkout_plans() {
 			$finances = $this->get_finances( $this->getCheckoutFinanceOptions() );
-			
+
 			if ( is_array( $finances ) ) {
-				$plans = array_keys($finances);
+				$plans = array_keys( $finances );
 			}
 			return ( is_array( $plans ) ) ? implode( ',', $plans ) : false;
 		}
@@ -543,7 +534,7 @@ function woocommerce_finance_init() {
 		/**
 		 * Get specific product plans.
 		 *
-		 * @param object $product WC product instance.
+		 * @param  object $product WC product instance.
 		 * @return string|false
 		 */
 		public function get_product_plans( $product ) {
@@ -555,7 +546,7 @@ function woocommerce_finance_init() {
 		/**
 		 * Product calculator helper.
 		 *
-		 * @param object $product The current product.
+		 * @param  object $product The current product.
 		 * @return void
 		 */
 		public function product_calculator( $product ) {
@@ -573,19 +564,16 @@ function woocommerce_finance_init() {
 		/**
 		 * Product widget helper.
 		 *
-		 * @param object $product The current product.
+		 * @param  object $product The current product.
 		 * @return void
 		 */
 		public function product_widget( $product ) {
-	
+
 			global $product;
 			$price = $this->get_price_including_tax( $product, '' );
 			$plans = $this->get_product_plans( $product );
-			
 
-
-			if ( $this->is_available( $product ) && $price>($this->widget_threshold))  
-			{
+			if ( $this->is_available( $product ) && $price > ( $this->widget_threshold ) ) {
 				$append_price = '';
 				if ( ! empty( $this->append_price ) ) {
 					$append_price = 'data-divido-suffix="' . $this->append_price . '" ';
@@ -596,7 +584,7 @@ function woocommerce_finance_init() {
 				}
 
 				$plans = $this->get_product_plans( $product );
-				
+
 				include_once WP_PLUGIN_DIR . '/' . plugin_basename( dirname( __FILE__ ) ) . '/includes/widget.php';
 			}
 
@@ -654,7 +642,6 @@ function woocommerce_finance_init() {
 				);
 			}
 
-			// Bug with null value returned expecting array.
 			if ( empty( $tab_data[0]['finances'] ) ) {
 				$tab_data[0]['finances'] = array();
 			}
@@ -671,14 +658,13 @@ function woocommerce_finance_init() {
 				<p class="form-field _hide_title_field" id="selectedFinance" style="display:none;">
 					<label for="_hide_title"><?php esc_html_e( 'Selected plans', 'woothemes' ); ?></label>
 
-					<?php foreach ( $finances as $finance => $value ) {
-						
-						
+			<?php
+			foreach ( $finances as $finance => $value ) {
 
-						?>
+				?>
 						
 						<input type="checkbox" class="checkbox" name="_tab_finances[]" id="finances_<?php print $finance; ?>" value="<?php print $finance; ?>" <?php print ( in_array( $finance, $tab_data[0]['finances'], true ) ) ? 'checked' : ''; ?>> &nbsp;<?php print $value['description']; ?><br  style="clear:both;" />
-					<?php } ?>
+			<?php } ?>
 				</p>
 			</div>
 			<script type="text/javascript">
@@ -703,8 +689,8 @@ function woocommerce_finance_init() {
 		/**
 		 * A function to save metadata per product
 		 *
-		 * @param [type] $post_id The product Post Id.
-		 * @param [type] $post    The Post.
+		 * @param  [type] $post_id The product Post Id.
+		 * @param  [type] $post    The Post.
 		 * @return void
 		 */
 		public function product_save_data( $post_id, $post ) {
@@ -755,34 +741,35 @@ function woocommerce_finance_init() {
 					'default'     => '',
 				),
 			);
-		
+
 			if ( isset( $this->settings['apiKey'] ) && $this->settings['apiKey'] ) {
 
-				$response = $this->get_all_finances( $this->settings['apiKey'] );
-				$finance = [];
-				foreach($response as $finances){
-				$finance[$finances->id] = $finances->description;
+				   $response = $this->get_all_finances( $this->settings['apiKey'] );
+				   $finance  = [];
+				foreach ( $response as $finances ) {
+					$finance[ $finances->id ] = $finances->description;
 				}
-		
-				$options = array();
 
-				//TODO: Condition to return true
-				if (true) {
+				   $options = array();
+
+				   // TODO: Condition to return true
+				if ( true ) {
 					foreach ( $finance as $key => $descriptions ) {
 						$options[ $key ] = $descriptions;
-						
+
 					}
 
 					$this->form_fields = array_merge(
-						$this->form_fields, array(
-							'secret'          => array(
+						$this->form_fields,
+						array(
+							'secret'           => array(
 								'title'       => __( 'Shared Secret', 'woothemes' ),
 								'type'        => 'text',
 								'description' => __( 'Optional key - may be used to verify webhooks.', 'woothemes' ),
 								'default'     => '',
 							),
 
-							'enabled'         => array(
+							'enabled'          => array(
 								'title'       => __( 'Activated', 'woothemes' ),
 								'label'       => __( 'Enable Finance', 'woothemes' ),
 								'type'        => 'checkbox',
@@ -790,59 +777,56 @@ function woocommerce_finance_init() {
 								'default'     => 'no',
 							),
 
-							'title'           => array(
+							'title'            => array(
 								'title'       => __( 'Checkout Title', 'woothemes' ),
 								'type'        => 'text',
 								'description' => __( 'The name of the payment option during checkout.', 'woothemes' ),
 								'default'     => __( 'Finance', 'woothemes' ),
 							),
-							'description'     => array(
+							'description'      => array(
 								'title'       => __( 'Checkout Description', 'woothemes' ),
 								'type'        => 'text',
 								'description' => __( 'The description of the payment option during checkout.', 'woothemes' ),
-								'default'     => 'Pay in instalments'
+								'default'     => 'Pay in instalments',
 							),
-							'General Settings'     => array(
-								'title'       => __( 'Finance/Product Settings', 'woothemes' ),
-								'type'        => 'title',
-								'class'		  => 'border'	
+							'General Settings' => array(
+								'title' => __( 'Finance/Product Settings', 'woothemes' ),
+								'type'  => 'title',
+								'class' => 'border',
 							),
 						)
-						);
+					);
 
+					$this->form_fields['showFinanceOptions'] = array(
+						'title'       => __( 'Display Plans', 'woothemes' ),
+						'type'        => 'select',
+						'description' => __( 'You can always override this setting from the product card', 'woothemes' ),
+						'default'     => 'all',
+						'options'     => array(
+							'all' => __( 'Display all plans', 'woothemes' ),
+						),
+					);
 
+					$this->form_fields['showFinanceOptions']['options']['selection'] = __( 'Display selected plans', 'woothemes' );
 
-						$this->form_fields['showFinanceOptions'] = array(
-							'title'       => __( 'Display Plans', 'woothemes' ),
-							'type'        => 'select',
-							'description' => __( 'You can always override this setting from the product card', 'woothemes' ),
-							'default'     => 'all',
-							'options'     => array(
-								'all' => __( 'Display all plans', 'woothemes' ),
-							),
-						);
-	
-						$this->form_fields['showFinanceOptions']['options']['selection'] = __( 'Display selected plans', 'woothemes' );
-	
-						$this->form_fields['showFinanceOptionSelection'] = array(
-							'title'       => __( 'Plans', 'woothemes' ),
-							'type'        => 'multiselect',
-							'options'     => $options,
-							'description' => __( 'Shift-click or Control-click to select multiple items in the list', 'woothemes' ),
-							'default'     => 'all',
-						);
+					$this->form_fields['showFinanceOptionSelection'] = array(
+						'title'       => __( 'Plans', 'woothemes' ),
+						'type'        => 'multiselect',
+						'options'     => $options,
+						'description' => __( 'Shift-click or Control-click to select multiple items in the list', 'woothemes' ),
+						'default'     => 'all',
+					);
 
-							
-							$this->form_fields = array_merge(
-							$this->form_fields, array(
+					$this->form_fields = array_merge(
+						$this->form_fields,
+						array(
 
-							
 							'cartThreshold'   => array(
 								'title'       => __( 'Cart Threshold', 'woothemes' ),
 								'type'        => 'text',
 								'description' => __( 'Under this amount, Finance is not available as a payment option.', 'woothemes' ),
 								'default'     => '250',
-								),
+							),
 
 							'productSelect'   => array(
 								'title'   => __( 'Product Selection', 'woothemes' ),
@@ -852,20 +836,20 @@ function woocommerce_finance_init() {
 									'all'      => __( 'All products', 'woothemes' ),
 									'selected' => __( 'Selected products', 'woothemes' ),
 									'price'    => __( 'All products above a defined price.', 'woothemes' ),
-									),
 								),
+							),
 							'priceSelection'  => array(
 								'title'       => __( 'Price', 'woothemes' ),
 								'type'        => 'text',
 								'description' => __( 'Finance payment method will be available on all products above this price.', 'woothemes' ),
 								'default'     => '350',
-								),
+							),
 
-							'Widget Settings'     => array(
-								'title'       => __( 'Widget Settings', 'woothemes' ),
-								'type'        => 'title',
-								'class'		  => 'border'
-							   ),
+							'Widget Settings' => array(
+								'title' => __( 'Widget Settings', 'woothemes' ),
+								'type'  => 'title',
+								'class' => 'border',
+							),
 
 							'showWidget'      => array(
 								'title'   => __( 'Show Product Widget', 'woothemes' ),
@@ -875,19 +859,19 @@ function woocommerce_finance_init() {
 									'show'     => __( 'Yes', 'woothemes' ),
 									'disabled' => __( 'No', 'woothemes' ),
 								),
-							), 
+							),
 
 							'calculatorTheme' => array(
 								'title'   => __( 'Show Calculator Widget', 'woothemes' ),
 								'type'    => 'select',
 								'default' => 'enabled',
 								'options' => array(
-									'enabled'     => __( 'Yes', 'woothemes' ),
+									'enabled'  => __( 'Yes', 'woothemes' ),
 									'disabled' => __( 'No', 'woothemes' ),
 								),
 							),
 
-							'widgetThreshold'   => array(
+							'widgetThreshold' => array(
 								'title'       => __( 'Widget threshold', 'woothemes' ),
 								'type'        => 'text',
 								'description' => __( 'Product widget will only appear on products above this value' ),
@@ -907,12 +891,12 @@ function woocommerce_finance_init() {
 								'default'     => '',
 							),
 
-							'Order Settings'     => array(
-								'title'       => __( 'Order Settings', 'woothemes' ),
-								'type'        => 'title',
-								'class'		  => 'border'
-							   ),
-						
+							'Order Settings'  => array(
+								'title' => __( 'Order Settings', 'woothemes' ),
+								'type'  => 'title',
+								'class' => 'border',
+							),
+
 							'autoFulfillment' => array(
 								'title'       => __( 'Enable/Disable Automatic Fulfillment', 'woothemes' ),
 								'label'       => __( 'Automatic Fulfillment', 'woothemes' ),
@@ -926,7 +910,6 @@ function woocommerce_finance_init() {
 				}
 			}
 		}
-		
 
 		/**
 		 * Admin Panel Options
@@ -937,26 +920,27 @@ function woocommerce_finance_init() {
 			<h3><?php esc_html_e( 'Finance', 'woothemes' ); ?></h3>
 			<p><?php esc_html_e( 'This plugin allows you to accept finance payments in your WooCommerce store.', 'woothemes' ); ?></p>
 			<table class="form-table">
-				<?php
-				$this->init_settings(); ?>
+			<?php
+			$this->init_settings();
+			?>
 				<h3 style="border-bottom:1px solid"><?php esc_html_e( 'General Settings', 'woothemes' ); ?></h3>
-				<?php
-				if ( isset( $this->settings['apiKey'] ) && $this->settings['apiKey'] ) {
-					$response = $this->get_all_finances( $this->settings['apiKey'], 1 );
+			<?php
+			if ( isset( $this->settings['apiKey'] ) && $this->settings['apiKey'] ) {
+				$response = $this->get_all_finances( $this->settings['apiKey'], 1 );
 
-					$options = array();
+				$options = array();
 
-					if ( 'error' === $response->status ) {
-						?>
+				if ( 'error' === $response->status ) {
+					?>
 						<div style="border:1px solid red;color:red;padding:20px;">
 							<b><?php esc_html_e( 'Wrong or invalid API key', 'woothemes' ); ?></b>
 							<p><?php esc_html_e( 'Contact Finance provider for more information', 'woothemes' ); ?></p>
 						</div>
-						<?php
-					}
+					<?php
 				}
-				$this->generate_settings_html();
-				?>
+			}
+			$this->generate_settings_html();
+			?>
 			</table><!--/.form-table-->
 
 			<script type="text/javascript">
@@ -1018,7 +1002,7 @@ function woocommerce_finance_init() {
 
 				$amount = WC()->cart->total;
 				$plans  = $this->get_checkout_plans();
-				
+
 				include_once WP_PLUGIN_DIR . '/' . plugin_basename( dirname( __FILE__ ) ) . '/includes/checkout.php';
 			}
 		}
@@ -1026,7 +1010,7 @@ function woocommerce_finance_init() {
 		/**
 		 * Process the payment.
 		 *
-		 * @param int $order_id The order id integer.
+		 * @param  int $order_id The order id integer.
 		 * @return array
 		 */
 		function process_payment( $order_id ) {
@@ -1040,22 +1024,22 @@ function woocommerce_finance_init() {
 			}
 			// TODO: Checking for divido_plan and divido_deposit
 			$finances = $this->get_finances( $this->getCheckoutFinanceOptions() );
-			
+
 			foreach ( $finances as $_finance => $value ) {
 				if ( isset( $_POST['divido_plan'] ) && $_finance === $_POST['divido_plan'] ) { // Input var okay.
-					$finance = $_finance;
+					$finance     = $_finance;
 					$description = $value['description'];
 					$min_deposit = $value['min_deposit'];
 					$max_deposit = $value['max_deposit'];
 
 				}
 			}
-			
+
 			if ( isset( $_finance ) ) {
-				$deposit = ( isset( $_POST['divido_deposit'] ) && intval( $_POST['divido_deposit'] ) > 0 ) ? sanitize_text_field( wp_unslash( $_POST['divido_deposit'] ) ) : $min_deposit; // Input var okay.
+				$deposit     = ( isset( $_POST['divido_deposit'] ) && intval( $_POST['divido_deposit'] ) > 0 ) ? sanitize_text_field( wp_unslash( $_POST['divido_deposit'] ) ) : $min_deposit; // Input var okay.
 				$products    = array();
 				$order_total = 0;
-	
+
 				foreach ( $woocommerce->cart->get_cart() as $item ) {
 					if ( version_compare( $this->get_woo_version(), '3.0.0' ) >= 0 ) {
 						$_product = wc_get_product( $item['data']->get_id() );
@@ -1068,7 +1052,7 @@ function woocommerce_finance_init() {
 
 					$quantity = $item['quantity'];
 					$price    = $item['line_subtotal'] / $quantity * 100;
-				
+
 					$order_total += $item['line_subtotal'];
 
 					$products[] = array(
@@ -1077,28 +1061,26 @@ function woocommerce_finance_init() {
 						'price'    => $price,
 					);
 				}
-	
 
 				$deposit = ( isset( $_POST['divido_deposit'] ) && intval( $_POST['divido_deposit'] ) > 0 ) ? sanitize_text_field( wp_unslash( $_POST['divido_deposit'] ) ) : $min_deposit; // Input var okay.
 
 				if ( $woocommerce->cart->needs_shipping() ) {
 					$shipping   = $order->get_total_shipping();
-					$shipping = (int)$shipping;
+					$shipping   = (int) $shipping;
 					$products[] = array(
 						'name'     => 'Shipping and handling',
 						'quantity' => 1,
-						'price'    => $shipping*100,
+						'price'    => $shipping * 100,
 					);
 					// Add shipping to ordertotal.
 					$order_total += $shipping;
 				}
-				
 
 				foreach ( $woocommerce->cart->get_taxes() as $tax ) {
 					$products[] = array(
 						'name'     => 'Taxes',
 						'quantity' => 1,
-						'price'    => $tax*100,
+						'price'    => $tax * 100,
 					);
 					// Add tax to ordertotal.
 					$order_total += $tax;
@@ -1108,14 +1090,14 @@ function woocommerce_finance_init() {
 					$products[] = array(
 						'name'     => 'Fees',
 						'quantity' => 1,
-						'price'    => $fee->amount*100,
+						'price'    => $fee->amount * 100,
 					);
 
 					if ( $fee->taxable ) {
 						$products[]   = array(
 							'name'     => 'Fees-tax',
 							'quantity' => 1,
-							'price'    => $fee->tax*100,
+							'price'    => $fee->tax * 100,
 						);
 						$order_total += $fee->tax;
 					}
@@ -1129,12 +1111,10 @@ function woocommerce_finance_init() {
 					$products[] = array(
 						'name'     => 'Discount',
 						'quantity' => 1,
-						'price'    => -$woocommerce->cart->get_cart_discount_total()*100,
+						'price'    => -$woocommerce->cart->get_cart_discount_total() * 100,
 					);
 					// Deduct total discount.
 					$order_total -= $woocommerce->cart->get_cart_discount_total();
-					// var_dump($order_total);
-					// die();
 				}
 
 				$other = $order->get_total() - $order_total;
@@ -1146,114 +1126,123 @@ function woocommerce_finance_init() {
 						'price'    => $other,
 					);
 				}
-				
-				//TODO: Backend need to add shared secret to SDK
-				// // Set secret.
-				// if ( '' !== $this->secret ) {
-				// 	Divido::setSharedSecret( $this->secret );
-				// }
 
-				//
-					// Version 3.0+.
-					//
+				if ( $this->secret != '' ) {
+					   $secret = $this->secret;
+				}
+
+				// Version 3.0+.
 				// Create an appication model with the application data.
+				if ( version_compare( $this->get_woo_version(), '3.0.0' ) >= 0 ) {
+					$env            = $this->environments( $this->api_key );
+					$sdk            = new \Divido\MerchantSDK\Client( $this->api_key, $env );
+					$deposit_amount = $order->get_total() * $deposit;
 
-				if ( version_compare( $this->get_woo_version(), '3.0.0' ) >= 0 ) { 		
-					
-					$env = $this->environments($this->api_key);					
-					$sdk = new \Divido\MerchantSDK\Client($this->api_key, $env);
-					$deposit_amount = $order->get_total()*$deposit;
-					
-					$application = (new \Divido\MerchantSDK\Models\Application())
-					->withCountryId($order->get_billing_country())
-					->withCurrencyId('GBP')
-					->withLanguageId('en')
-					->withFinancePlanId($finance)
-					->withApplicants([
-						[
-							'firstName' => $order->get_billing_first_name(),
-							'lastName' => $order->get_billing_last_name(),
-							'phoneNumber' => $order->get_billing_phone(),
-							'email' => $order->get_billing_email(),
-							'addresses' => array([
-								'postcode' => $order->get_billing_postcode(),
-								'street'   => $order->get_billing_address_1(),
-								'town'     => $order->get_billing_city(),
+					$application = ( new \Divido\MerchantSDK\Models\Application() )
+						->withCountryId( $order->get_billing_country() )
+						->withCurrencyId( 'GBP' )
+						->withLanguageId( 'en' )
+						->withFinancePlanId( $finance )
+						->withApplicants(
+							[
+								[
+									'firstName'   => $order->get_billing_first_name(),
+									'lastName'    => $order->get_billing_last_name(),
+									'phoneNumber' => $order->get_billing_phone(),
+									'email'       => $order->get_billing_email(),
+									'addresses'   => array(
+										[
+											'postcode' => $order->get_billing_postcode(),
+											'street'   => $order->get_billing_address_1(),
+											'town'     => $order->get_billing_city(),
 
-							]),
-						],
-					])
-					->withOrderItems($products)
-					->withDepositAmount($deposit_amount)
-					->withFinalisationRequired(false)
-					->withMerchantReference("")
-					->withUrls([
-						'merchant_redirect_url' => $order->get_checkout_order_received_url(),
-						'merchant_checkout_url' => wc_get_checkout_url(),
-						'merchant_response_url' => admin_url( 'admin-ajax.php' ) . '?action=woocommerce_finance_callback',
-					])
-					->withMetadata([
-						'order_number' => $order_id,
-					]);
+										],
+									),
+								],
+							]
+						)
+						->withOrderItems( $products )
+						->withDepositAmount( $deposit_amount )
+						->withFinalisationRequired( false )
+						->withMerchantReference( '' )
+						->withUrls(
+							[
+								'merchant_redirect_url' => $order->get_checkout_order_received_url(),
+								'merchant_checkout_url' => wc_get_checkout_url(),
+								'merchant_response_url' => admin_url( 'admin-ajax.php' ) . '?action=woocommerce_finance_callback',
+							]
+						)
+						->withMetadata(
+							[
+								'order_number' => $order_id,
+							]
+						);
 
-				$response = $sdk->applications()->createApplication($application);
-				$applicationResponseBody = $response->getBody()->getContents();
-				$decode = json_decode($applicationResponseBody);
-				$result_id = $decode->data->id;
-				$result_redirect = $decode->data->urls->application_url;
-	
-				 } else {
+					$response                = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-Hmac-Sha256' => $secret ] );
+					$applicationResponseBody = $response->getBody()->getContents();
+					$decode                  = json_decode( $applicationResponseBody );
+					$result_id               = $decode->data->id;
+					$result_redirect         = $decode->data->urls->application_url;
+
+				} else {
 					//
 					// Version ~2.0.
 					//
+					$env            = $this->environments( $this->api_key );
+					$sdk            = new \Divido\MerchantSDK\Client( $this->api_key, $env );
+					$deposit_amount = $order->get_total() * $deposit;
 
-					$env = $this->environments($this->api_key);					
-					$sdk = new \Divido\MerchantSDK\Client($this->api_key, $env);
-					$deposit_amount = $order->get_total()*$deposit;
-					
-					$application = (new \Divido\MerchantSDK\Models\Application())
-					->withCountryId($order->billing_country)
-					->withCurrencyId('GBP')
-					->withLanguageId('en')
-					->withFinancePlanId($finance)
-					->withApplicants([
-						[
-							'firstName' => $order->billing_first_name,
-							'lastName' => $order->billing_last_name,
-							'phoneNumber' => $order->billing_phone,
-							'email' => $order->billing_email,
-							'addresses' => array([
-								'postcode' => $order->get_billing_postcode,
-								'street'   => $order->get_billing_address_1,
-								'town'     => $order->get_billing_city,
-					
-							]),
-						
-						],
-					])
-					->withOrderItems($products)
-					->withDepositAmount($deposit_amount)
-					->withFinalisationRequired(false)
-					->withMerchantReference("")
-					->withUrls([
-						'merchant_redirect_url' => $order->get_checkout_order_received_url(),
-						'merchant_checkout_url' => wc_get_checkout_url(),
-						'merchant_response_url' => admin_url( 'admin-ajax.php' ) . '?action=woocommerce_finance_callback',
-					])
-					->withMetadata([
-						'order_number' => $order_id,
-					]);
+					$application = ( new \Divido\MerchantSDK\Models\Application() )
+						->withCountryId( $order->billing_country )
+						->withCurrencyId( 'GBP' )
+						->withLanguageId( 'en' )
+						->withFinancePlanId( $finance )
+						->withApplicants(
+							[
+								[
+									'firstName'   => $order->billing_first_name,
+									'lastName'    => $order->billing_last_name,
+									'phoneNumber' => $order->billing_phone,
+									'email'       => $order->billing_email,
+									'addresses'   => array(
+										[
+											'postcode' => $order->get_billing_postcode,
+											'street'   => $order->get_billing_address_1,
+											'town'     => $order->get_billing_city,
 
-				$response = $sdk->applications()->createApplication($application);
-				$applicationResponseBody = $response->getBody()->getContents();
-				$decode = json_decode($applicationResponseBody);
-				$result_id = $decode->data->id;
-				$result_redirect = $decode->data->urls->application_url;
-				
+										],
+									),
+
+								],
+							]
+						)
+						->withOrderItems( $products )
+						->withDepositAmount( $deposit_amount )
+						->withFinalisationRequired( false )
+						->withMerchantReference( '' )
+						->withUrls(
+							[
+								'merchant_redirect_url' => $order->get_checkout_order_received_url(),
+								'merchant_checkout_url' => wc_get_checkout_url(),
+								'merchant_response_url' => admin_url( 'admin-ajax.php' ) . '?action=woocommerce_finance_callback',
+							]
+						)
+						->withMetadata(
+							[
+								'order_number' => $order_id,
+							]
+						);
+
+					$response                = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-Hmac-Sha256' => $secret ] );
+					$applicationResponseBody = $response->getBody()->getContents();
+					$decode                  = json_decode( $applicationResponseBody );
+					$result_id               = $decode->data->id;
+					$result_redirect         = $decode->data->urls->application_url;
+
 				}
 			}
 
-			//TODO condition to return true
+			// TODO condition to return true
 			if ( true ) {
 
 				update_post_meta( $order_id, '_finance_reference', $result_id );
@@ -1264,14 +1253,14 @@ function woocommerce_finance_init() {
 					'result'   => 'success',
 					'redirect' => $result_redirect,
 				);
-				
+
 			} else {
 
 				$cancel_note = __( 'Finance Payment failed', 'woothemes' ) . ' (Transaction ID: ' . $order_id . '). ' . __( 'Payment was rejected due to an error', 'woothemes' ) . ': "' . $response->error . '". ';
 				$order->add_order_note( $cancel_note );
 				if ( version_compare( $this->get_woo_version(), '2.1.0' ) >= 0 ) {
 					wc_add_notice( __( 'Payment error', 'woothemes' ) . ': ' . $decode->data->error . '' );
-					
+
 				} else {
 					$woocommerce->add_error( __( 'Payment error', 'woothemes' ) . ': ' . $decode->data->error . '' );
 				}
@@ -1281,51 +1270,46 @@ function woocommerce_finance_init() {
 		/**
 		 * Get Finances helper function
 		 *
-		 * @param boolean $selection true or false depending on checkout or widget use.
+		 * @param  boolean $selection true or false depending on checkout or widget use.
 		 * @return array Array of finances.
 		 */
 		function get_finances( $selection = false ) {
 			if ( ! isset( $this->finance_options ) ) {
 				$this->finance_options = $this->get_all_finances( $this->settings['apiKey'] );
 			}
-			$response = $this->finance_options; // array 
+			$response = $this->finance_options; // array
 			$finances = array();
-			//TODO Condition to return true
+			// TODO Condition to return true
 			if ( true ) {
-		
+
 				foreach ( $response as $_finance ) {
 					if ( ( ! $selection && ! is_array( $selection ) ) || in_array( $_finance->id, $selection, true ) ) {
-						$finances[$_finance->id] = $_finance->description;
-						$finances[$_finance->id] = array(
-							'description'=>$_finance->description,
-							'min_deposit'=> $_finance->deposit->minimum_percentage,
-							'max_deposit'=> $_finance->deposit->maximum_percentage
+						$finances[ $_finance->id ] = $_finance->description;
+						$finances[ $_finance->id ] = array(
+							'description' => $_finance->description,
+							'min_deposit' => $_finance->deposit->minimum_percentage,
+							'max_deposit' => $_finance->deposit->maximum_percentage,
 						);
 					}
-				} 
+				}
 			}
 			return $finances;
 		}
 
 		/**
-		 * 
 		 * Define environment function
-		 * 
 		 */
 
-		function environments($key) {
-			$array = explode("_",$key);
-			$environment = strtoupper($array[0]);
-			if(constant("Divido\MerchantSDK\Environment::$environment") !== null){
-				return constant("Divido\MerchantSDK\Environment::$environment");
+		function environments( $key ) {
+			$array       = explode( '_', $key );
+			$environment = strtoupper( $array[0] );
+			if ( constant( "Divido\MerchantSDK\Environment::$environment" ) !== null ) {
+				return constant( "Divido\MerchantSDK\Environment::$environment" );
+			} else {
+				  return false;
 			}
-			else {
-			   return false;
-			 }
 		}
 
-
-		
 		/**
 		 * Validate the payment form.
 		 *
@@ -1347,8 +1331,8 @@ function woocommerce_finance_init() {
 		/**
 		 * Create HMAC SIGNATURE.
 		 *
-		 * @param [string] $payload Payload value.
-		 * @param [string] $secret  The secret value saved on Finance portal and WordPress.
+		 * @param  [string] $payload Payload value.
+		 * @param  [string] $secret  The secret value saved on Finance portal and WordPress.
 		 * @return string Returns a base64 encoded string.
 		 */
 		public function create_signature( $payload, $secret ) {
@@ -1361,8 +1345,8 @@ function woocommerce_finance_init() {
 		/**
 		 * Wrapper function for sending JSON.
 		 *
-		 * @param [string] $status  The status to send - defaults ok.
-		 * @param [string] $message The message to send in the json.
+		 * @param  [string] $status  The status to send - defaults ok.
+		 * @param  [string] $message The message to send in the json.
 		 * @return void
 		 */
 		function send_json( $status = 'ok', $message = '' ) {
@@ -1383,7 +1367,7 @@ function woocommerce_finance_init() {
 		 */
 		function get_woo_version() {
 			if ( ! function_exists( 'get_plugins' ) ) {
-				require_once ABSPATH . 'wp-admin/includes/plugin.php';
+				include_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 
 			$plugin_folder = get_plugins( '/woocommerce' );
@@ -1399,7 +1383,7 @@ function woocommerce_finance_init() {
 		/**
 		 * Access stored variables in post meta
 		 *
-		 * @param [object] $order Instance of wc_get_order.
+		 * @param  [object] $order Instance of wc_get_order.
 		 * @return array An array containing the finance reference number and the finance id.
 		 */
 		function get_ref_finance( $order ) {
@@ -1408,75 +1392,79 @@ function woocommerce_finance_init() {
 				'finance' => false,
 			);
 			if ( version_compare( $this->woo_version, '3.0.0' ) >= 0 ) {
-				$ref     = get_post_meta( $order->get_id(), '_finance_reference', true );
-				$finance = get_post_meta( $order->get_id(), '_finance', true );
+				   $ref     = get_post_meta( $order->get_id(), '_finance_reference', true );
+				   $finance = get_post_meta( $order->get_id(), '_finance', true );
 			} else {
 				$ref     = get_post_meta( $order->id, '_finance_reference', true );
 				$finance = get_post_meta( $order->id, '_finance', true );
 			}
 
-				$result['ref']     = $ref;
-				$result['finance'] = $finance;
+			$result['ref']     = $ref;
+			$result['finance'] = $finance;
 
-				return $result;
+			return $result;
 		}
 
 		/**
 		 * A wrapper to determine if autofulfilment is on whether to send fulfillments.
 		 *
-		 * @param [int] $order_id - The woocommerce order id.
+		 * @param  [int] $order_id - The woocommerce order id.
 		 * @return void
 		 */
 		function send_finance_fulfillment_request( $order_id ) {
-			
-			$wc_order_id = (string)$order_id;
-			$name   = get_post_meta( $order_id, '_payment_method', true );
-			$order  = wc_get_order( $order_id );
-			$order_total = $order->get_total();	
-			if ( $name == 'finance') {
+
+			$wc_order_id = (string) $order_id;
+			$name        = get_post_meta( $order_id, '_payment_method', true );
+			$order       = wc_get_order( $order_id );
+			$order_total = $order->get_total();
+			if ( $name == 'finance' ) {
 				if ( $this->auto_fulfillment ) {
 					$ref_and_finance = $this->get_ref_finance( $order );
 					$this->logger->debug( 'Finance', 'Autofullfillment selected' . $ref_and_finance['ref'] );
 					$this->set_fulfilled( $ref_and_finance['ref'], $order_total, $wc_order_id, $product_name, $product_quantity );
 					$order->add_order_note( 'Finance - Autofulfillment Request Sents.' );
-				} else $this->logger->debug( 'Finance', 'Autofulfillment not set' );
-			} else return false;
+				} else {
+					$this->logger->debug( 'Finance', 'Autofulfillment not set' );
+				}
+			} else {
+				return false;
+			}
 		}
 
 		/**
 		 * Function that will activate an application or set to fulfilled on dividio.
 		 *
-		 * @param [string] $application_id   - Application ID - fea4dcb7-e474-4fba-b1a4-123.....
-		 * @param [string] $shipping_method  - If the shipping method is set we can apply it here.
-		 * @param [string] $tracking_numbers - If there are any tracking numbers to attach we apply here.
+		 * @param  [string] $application_id   - Application ID - fea4dcb7-e474-4fba-b1a4-123.....
+		 * @param  [string] $shipping_method  - If the shipping method is set we can apply it here.
+		 * @param  [string] $tracking_numbers - If there are any tracking numbers to attach we apply here.
 		 * @return void
 		 */
 		function set_fulfilled( $application_id, $order_total, $order_id, $shipping_method = null, $tracking_numbers = null ) {
 
 			// First get the application you wish to create an activation for.
-				$application = (new \Divido\MerchantSDK\Models\Application())
-					->withId($application_id);
+			$application = ( new \Divido\MerchantSDK\Models\Application() )
+			->withId( $application_id );
 
-				$items = [
-					[
-						'name' =>  "Order id: $order_id",
-						'quantity' =>  1,
-						'price' => $order_total*100,
-					],
-				];
+			$items = [
+				[
+					'name'     => "Order id: $order_id",
+					'quantity' => 1,
+					'price'    => $order_total * 100,
+				],
+			];
 
-				// Create a new application activation model.
-				$applicationActivation = (new \Divido\MerchantSDK\Models\ApplicationActivation())
-					->withOrderItems($items)
-					->withDeliveryMethod($shipping_method)
-					->withTrackingNumber($tracking_numbers);
+			// Create a new application activation model.
+			$applicationActivation = ( new \Divido\MerchantSDK\Models\ApplicationActivation() )
+				->withOrderItems( $items )
+				->withDeliveryMethod( $shipping_method )
+				->withTrackingNumber( $tracking_numbers );
 
-				// Create a new activation for the application.
-				$env = $this->environments($this->api_key);					
-				$sdk = new \Divido\MerchantSDK\Client($this->api_key, $env);
-				$response = $sdk->applicationActivations()->createApplicationActivation($application, $applicationActivation);
+			// Create a new activation for the application.
+			$env      = $this->environments( $this->api_key );
+			$sdk      = new \Divido\MerchantSDK\Client( $this->api_key, $env );
+			$response = $sdk->applicationActivations()->createApplicationActivation( $application, $applicationActivation );
 
-				$activationResponseBody = $response->getBody()->getContents();
+			$activationResponseBody = $response->getBody()->getContents();
 		}
 
 	} // end woocommerce_finance.

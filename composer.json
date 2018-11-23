@@ -1,7 +1,6 @@
 {
     "require": {
         "divido/divido-php": "^1.9",
-
         "divido/merchant-sdk": "dev-master"
         },
         "repositories": [
