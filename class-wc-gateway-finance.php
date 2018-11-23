@@ -1,5 +1,4 @@
 <?php
-
 /**
  * TODO: Change Name for to a specific lender
  *
@@ -99,7 +98,7 @@ function woocommerce_finance_init() {
 			$this->widget_threshold = ( ! empty( $this->settings['widgetThreshold'] ) ) ? $this->settings['widgetThreshold'] : 250;
 			$this->secret           = ( ! empty( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 
-			if ( $this->api != null ) {
+			if ( $null !== $this->api ) {
 				$env = $this->environments( $this->api_key );
 				$sdk = new \Divido\MerchantSDK\Client( $this->api_key, $env );
 			}
@@ -170,10 +169,10 @@ function woocommerce_finance_init() {
 
 			if ( false === $finances ) {
 
-				$requestOptions = ( new \Divido\MerchantSDK\Handlers\ApiRequestOptions() );
+				$request_options = ( new \Divido\MerchantSDK\Handlers\ApiRequestOptions() );
 
-				  // Retrieve all finance plans for the merchant.
-				$plans = $sdk->getAllPlans( $requestOptions );
+				// Retrieve all finance plans for the merchant.
+				$plans = $sdk->getAllPlans( $request_options );
 
 				$plans = $plans->getResources();
 
@@ -193,7 +192,7 @@ function woocommerce_finance_init() {
 			if ( $this->api_key && is_product() || is_checkout() ) {
 				$key      = preg_split( '/\./', $this->api_key );
 				$protocol = ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http'; // Input var okay.
-				// TODO: Change the endpoint for the calculator once ready
+				// TODO: Change the endpoint for the calculator once ready.
 				wp_register_script( 'woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/calculator/v2.1/production/js/template.divido.js', false, false, true );
 				wp_register_script( 'woocoomerce-finance-gateway-calculator_price_update', plugins_url( '', __FILE__ ) . '/js/widget_price_update.js' );
 				wp_register_style( 'woocommerce-finance-gateway-style', plugins_url( '', __FILE__ ) . '/css/style.css' );
@@ -1178,11 +1177,11 @@ function woocommerce_finance_init() {
 							]
 						);
 
-					$response                = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-Hmac-Sha256' => $secret ] );
-					$applicationResponseBody = $response->getBody()->getContents();
-					$decode                  = json_decode( $applicationResponseBody );
-					$result_id               = $decode->data->id;
-					$result_redirect         = $decode->data->urls->application_url;
+					$response                  = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-Hmac-Sha256' => $secret ] );
+					$application_response_body = $response->getBody()->getContents();
+					$decode                    = json_decode( $application_response_body );
+					$result_id                 = $decode->data->id;
+					$result_redirect           = $decode->data->urls->application_url;
 
 				} else {
 					//
@@ -1233,16 +1232,16 @@ function woocommerce_finance_init() {
 							]
 						);
 
-					$response                = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-Hmac-Sha256' => $secret ] );
-					$applicationResponseBody = $response->getBody()->getContents();
-					$decode                  = json_decode( $applicationResponseBody );
-					$result_id               = $decode->data->id;
-					$result_redirect         = $decode->data->urls->application_url;
+					$response                  = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-Hmac-Sha256' => $secret ] );
+					$application_response_body = $response->getBody()->getContents();
+					$decode                    = json_decode( $application_response_body );
+					$result_id                 = $decode->data->id;
+					$result_redirect           = $decode->data->urls->application_url;
 
 				}
 			}
 
-			// TODO condition to return true
+			// TODO condition to return true.
 			if ( true ) {
 
 				update_post_meta( $order_id, '_finance_reference', $result_id );
@@ -1277,9 +1276,9 @@ function woocommerce_finance_init() {
 			if ( ! isset( $this->finance_options ) ) {
 				$this->finance_options = $this->get_all_finances( $this->settings['apiKey'] );
 			}
-			$response = $this->finance_options; // array
+			$response = $this->finance_options; // array.
 			$finances = array();
-			// TODO Condition to return true
+			// TODO Condition to return true.
 			if ( true ) {
 
 				foreach ( $response as $_finance ) {
@@ -1299,14 +1298,13 @@ function woocommerce_finance_init() {
 		/**
 		 * Define environment function
 		 */
-
 		function environments( $key ) {
 			$array       = explode( '_', $key );
 			$environment = strtoupper( $array[0] );
 			if ( constant( "Divido\MerchantSDK\Environment::$environment" ) !== null ) {
 				return constant( "Divido\MerchantSDK\Environment::$environment" );
 			} else {
-				  return false;
+				return false;
 			}
 		}
 
@@ -1392,8 +1390,8 @@ function woocommerce_finance_init() {
 				'finance' => false,
 			);
 			if ( version_compare( $this->woo_version, '3.0.0' ) >= 0 ) {
-				   $ref     = get_post_meta( $order->get_id(), '_finance_reference', true );
-				   $finance = get_post_meta( $order->get_id(), '_finance', true );
+				$ref     = get_post_meta( $order->get_id(), '_finance_reference', true );
+				$finance = get_post_meta( $order->get_id(), '_finance', true );
 			} else {
 				$ref     = get_post_meta( $order->id, '_finance_reference', true );
 				$finance = get_post_meta( $order->id, '_finance', true );
@@ -1417,7 +1415,7 @@ function woocommerce_finance_init() {
 			$name        = get_post_meta( $order_id, '_payment_method', true );
 			$order       = wc_get_order( $order_id );
 			$order_total = $order->get_total();
-			if ( $name == 'finance' ) {
+			if ( 'finance' === $name ) {
 				if ( $this->auto_fulfillment ) {
 					$ref_and_finance = $this->get_ref_finance( $order );
 					$this->logger->debug( 'Finance', 'Autofullfillment selected' . $ref_and_finance['ref'] );
@@ -1434,10 +1432,8 @@ function woocommerce_finance_init() {
 		/**
 		 * Function that will activate an application or set to fulfilled on dividio.
 		 *
-		 * @param  [string] $application_id   - Application ID - fea4dcb7-e474-4fba-b1a4-123.....
-		 * @param  [string] $shipping_method  - If the shipping method is set we can apply it here.
-		 * @param  [string] $tracking_numbers - If there are any tracking numbers to attach we apply here.
-		 * @return void
+		 * @application_id
+		 *
 		 */
 		function set_fulfilled( $application_id, $order_total, $order_id, $shipping_method = null, $tracking_numbers = null ) {
 
@@ -1454,7 +1450,7 @@ function woocommerce_finance_init() {
 			];
 
 			// Create a new application activation model.
-			$applicationActivation = ( new \Divido\MerchantSDK\Models\ApplicationActivation() )
+			$application_activation = ( new \Divido\MerchantSDK\Models\ApplicationActivation() )
 				->withOrderItems( $items )
 				->withDeliveryMethod( $shipping_method )
 				->withTrackingNumber( $tracking_numbers );
@@ -1462,9 +1458,9 @@ function woocommerce_finance_init() {
 			// Create a new activation for the application.
 			$env      = $this->environments( $this->api_key );
 			$sdk      = new \Divido\MerchantSDK\Client( $this->api_key, $env );
-			$response = $sdk->applicationActivations()->createApplicationActivation( $application, $applicationActivation );
+			$response = $sdk->applicationActivations()->createApplicationActivation( $application, $application_activation );
 
-			$activationResponseBody = $response->getBody()->getContents();
+			$activation_response_body = $response->getBody()->getContents();
 		}
 
 	} // end woocommerce_finance.
@@ -1472,5 +1468,3 @@ function woocommerce_finance_init() {
 	global $woocommerce_finance;
 	$woocommerce_finance = new WC_Gateway_Finance();
 }
-
-
