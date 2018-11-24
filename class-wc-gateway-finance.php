@@ -98,7 +98,7 @@ function woocommerce_finance_init() {
 			$this->widget_threshold = ( ! empty( $this->settings['widgetThreshold'] ) ) ? $this->settings['widgetThreshold'] : 250;
 			$this->secret           = ( ! empty( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 
-			if ( $null !== $this->api ) {
+			if ( null !== $this->api ) {
 				$env = $this->environments( $this->api_key );
 				$sdk = new \Divido\MerchantSDK\Client( $this->api_key, $env );
 			}
