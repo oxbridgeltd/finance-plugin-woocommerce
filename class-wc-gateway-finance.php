@@ -98,9 +98,9 @@ function woocommerce_finance_init() {
 			$this->widget_threshold = ( ! empty( $this->settings['widgetThreshold'] ) ) ? $this->settings['widgetThreshold'] : 250;
 			$this->secret           = ( ! empty( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 
-			if ( null !== $this->api ) {
+			if ( null || '' !== $this->api_key ) {
 				$env = $this->environments( $this->api_key );
-				$sdk = new \Divido\MerchantSDK\Client( $this->api_keys, $env );
+				$sdk = new \Divido\MerchantSDK\Client( $this->api_key, $env );
 			}
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) ); // Version 2.0 Hook.
 
@@ -144,6 +144,7 @@ function woocommerce_finance_init() {
 
 			// scripts.
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
+			add_action( 'woocommerce_settings_tabs', array( $this, 'enqueue' ) );
 
 		}
 
@@ -193,9 +194,9 @@ function woocommerce_finance_init() {
 				$key      = preg_split( '/\./', $this->api_key );
 				$protocol = ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http'; // Input var okay.
 				// TODO: Change the endpoint for the calculator once ready.
-				wp_register_script( 'woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/calculator/v2.1/production/js/template.divido.js', false, false, true );
-				wp_register_script( 'woocoomerce-finance-gateway-calculator_price_update', plugins_url( '', __FILE__ ) . '/js/widget_price_update.js', false, false, true );
-				wp_register_style( 'woocommerce-finance-gateway-style', plugins_url( '', __FILE__ ) . '/css/style.css' );
+				wp_register_script( 'woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/calculator/v2.1/production/js/template.divido.js', false, 1.0, true );
+				wp_register_script( 'woocoomerce-finance-gateway-calculator_price_update', plugins_url( '', __FILE__ ) . '/js/widget_price_update.js', false, 1.0, true );
+				wp_register_style( 'woocommerce-finance-gateway-style', plugins_url( '', __FILE__ ) . '/css/style.css', false, 1.0 );
 				wp_enqueue_style( 'woocommerce-finance-gateway-style' );
 				wp_enqueue_script( 'woocommerce-finance-gateway-calculator' );
 				wp_enqueue_script( 'woocoomerce-finance-gateway-calculator_price_update' );
@@ -610,9 +611,9 @@ function woocommerce_finance_init() {
 			}
 			?>
 			<style type="text/css">
-			#woocommerce-product-data ul.product_data_tabs li.finance_tab a { <?php echo $style; ?> }
+			#woocommerce-product-data ul.product_data_tabs li.finance_tab a { <?php echo esc_attr( $style ); ?> }
 			#woocommerce-product-data ul.product_data_tabs li.finance_tab a:before { content:''!important; }
-			<?php echo $active_style; ?>
+			<?php echo esc_attr( $active_style ); ?>
 			</style>
 			<?php
 			// TODO: Change href name to finance_tab.
@@ -659,7 +660,7 @@ function woocommerce_finance_init() {
 			<?php
 			foreach ( $finances as $finance => $value ) {
 				?>
-					<input type="checkbox" class="checkbox" name="_tab_finances[]" id="finances_<?php print $finance; ?>" value="<?php print $finance; ?>" <?php print ( in_array( $finance, $tab_data[0]['finances'], true ) ) ? 'checked' : ''; ?>> &nbsp;<?php print $value['description']; ?><br  style="clear:both;" />
+					<input type="checkbox" class="checkbox" name="_tab_finances[]" id="finances_<?php print esc_attr( $finance ); ?>" value="<?php print esc_attr( $finance ); ?>" <?php print ( in_array( $finance, $tab_data[0]['finances'], true ) ) ? 'checked' : ''; ?>> &nbsp;<?php print esc_attr( $value['description'] ); ?><br  style="clear:both;" />
 			<?php } ?>
 				</p>
 			</div>
@@ -691,7 +692,7 @@ function woocommerce_finance_init() {
 		 */
 		public function product_save_data( $post_id, $post ) {
 
-			$active   = isset( $_POST['_tab_finance_active'] ) ? sanitize_text_field( wp_unslash( $_POST['_tab_finance_active'] ) ) : ''; // Input var okay.
+			$active   = isset( $_POST['_tab_finance_active'], $_POST['_tab_finance_active_nonce'] ) ? wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_tab_finance_active'] ) ) ) : ''; // Input var okay.
 			$finances = isset( $_POST['_tab_finances'] ) ? sanitize_text_field( wp_unslash( $_POST['_tab_finances'] ) ) : ''; // Input var okay.
 			if ( ( empty( $active ) || 'default' === $active ) && get_post_meta( $post_id, 'woo_finance_product_tab', true ) ) {
 				delete_post_meta( $post_id, 'woo_finance_product_tab' );
@@ -725,9 +726,6 @@ function woocommerce_finance_init() {
 		function init_form_fields() {
 
 			$this->init_settings();
-
-			wp_register_style( 'woocommerce-finance-gateway-style', plugins_url( '', __FILE__ ) . '/css/style.css' );
-			wp_enqueue_style( 'woocommerce-finance-gateway-style' );
 
 			$this->form_fields = array(
 				'apiKey' => array(
