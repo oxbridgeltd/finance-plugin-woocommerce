@@ -98,9 +98,9 @@ function woocommerce_finance_init() {
 			$this->widget_threshold = ( ! empty( $this->settings['widgetThreshold'] ) ) ? $this->settings['widgetThreshold'] : 250;
 			$this->secret           = ( ! empty( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 
-			if ( $null !== $this->api ) {
+			if ( null !== $this->api ) {
 				$env = $this->environments( $this->api_key );
-				$sdk = new \Divido\MerchantSDK\Client( $this->api_key, $env );
+				$sdk = new \Divido\MerchantSDK\Client( $this->api_keys, $env );
 			}
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) ); // Version 2.0 Hook.
 
@@ -194,7 +194,7 @@ function woocommerce_finance_init() {
 				$protocol = ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http'; // Input var okay.
 				// TODO: Change the endpoint for the calculator once ready.
 				wp_register_script( 'woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/calculator/v2.1/production/js/template.divido.js', false, false, true );
-				wp_register_script( 'woocoomerce-finance-gateway-calculator_price_update', plugins_url( '', __FILE__ ) . '/js/widget_price_update.js' );
+				wp_register_script( 'woocoomerce-finance-gateway-calculator_price_update', plugins_url( '', __FILE__ ) . '/js/widget_price_update.js', false, false, true );
 				wp_register_style( 'woocommerce-finance-gateway-style', plugins_url( '', __FILE__ ) . '/css/style.css' );
 				wp_enqueue_style( 'woocommerce-finance-gateway-style' );
 				wp_enqueue_script( 'woocommerce-finance-gateway-calculator' );
@@ -267,14 +267,14 @@ function woocommerce_finance_init() {
 		 * @return void
 		 */
 		function callback() {
-			if ( isset( $_SERVER['HTTP_RAW_POST_DATA'] ) && wp_unslash( $_SERVER['HTTP_RAW_POST_DATA'] ) ) { // Input var okay.
-				$data = file_get_contents( wp_unslash( $_SERVER['HTTP_RAW_POST_DATA'] ) ); // Input var okay.
+			if ( isset( $_SERVER['HTTP_RAW_POST_DATA'] ) && sanitize_text_field( wp_unslash( $_SERVER['HTTP_RAW_POST_DATA'] ) ) ) { // Input var okay.
+				$data = wp_remote_get( sanitize_text_field( wp_unslash( $_SERVER['HTTP_RAW_POST_DATA'] ) ) ); // Input var okay.
 			} else {
-				$data = file_get_contents( 'php://input' );
+				$data = wp_remote_get( 'php://input' );
 			}
 
 			// If secret is set, check against http header.
-			// TODO: Change from DIVIDO_HMAC to FINANCE_HMAC
+			// TODO: Change from DIVIDO_HMAC to FINANCE_HMAC.
 			if ( '' !== $this->secret ) {
 				$callback_sign = isset( $_SERVER['HTTP_X_DIVIDO_HMAC_SHA256'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_DIVIDO_HMAC_SHA256'] ) ) : ''; // Input var okay.
 				$sign          = $this->create_signature( $data, $this->secret );
@@ -308,7 +308,7 @@ function woocommerce_finance_init() {
 							$this->send_json();
 						} else {
 							// Amount matches, update status.
-							// TODO: Review Logging error
+							// TODO: Review Logging error.
 							if ( 'DECLINED' === $data_json->status ) {
 									$order->update_status( 'failed' );
 									$this->send_json();
@@ -384,7 +384,7 @@ function woocommerce_finance_init() {
 		 */
 		public function is_available( $product = false ) {
 
-			if ( 'yes' !== $this->settings['enabled'] || $this->api_key == '' ) {
+			if ( 'yes' !== $this->settings['enabled'] || '' === $this->api_key ) {
 
 				return false;
 			}
@@ -413,7 +413,7 @@ function woocommerce_finance_init() {
 				} elseif ( 'selection' === $this->settings['productSelect'] ) {
 					return false;
 				} elseif ( 'all' === $this->settings['productSelect'] ) {
-					   return true;
+					return true;
 				}
 
 				return false;
@@ -615,7 +615,7 @@ function woocommerce_finance_init() {
 			<?php echo $active_style; ?>
 			</style>
 			<?php
-			// TODO: Change href name to finance_tab
+			// TODO: Change href name to finance_tab.
 			echo '<li class="finance_tab"><a href="#finance_tab"><span>' . esc_attr( __( 'Finance', 'wc_finance_product_tab' ) ) . '</span></a></li>';
 		}
 
@@ -652,17 +652,14 @@ function woocommerce_finance_init() {
 
 					<input type="radio" class="checkbox" name="_tab_finance_active" id="finance_active_default" value="default" <?php print ( 'default' === $tab_data[0]['active'] ) ? 'checked' : ''; ?> > <?php esc_html_e( 'Default settings', 'woothemes' ); ?><br style="clear:both;" />
 					<input type="radio" class="checkbox" name="_tab_finance_active" id="finance_active_selected" value="selected" <?php print ( 'selected' === $tab_data[0]['active'] ) ? 'checked' : ''; ?> > <?php esc_html_e( 'Selected plans', 'woothemes' ); ?><br  style="clear:both;" />
-					
 					</p>
 				<p class="form-field _hide_title_field" id="selectedFinance" style="display:none;">
 					<label for="_hide_title"><?php esc_html_e( 'Selected plans', 'woothemes' ); ?></label>
 
 			<?php
 			foreach ( $finances as $finance => $value ) {
-
 				?>
-						
-						<input type="checkbox" class="checkbox" name="_tab_finances[]" id="finances_<?php print $finance; ?>" value="<?php print $finance; ?>" <?php print ( in_array( $finance, $tab_data[0]['finances'], true ) ) ? 'checked' : ''; ?>> &nbsp;<?php print $value['description']; ?><br  style="clear:both;" />
+					<input type="checkbox" class="checkbox" name="_tab_finances[]" id="finances_<?php print $finance; ?>" value="<?php print $finance; ?>" <?php print ( in_array( $finance, $tab_data[0]['finances'], true ) ) ? 'checked' : ''; ?>> &nbsp;<?php print $value['description']; ?><br  style="clear:both;" />
 			<?php } ?>
 				</p>
 			</div>
@@ -695,7 +692,7 @@ function woocommerce_finance_init() {
 		public function product_save_data( $post_id, $post ) {
 
 			$active   = isset( $_POST['_tab_finance_active'] ) ? sanitize_text_field( wp_unslash( $_POST['_tab_finance_active'] ) ) : ''; // Input var okay.
-			$finances = isset( $_POST['_tab_finances'] ) ? wp_unslash( $_POST['_tab_finances'] ) : ''; // Input var okay.
+			$finances = isset( $_POST['_tab_finances'] ) ? sanitize_text_field( wp_unslash( $_POST['_tab_finances'] ) ) : ''; // Input var okay.
 			if ( ( empty( $active ) || 'default' === $active ) && get_post_meta( $post_id, 'woo_finance_product_tab', true ) ) {
 				delete_post_meta( $post_id, 'woo_finance_product_tab' );
 			} else {
@@ -743,15 +740,15 @@ function woocommerce_finance_init() {
 
 			if ( isset( $this->settings['apiKey'] ) && $this->settings['apiKey'] ) {
 
-				   $response = $this->get_all_finances( $this->settings['apiKey'] );
-				   $finance  = [];
+				$response = $this->get_all_finances( $this->settings['apiKey'] );
+				$finance  = [];
 				foreach ( $response as $finances ) {
 					$finance[ $finances->id ] = $finances->description;
 				}
 
-				   $options = array();
+				$options = array();
 
-				   // TODO: Condition to return true
+				// TODO: Condition to return true.
 				if ( true ) {
 					foreach ( $finance as $key => $descriptions ) {
 						$options[ $key ] = $descriptions;
@@ -1021,7 +1018,7 @@ function woocommerce_finance_init() {
 					return;
 				}
 			}
-			// TODO: Checking for divido_plan and divido_deposit
+			// TODO: Checking for divido_plan and divido_deposit.
 			$finances = $this->get_finances( $this->getCheckoutFinanceOptions() );
 
 			foreach ( $finances as $_finance => $value ) {
@@ -1118,7 +1115,7 @@ function woocommerce_finance_init() {
 
 				$other = $order->get_total() - $order_total;
 
-				if ( 0 != $other ) {
+				if ( 0 !== $other ) {
 					$products[] = array(
 						'name'     => 'Other',
 						'quantity' => 1,
@@ -1126,8 +1123,8 @@ function woocommerce_finance_init() {
 					);
 				}
 
-				if ( $this->secret != '' ) {
-					   $secret = $this->secret;
+				if ( '' !== $this->secret ) {
+					$secret = $this->secret;
 				}
 
 				// Version 3.0+.
@@ -1297,6 +1294,8 @@ function woocommerce_finance_init() {
 
 		/**
 		 * Define environment function
+		 *
+		 *  @param [string] $key   - The Divido API key.
 		 */
 		function environments( $key ) {
 			$array       = explode( '_', $key );
@@ -1407,7 +1406,6 @@ function woocommerce_finance_init() {
 		 * A wrapper to determine if autofulfilment is on whether to send fulfillments.
 		 *
 		 * @param  [int] $order_id - The woocommerce order id.
-		 * @return void
 		 */
 		function send_finance_fulfillment_request( $order_id ) {
 
@@ -1432,8 +1430,12 @@ function woocommerce_finance_init() {
 		/**
 		 * Function that will activate an application or set to fulfilled on dividio.
 		 *
-		 * @application_id
-		 *
+		 * @param [string] $application_id   - The Divido Application ID - fea4dcb7-e474-4fba-b1a4-123.....
+		 * @param [string] $order_total  - Total amount of the order.
+		 * @param [string] $order_id  - The Order ID from WooCommerce.
+		 * @param [string] $shipping_method - If the shipping method is set we can apply it here.
+		 * @param [string] $tracking_numbers - If there are any tracking numbers to attach we apply here.
+		 * @return void
 		 */
 		function set_fulfilled( $application_id, $order_total, $order_id, $shipping_method = null, $tracking_numbers = null ) {
 
