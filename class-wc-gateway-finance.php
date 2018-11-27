@@ -9,7 +9,7 @@
  * @copyright 2018 Divido Financial Services
  * @license   MIT
  *
- * Plugin Name: Finance payment Gateway for WooCommerce
+ * Plugin Name: Finance Gateway for WooCommerce
  * Plugin URI: https://www.divido.com
  * Description: The Finance Payment Gateway plugin for WooCommerce.
  * Version: 2.1.0
@@ -692,7 +692,7 @@ function woocommerce_finance_init() {
 						'options'     => $options,
 						'description' => __( 'Shift-click or Control-click to select multiple items in the list', 'woothemes' ),
 						'default'     => 'all',
-						'class'		  => 'border_height'
+						'class'       => 'border_height',
 					);
 					$this->form_fields = array_merge(
 						$this->form_fields,
