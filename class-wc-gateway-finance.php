@@ -91,10 +91,6 @@ function woocommerce_finance_init() {
 			}
 			$this->woo_version = $this->get_woo_version();
 
-			if ( null || '' !== $this->api_key ) {
-				$env = $this->environments( $this->api_key );
-				$sdk = new \Divido\MerchantSDK\Client( $this->api_key, $env );
-			}
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) ); // Version 2.0 Hook.
 			// product settings.
 			add_action( 'woocommerce_product_write_panel_tabs', array( $this, 'product_write_panel_tab' ) );
@@ -148,10 +144,15 @@ function woocommerce_finance_init() {
 			if ( false === $finances ) {
 				$request_options = ( new \Divido\MerchantSDK\Handlers\ApiRequestOptions() );
 				// Retrieve all finance plans for the merchant.
-				$plans = $sdk->getAllPlans( $request_options );
-				$plans = $plans->getResources();
-				set_transient( $transient_name, $plans, 1 * HOUR_IN_SECONDS );
-				return $plans;
+				try {
+					$plans = $sdk->getAllPlans( $request_options );
+					$plans = $plans->getResources();
+					set_transient( $transient_name, $plans, 1 * HOUR_IN_SECONDS );
+					return $plans;
+				}
+				catch (Exception $e){
+					return [];
+				}				
 			}
 		}
 		/**
@@ -1231,7 +1232,7 @@ function woocommerce_finance_init() {
 			$order       = wc_get_order( $order_id );
 			$order_total = $order->get_total();
 			if ( 'finance' === $name ) {
-				if ( $this->auto_fulfillment ) {
+				if ( 'no' !== $this->auto_fulfillment ) {
 					$ref_and_finance = $this->get_ref_finance( $order );
 					$this->logger->debug( 'Finance', 'Autofullfillment selected' . $ref_and_finance['ref'] );
 					$this->set_fulfilled( $ref_and_finance['ref'], $order_total, $wc_order_id, $product_name, $product_quantity );
