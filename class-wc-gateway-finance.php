@@ -533,7 +533,7 @@ function woocommerce_finance_init() {
 		 * @return false
 		 */
 		public function product_write_panel() {
-			if ( 'yes' !== $this->enabled ) {
+			if ( 'yes' !== $this->enabled ) {		
 				return false;
 			}
 			global $post;
@@ -550,6 +550,7 @@ function woocommerce_finance_init() {
 				$tab_data[0]['finances'] = array();
 			}
 			$finances = $this->get_finances();
+
 			?>
 			<div id="finance_tab" class="panel woocommerce_options_panel">
 				<p class="form-field _hide_title_field ">
@@ -562,7 +563,9 @@ function woocommerce_finance_init() {
 					<label for="_hide_title"><?php esc_html_e( 'Selected plans', 'woothemes' ); ?></label>
 
 			<?php
+	
 			foreach ( $finances as $finance => $value ) {
+
 				?>
 					<input type="checkbox" class="checkbox" name="_tab_finances[]" id="finances_<?php print esc_attr( $finance ); ?>" value="<?php print esc_attr( $finance ); ?>" <?php print ( in_array( $finance, $tab_data[0]['finances'], true ) ) ? 'checked' : ''; ?>> &nbsp;<?php print esc_attr( $value['description'] ); ?><br  style="clear:both;" />
 			<?php } ?>
@@ -593,8 +596,8 @@ function woocommerce_finance_init() {
 		 * @return void
 		 */
 		public function product_save_data( $post_id, $post ) {
-			$active   = isset( $_POST['_tab_finance_active'], $_POST['_tab_finance_active_nonce'] ) ? wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_tab_finance_active'] ) ) ) : ''; // Input var okay.
-			$finances = isset( $_POST['_tab_finances'] ) ? sanitize_text_field( wp_unslash( $_POST['_tab_finances'] ) ) : ''; // Input var okay.
+			$active   = isset( $_POST['_tab_finance_active'] ) ? sanitize_text_field( wp_unslash( $_POST['_tab_finance_active'] ) ) : ''; // Input var okay.
+			$finances = isset( $_POST['_tab_finances'] ) ? wp_unslash( $_POST['_tab_finances'] ) : ''; // Input var okay.
 			if ( ( empty( $active ) || 'default' === $active ) && get_post_meta( $post_id, 'woo_finance_product_tab', true ) ) {
 				delete_post_meta( $post_id, 'woo_finance_product_tab' );
 			} else {
