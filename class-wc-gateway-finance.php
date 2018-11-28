@@ -5,16 +5,16 @@
  *  Finance
  *
  * @package   WordPress
- * @author    Divido <support@divido.com>
- * @copyright 2018 Divido Financial Services
+ * @author    "Enter Author Here"
+ * @copyright "Enter copyright info here"
  * @license   MIT
  *
  * Plugin Name: Finance Gateway for WooCommerce
- * Plugin URI: https://www.divido.com
+ * Plugin URI: "Enter URI Here"
  * Description: The Finance Payment Gateway plugin for WooCommerce.
- * Version: 2.1.0
- * Author: Divido Financial Services Ltd
- * Author URI: https://www.divido.com
+ * Version: 1.0.0
+ * Author: "Enter Name here"
+ * Author URI: "Enter Author URI here"
  * WC tested up to: 3.5.0
  */
 
@@ -149,10 +149,9 @@ function woocommerce_finance_init() {
 					$plans = $plans->getResources();
 					set_transient( $transient_name, $plans, 1 * HOUR_IN_SECONDS );
 					return $plans;
-				}
-				catch (Exception $e){
+				} catch ( Exception $e ) {
 					return [];
-				}				
+				}
 			}
 		}
 		/**
@@ -638,7 +637,7 @@ function woocommerce_finance_init() {
 				}
 				$options = array();
 				// TODO: Condition to return true.
-				if ( true ) {
+				try {
 					foreach ( $finance as $key => $descriptions ) {
 						$options[ $key ] = $descriptions;
 					}
@@ -775,6 +774,8 @@ function woocommerce_finance_init() {
 							),
 						)
 					);
+				} catch ( Exception $e ) {
+					return [];
 				}
 			}
 		}
@@ -783,6 +784,7 @@ function woocommerce_finance_init() {
 		 * - Payment options
 		 */
 		function admin_options() {
+
 			?>
 			<h3><?php esc_html_e( 'Finance', 'woothemes' ); ?></h3>
 			<p><?php esc_html_e( 'This plugin allows you to accept finance payments in your WooCommerce store.', 'woothemes' ); ?></p>
@@ -793,9 +795,10 @@ function woocommerce_finance_init() {
 				<h3 style="border-bottom:1px solid"><?php esc_html_e( 'General Settings', 'woothemes' ); ?></h3>
 			<?php
 			if ( isset( $this->api_key ) && $this->api_key ) {
-				$response = $this->get_all_finances( $this->api_key, 1 );
-				$options  = array();
-				if ( 'error' === $response->status ) {
+
+					$response = $this->get_all_finances( $this->api_key, 1 );
+					$options  = array();
+				if ( [] === $response ) {
 					?>
 						<div style="border:1px solid red;color:red;padding:20px;">
 							<b><?php esc_html_e( 'Wrong or invalid API key', 'woothemes' ); ?></b>
@@ -804,6 +807,7 @@ function woocommerce_finance_init() {
 					<?php
 				}
 			}
+
 			$this->generate_settings_html();
 			?>
 			</table><!--/.form-table-->
@@ -1068,7 +1072,7 @@ function woocommerce_finance_init() {
 				}
 			}
 			// TODO condition to return true.
-			if ( true ) {
+			try {
 				update_post_meta( $order_id, '_finance_reference', $result_id );
 				update_post_meta( $order_id, '_divido_finance', $description );
 				update_post_meta( $order_id, '_finance_amount', number_format( $order->get_total(), 2, '.', '' ) );
@@ -1076,7 +1080,7 @@ function woocommerce_finance_init() {
 					'result'   => 'success',
 					'redirect' => $result_redirect,
 				);
-			} else {
+			} catch ( Exception $e ) {
 				$cancel_note = __( 'Finance Payment failed', 'woothemes' ) . ' (Transaction ID: ' . $order_id . '). ' . __( 'Payment was rejected due to an error', 'woothemes' ) . ': "' . $response->error . '". ';
 				$order->add_order_note( $cancel_note );
 				if ( version_compare( $this->get_woo_version(), '2.1.0' ) >= 0 ) {
@@ -1099,7 +1103,7 @@ function woocommerce_finance_init() {
 			$response = $this->finance_options; // array.
 			$finances = array();
 			// TODO Condition to return true.
-			if ( true ) {
+			try {
 				foreach ( $response as $_finance ) {
 					if ( ( ! $selection && ! is_array( $selection ) ) || in_array( $_finance->id, $selection, true ) ) {
 						$finances[ $_finance->id ] = $_finance->description;
@@ -1110,8 +1114,12 @@ function woocommerce_finance_init() {
 						);
 					}
 				}
+			} catch ( Exception $e ) {
+				return [];
+			} finally {
+				return $finances;
 			}
-			return $finances;
+
 		}
 		/**
 		 * Define environment function
