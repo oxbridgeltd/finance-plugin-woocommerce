@@ -978,7 +978,6 @@ function woocommerce_finance_init() {
 				if ( version_compare( $this->get_woo_version(), '3.0.0' ) >= 0 ) {
 					$env                       = $this->environments( $this->api_key );
 					$sdk                       = new \Divido\MerchantSDK\Client( $this->api_key, $env );
-					$deposit_amount            = $order->get_total() * $deposit;
 					$application               = ( new \Divido\MerchantSDK\Models\Application() )
 						->withCountryId( $order->get_billing_country() )
 						->withCurrencyId( 'GBP' )
@@ -1002,7 +1001,7 @@ function woocommerce_finance_init() {
 							]
 						)
 						->withOrderItems( $products )
-						->withDepositAmount( $deposit_amount )
+						->withDepositPercentage($deposit/100)
 						->withFinalisationRequired( false )
 						->withMerchantReference( '' )
 						->withUrls(
@@ -1017,7 +1016,7 @@ function woocommerce_finance_init() {
 								'order_number' => $order_id,
 							]
 						);
-					$response                  = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-Hmac-Sha256' => $secret ] );
+					$response                  = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-sHmac-Sha256' => $secret ] );
 					$application_response_body = $response->getBody()->getContents();
 					$decode                    = json_decode( $application_response_body );
 					$result_id                 = $decode->data->id;
@@ -1028,7 +1027,6 @@ function woocommerce_finance_init() {
 					//
 					$env                       = $this->environments( $this->api_key );
 					$sdk                       = new \Divido\MerchantSDK\Client( $this->api_key, $env );
-					$deposit_amount            = $order->get_total() * $deposit;
 					$application               = ( new \Divido\MerchantSDK\Models\Application() )
 						->withCountryId( $order->billing_country )
 						->withCurrencyId( 'GBP' )
@@ -1052,7 +1050,7 @@ function woocommerce_finance_init() {
 							]
 						)
 						->withOrderItems( $products )
-						->withDepositAmount( $deposit_amount )
+						->withDepositPercentage($deposit/100)
 						->withFinalisationRequired( false )
 						->withMerchantReference( '' )
 						->withUrls(
@@ -1076,6 +1074,7 @@ function woocommerce_finance_init() {
 			}
 			// TODO condition to return true.
 			try {
+
 				update_post_meta( $order_id, '_finance_reference', $result_id );
 				update_post_meta( $order_id, '_divido_finance', $description );
 				update_post_meta( $order_id, '_finance_amount', number_format( $order->get_total(), 2, '.', '' ) );
