@@ -232,15 +232,15 @@ function woocommerce_finance_init() {
 		 * @return void
 		 */
 		function callback() {
-			if ( isset( $_SERVER['HTTP_RAW_POST_DATA'] ) && sanitize_text_field( wp_unslash( $_SERVER['HTTP_RAW_POST_DATA'] ) ) ) { // Input var okay.
-				$data = wp_remote_get( sanitize_text_field( wp_unslash( $_SERVER['HTTP_RAW_POST_DATA'] ) ) ); // Input var okay.
+			if ( isset( $_SERVER['HTTP_RAW_POST_DATA'] ) && wp_unslash( $_SERVER['HTTP_RAW_POST_DATA'] ) ) { // Input var okay.
+				$data = file_get_contents( wp_unslash( $_SERVER['HTTP_RAW_POST_DATA'] ) ); // Input var okay.
 			} else {
-				$data = wp_remote_get( 'php://input' );
+				$data = file_get_contents( 'php://input' );
 			}
 			// If secret is set, check against http header.
 			// TODO: Change from DIVIDO_HMAC to FINANCE_HMAC.
 			if ( '' !== $this->secret ) {
-				$callback_sign = isset( $_SERVER['HTTP_X_DIVIDO_HMAC_SHA256'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_DIVIDO_HMAC_SHA256'] ) ) : ''; // Input var okay.
+				$callback_sign = isset( $_SERVER['HTTP_X_DIVIDO_HMAC_SHA256'] ) ?  $_SERVER['HTTP_X_DIVIDO_HMAC_SHA256']  : ''; // Input var okay.
 				$sign          = $this->create_signature( $data, $this->secret );
 				if ( $callback_sign !== $sign ) {
 					$this->logger->debug( 'FINANCE', 'ERROR: Hash error' );
@@ -971,7 +971,7 @@ function woocommerce_finance_init() {
 					);
 				}
 				if ( '' !== $this->secret ) {
-					$secret = $this->secret;
+					$secret = $this->create_signature($this->secret);
 				}
 				// Version 3.0+.
 				// Create an appication model with the application data.
@@ -1016,7 +1016,7 @@ function woocommerce_finance_init() {
 								'order_number' => $order_id,
 							]
 						);
-					$response                  = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-sHmac-Sha256' => $secret ] );
+					$response                  = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-Hmac-Sha256' => $secret ] );
 					$application_response_body = $response->getBody()->getContents();
 					$decode                    = json_decode( $application_response_body );
 					$result_id                 = $decode->data->id;
