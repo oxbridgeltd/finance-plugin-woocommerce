@@ -163,7 +163,7 @@ function woocommerce_finance_init() {
 			if ( $this->api_key && is_product() || is_checkout() ) {
 				$key      = preg_split( '/\./', $this->api_key );
 				$protocol = ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http'; // Input var okay.
-				// TODO: Change the endpoint for the calculator once ready.
+				
 				wp_register_script( 'woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/calculator/v2.1/production/js/template.divido.js', false, 1.0, true );
 				wp_register_script( 'woocoomerce-finance-gateway-calculator_price_update', plugins_url( '', __FILE__ ) . '/js/widget_price_update.js', false, 1.0, true );
 				wp_register_style( 'woocommerce-finance-gateway-style', plugins_url( '', __FILE__ ) . '/css/style.css', false, 1.0 );
@@ -179,7 +179,7 @@ function woocommerce_finance_init() {
 		 *
 		 * @return void
 		 *
-		 * TODO: change the name of dividoKey
+		 *
 		 */
 		function add_api_to_head() {
 			if ( $this->api_key ) {
@@ -238,7 +238,7 @@ function woocommerce_finance_init() {
 				$data = file_get_contents( 'php://input' );
 			}
 			// If secret is set, check against http header.
-			// TODO: Change from DIVIDO_HMAC to FINANCE_HMAC.
+			
 			if ( '' !== $this->secret ) {
 				$callback_sign = isset( $_SERVER['HTTP_X_DIVIDO_HMAC_SHA256'] ) ?  $_SERVER['HTTP_X_DIVIDO_HMAC_SHA256']  : ''; // Input var okay.
 				$sign          = $this->create_signature( $data, $this->secret );
@@ -265,7 +265,7 @@ function woocommerce_finance_init() {
 							$this->send_json();
 						} else {
 							// Amount matches, update status.
-							// TODO: Review Logging error.
+							
 							if ( 'DECLINED' === $data_json->status ) {
 									$order->update_status( 'failed' );
 									$this->send_json();
@@ -524,7 +524,7 @@ function woocommerce_finance_init() {
 			<?php echo esc_attr( $active_style ); ?>
 			</style>
 			<?php
-			// TODO: Change href name to finance_tab.
+			
 			echo '<li class="finance_tab"><a href="#finance_tab"><span>' . esc_attr( __( 'Finance', 'wc_finance_product_tab' ) ) . '</span></a></li>';
 		}
 		/**
@@ -639,7 +639,7 @@ function woocommerce_finance_init() {
 					$finance[ $finances->id ] = $finances->description;
 				}
 				$options = array();
-				// TODO: Condition to return true.
+				
 				try {
 					foreach ( $finance as $key => $descriptions ) {
 						$options[ $key ] = $descriptions;
@@ -883,7 +883,7 @@ function woocommerce_finance_init() {
 					return;
 				}
 			}
-			// TODO: Checking for divido_plan and divido_deposit.
+			
 			$finances = $this->get_finances( $this->getCheckoutFinanceOptions() );
 			foreach ( $finances as $_finance => $value ) {
 				if ( isset( $_POST['divido_plan'] ) && $_finance === $_POST['divido_plan'] ) { // Input var okay.
@@ -1072,7 +1072,7 @@ function woocommerce_finance_init() {
 					$result_redirect           = $decode->data->urls->application_url;
 				}
 			}
-			// TODO condition to return true.
+			
 			try {
 
 				update_post_meta( $order_id, '_finance_reference', $result_id );
@@ -1104,7 +1104,7 @@ function woocommerce_finance_init() {
 			}
 			$response = $this->finance_options; // array.
 			$finances = array();
-			// TODO Condition to return true.
+			
 			try {
 				foreach ( $response as $_finance ) {
 					if ( ( ! $selection && ! is_array( $selection ) ) || in_array( $_finance->id, $selection, true ) ) {
