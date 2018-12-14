@@ -917,7 +917,8 @@ function woocommerce_finance_init() {
 				$deposit = ( isset( $_POST['divido_deposit'] ) && intval( $_POST['divido_deposit'] ) > 0 ) ? sanitize_text_field( wp_unslash( $_POST['divido_deposit'] ) ) : $min_deposit; // Input var okay.
 				if ( $woocommerce->cart->needs_shipping() ) {
 					$shipping   = $order->get_total_shipping();
-					$shipping   = (int) $shipping;
+					$shipping   = (float) $shipping;
+					
 					$products[] = array(
 						'name'     => 'Shipping and handling',
 						'quantity' => 1,
@@ -1016,6 +1017,7 @@ function woocommerce_finance_init() {
 								'order_number' => $order_id,
 							]
 						);
+						
 					$response                  = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-Hmac-Sha256' => $secret ] );
 					$application_response_body = $response->getBody()->getContents();
 					$decode                    = json_decode( $application_response_body );
@@ -1131,11 +1133,20 @@ function woocommerce_finance_init() {
 		function environments( $key ) {
 			$array       = explode( '_', $key );
 			$environment = strtoupper( $array[0] );
-			if ( constant( "Divido\MerchantSDK\Environment::$environment" ) !== null ) {
-				return constant( "Divido\MerchantSDK\Environment::$environment" );
-			} else {
-				return false;
+			switch ($environment) {
+				case 'LIVE':
+					return constant( 'Divido\MerchantSDK\Environment::' . $environment );
+					break;
+
+					case 'SANDBOX':
+					return constant( "Divido\MerchantSDK\Environment::$environment" );
+					break;
+				
+				default:
+					return constant( "Divido\MerchantSDK\Environment::SANDBOX" );
+					break;
 			}
+
 		}
 
 		function wpdocs_enqueue_custom_admin_style( $hook_suffix ) {
