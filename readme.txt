@@ -6,7 +6,7 @@ Tags:              woothemes,woocommerce,payment gateway,payment,module,ecommerc
 Author URI:        <Website URI>
 Author:            <Author>
 Requires at least: 3.0.2 
-Tested up to:      4.9.8
+Tested up to:      5.0.1
 Stable tag:        1.0.0
 Version:           1.0.0
 
