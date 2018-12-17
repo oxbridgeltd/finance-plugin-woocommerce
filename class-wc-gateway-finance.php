@@ -490,10 +490,12 @@ function woocommerce_finance_init() {
 			if ( $this->is_available( $product ) && $price > ( $this->widget_threshold ) ) {
 				$append_price = '';
 				if ( ! empty( $this->append_price ) ) {
+					//TODO - Change this
 					$append_price = 'data-divido-suffix="' . $this->append_price . '" ';
 				}
 				$prepend_price = '';
 				if ( ! empty( $this->prepend_price ) ) {
+					//TODO - Change this
 					$prepend_price = ' data-divido-prefix="' . $this->prepend_price . '" ';
 				}
 				$plans = $this->get_product_plans( $product );
@@ -1257,7 +1259,7 @@ function woocommerce_finance_init() {
 					$ref_and_finance = $this->get_ref_finance( $order );
 					$this->logger->debug( 'Finance', 'Autofullfillment selected' . $ref_and_finance['ref'] );
 					$this->set_fulfilled( $ref_and_finance['ref'], $order_total, $wc_order_id, $product_name, $product_quantity );
-					$order->add_order_note( 'Finance - Autofulfillment Request Sents.' );
+					$order->add_order_note( 'Finance - Autofulfillment Request Sent.' );
 				} else {
 					$this->logger->debug( 'Finance', 'Autofulfillment not set' );
 				}
