@@ -287,7 +287,7 @@ function woocommerce_finance_init() {
 			}
 		}
 		/**
-		 * Add Financec payment methods using filter woocommerce_payment_gateways
+		 * Add Finance payment methods using filter woocommerce_payment_gateways
 		 *
 		 * @param  array $methods Array of payment methods.
 		 * @return array
