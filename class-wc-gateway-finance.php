@@ -1245,7 +1245,7 @@ function woocommerce_finance_init() {
 			return $result;
 		}
 		/**
-		 * A wrapper to determine if autofulfilment is on whether to send fulfillments.
+		 * A wrapper to determine if autofulfillment is on whether to send fulfillments.
 		 *
 		 * @param  [int] $order_id - The woocommerce order id.
 		 */
@@ -1257,11 +1257,11 @@ function woocommerce_finance_init() {
 			if ( 'finance' === $name ) {
 				if ( 'no' !== $this->auto_fulfillment ) {
 					$ref_and_finance = $this->get_ref_finance( $order );
-					$this->logger->debug( 'Finance', 'Autofullfillment selected' . $ref_and_finance['ref'] );
+					$this->logger->debug( 'Finance', 'Auto Fulfillment selected' . $ref_and_finance['ref'] );
 					$this->set_fulfilled( $ref_and_finance['ref'], $order_total, $wc_order_id, $product_name, $product_quantity );
-					$order->add_order_note( 'Finance - Autofulfillment Request Sent.' );
+					$order->add_order_note( 'Finance - Auto Fulfillment Request Sent.' );
 				} else {
-					$this->logger->debug( 'Finance', 'Autofulfillment not set' );
+					$this->logger->debug( 'Finance', 'Auto Fulfillment not set' );
 				}
 			} else {
 				return false;
