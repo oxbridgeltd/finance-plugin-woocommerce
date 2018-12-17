@@ -133,7 +133,7 @@ function woocommerce_finance_init() {
 		 * @param  boolean  $reload  An optional parameter to say if the finances endpoint should be called again.
 		 * @return array
 		 */
-		function get_all_finances( $api_key, $reload = true ) {
+		function get_all_finances( $api_key, $reload = false ) {
 			$env            = $this->environments( $api_key );
 			$sdk            = new \Divido\MerchantSDK\Client( $api_key, $env );
 			$finances       = false;
