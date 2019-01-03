@@ -133,13 +133,14 @@ function woocommerce_finance_init() {
 		 * @param  boolean  $reload  An optional parameter to say if the finances endpoint should be called again.
 		 * @return array
 		 */
-		function get_all_finances( $api_key, $reload = false ) {
+		function get_all_finances( $api_key, $reload = true ) {
 			$env            = $this->environments( $api_key );
 			$sdk            = new \Divido\MerchantSDK\Client( $api_key, $env );
 			$finances       = false;
 			$transient_name = 'finances';
-			if ( ! $reload ) {
+			if ( $reload ) {
 				$finances = get_transient( $transient_name );
+				return $finances;
 			}
 			if ( false === $finances ) {
 				$request_options = ( new \Divido\MerchantSDK\Handlers\ApiRequestOptions() );
@@ -635,7 +636,7 @@ function woocommerce_finance_init() {
 				),
 			);
 			if ( isset( $this->api_key ) && $this->api_key ) {
-				$response = $this->get_all_finances( $this->api_key );
+				$response = $this->get_all_finances( $this->api_key, false );
 				$finance  = [];
 				foreach ( $response as $finances ) {
 					$finance[ $finances->id ] = $finances->description;
@@ -800,8 +801,7 @@ function woocommerce_finance_init() {
 				<h3 style="border-bottom:1px solid"><?php esc_html_e( 'General Settings', 'woothemes' ); ?></h3>
 			<?php
 			if ( isset( $this->api_key ) && $this->api_key ) {
-
-					$response = $this->get_all_finances( $this->api_key, 1 );
+					$response = $this->get_all_finances( $this->api_key, false );
 					$options  = array();
 				if ( [] === $response ) {
 					?>
