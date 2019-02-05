@@ -133,9 +133,16 @@ function woocommerce_finance_init() {
 		 * @param  boolean  $reload  An optional parameter to say if the finances endpoint should be called again.
 		 * @return array
 		 */
-		function get_all_finances( $api_key, $reload = true ) {
-			$env            = $this->environments( $api_key );
-			$sdk            = new \Divido\MerchantSDK\Client( $api_key, $env );
+		function get_all_finances( $api_key, $reload = false ) {
+			$env               = $this->environments( $api_key );
+			$client            = new \GuzzleHttp\Client();
+			$httpClientWrapper = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
+				new \Divido\MerchantSDKGuzzle6\GuzzleAdapter($client),
+				\Divido\MerchantSDK\Environment::CONFIGURATION[$env]['base_uri'],
+				$this->api_key
+			);
+			$sdk = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
+			
 			$finances       = false;
 			$transient_name = 'finances';
 			if ( $reload ) {
@@ -148,7 +155,7 @@ function woocommerce_finance_init() {
 				try {
 					$plans = $sdk->getAllPlans( $request_options );
 					$plans = $plans->getResources();
-					set_transient( $transient_name, $plans, 1 * HOUR_IN_SECONDS );
+					set_transient( $transient_name, $plans );
 					return $plans;
 				} catch ( Exception $e ) {
 					return [];
@@ -979,8 +986,17 @@ function woocommerce_finance_init() {
 				// Version 3.0+.
 				// Create an appication model with the application data.
 				if ( version_compare( $this->get_woo_version(), '3.0.0' ) >= 0 ) {
+				
 					$env                       = $this->environments( $this->api_key );
-					$sdk                       = new \Divido\MerchantSDK\Client( $this->api_key, $env );
+					$client                    = new \GuzzleHttp\Client();
+					
+					$httpClientWrapper = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
+						new \Divido\MerchantSDKGuzzle6\GuzzleAdapter($client),
+						\Divido\MerchantSDK\Environment::CONFIGURATION[$env]['base_uri'],
+						$this->api_key
+					);
+
+					$sdk = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
 					$application               = ( new \Divido\MerchantSDK\Models\Application() )
 						->withCountryId( $order->get_billing_country() )
 						->withCurrencyId( 'GBP' )
@@ -1020,7 +1036,7 @@ function woocommerce_finance_init() {
 							]
 						);
 						
-					$response                  = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-Hmac-Sha256' => $secret ] );
+					$response                  = $sdk->applications()->createApplication( $application, [], ['Content-Type' => 'application/json']);
 					$application_response_body = $response->getBody()->getContents();
 					$decode                    = json_decode( $application_response_body );
 					$result_id                 = $decode->data->id;
@@ -1030,7 +1046,12 @@ function woocommerce_finance_init() {
 					// Version ~2.0.
 					//
 					$env                       = $this->environments( $this->api_key );
-					$sdk                       = new \Divido\MerchantSDK\Client( $this->api_key, $env );
+					$client 				   = new \GuzzleHttp\Client();
+					$httpClientWrapper 		   = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
+					  						     new \Divido\MerchantSDKGuzzle6\GuzzleAdapter($client),
+													\Divido\MerchantSDK\Environment::CONFIGURATION[$env]['base_uri'],
+													$this->api_key);
+					$sdk                       = new \Divido\MerchantSDK\Client( $httpClientWrapper, $env );
 					$application               = ( new \Divido\MerchantSDK\Models\Application() )
 						->withCountryId( $order->billing_country )
 						->withCurrencyId( 'GBP' )
@@ -1069,7 +1090,7 @@ function woocommerce_finance_init() {
 								'order_number' => $order_id,
 							]
 						);
-					$response                  = $sdk->applications()->createApplication( $application, [], [ 'X-Divido-Hmac-Sha256' => $secret ] );
+					$response                  = $sdk->applications()->createApplication( $application, [], ['Content-Type: application/json']);
 					$application_response_body = $response->getBody()->getContents();
 					$decode                    = json_decode( $application_response_body );
 					$result_id                 = $decode->data->id;
@@ -1104,7 +1125,7 @@ function woocommerce_finance_init() {
 		 */
 		function get_finances( $selection = false ) {
 			if ( ! isset( $this->finance_options ) ) {
-				$this->finance_options = $this->get_all_finances( $this->api_key );
+				$this->finance_options = $this->get_all_finances( $this->api_key, false );
 			}
 			$response = $this->finance_options; // array.
 			$finances = array();
@@ -1295,7 +1316,13 @@ function woocommerce_finance_init() {
 				->withTrackingNumber( $tracking_numbers );
 			// Create a new activation for the application.
 			$env                      = $this->environments( $this->api_key );
-			$sdk                      = new \Divido\MerchantSDK\Client( $this->api_key, $env );
+			$client 				  = new \GuzzleHttp\Client();
+			$httpClientWrapper 		  = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
+									    new \Divido\MerchantSDKGuzzle6\GuzzleAdapter($client),
+										\Divido\MerchantSDK\Environment::CONFIGURATION[$env]['base_uri'],
+										$this->api_key
+			);
+			$sdk                      = new \Divido\MerchantSDK\Client( $httpClientWrapper, $env );
 			$response                 = $sdk->applicationActivations()->createApplicationActivation( $application, $application_activation );
 			$activation_response_body = $response->getBody()->getContents();
 		}

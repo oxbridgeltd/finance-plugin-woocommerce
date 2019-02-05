@@ -6,5 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Divido' => array($vendorDir . '/divido/divido-php/lib'),
+    'Prophecy\\' => array($vendorDir . '/phpspec/prophecy/src'),
 );
