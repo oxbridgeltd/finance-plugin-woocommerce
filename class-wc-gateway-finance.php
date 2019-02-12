@@ -919,7 +919,7 @@ function woocommerce_finance_init() {
 					$order_total += $item['line_subtotal'];
 					$products[]   = array(
 						'name'     => $name,
-						'quantity' => $quantity,
+						'quantity' => (int)$quantity,
 						'price'    => $price,
 					);
 				}
