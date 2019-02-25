@@ -171,14 +171,19 @@ function woocommerce_finance_init() {
 			if ( $this->api_key && is_product() || is_checkout() ) {
 				$key      = preg_split( '/\./', $this->api_key );
 				$protocol = ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http'; // Input var okay.
-				
-				wp_register_script( 'woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/calculator/v2.1/production/js/template.divido.js', false, 1.0, true );
+				$finance = $this->getFinanceEnv($this->api_key);
+				wp_register_script( 'woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/calculator/v2.1/production/js/template.'.$finance.'.js', false, 1.0, true );
 				wp_register_script( 'woocoomerce-finance-gateway-calculator_price_update', plugins_url( '', __FILE__ ) . '/js/widget_price_update.js', false, 1.0, true );
 				wp_register_style( 'woocommerce-finance-gateway-style', plugins_url( '', __FILE__ ) . '/css/style.css', false, 1.0 );
+				$array = array(
+					'environment' => __( $finance )
+				);
+				wp_localize_script('woocoomerce-finance-gateway-calculator_price_update','environment',$array);
+			}
 				wp_enqueue_style( 'woocommerce-finance-gateway-style' );
 				wp_enqueue_script( 'woocommerce-finance-gateway-calculator' );
 				wp_enqueue_script( 'woocoomerce-finance-gateway-calculator_price_update' );
-			}
+				
 		}
 		/**
 		 * Add Finance Javascript
@@ -192,8 +197,9 @@ function woocommerce_finance_init() {
 		function add_api_to_head() {
 			if ( $this->api_key ) {
 				$key = preg_split( '/\./', $this->api_key );
+				
 				?>
-			<script type='text/javascript'> var dividoKey = '<?php echo esc_attr( strtolower( $key[0] ) ); ?>' </script>
+			<script type='text/javascript'> var <?php echo ($this->getFinanceEnv($this->api_key))?>Key = '<?php echo esc_attr( strtolower( $key[0] ) ); ?>' </script>
 			<script>// <![CDATA[
 					function waitForElementToDisplay(selector, time) {
 				if(document.querySelector(selector)!== null) {
@@ -480,6 +486,7 @@ function woocommerce_finance_init() {
 		public function product_calculator( $product ) {
 			global $product;
 			if ( $this->is_available( $product ) ) {
+				$environment = $this->getFinanceEnv($this->api_key);
 				$plans = $this->get_product_plans( $product );
 				$price = $this->get_price_including_tax( $product, '' );
 				include_once WP_PLUGIN_DIR . '/' . plugin_basename( dirname( __FILE__ ) ) . '/includes/calculator.php';
@@ -493,22 +500,26 @@ function woocommerce_finance_init() {
 		 */
 		public function product_widget( $product ) {
 			global $product;
+			if($this->api_key){
+			$finance = $this->getFinanceEnv($this->api_key);
 			$price = $this->get_price_including_tax( $product, '' );
 			$plans = $this->get_product_plans( $product );
+			$environment = $this->getFinanceEnv($this->api_key);
 			if ( $this->is_available( $product ) && $price > ( $this->widget_threshold ) ) {
 				$append_price = '';
 				if ( ! empty( $this->append_price ) ) {
 					//TODO - Change this
-					$append_price = 'data-divido-suffix="' . $this->append_price . '" ';
+					$append_price = 'data-'.$finance.'-suffix="' . $this->append_price . '" ';
 				}
 				$prepend_price = '';
 				if ( ! empty( $this->prepend_price ) ) {
 					//TODO - Change this
-					$prepend_price = ' data-divido-prefix="' . $this->prepend_price . '" ';
+					$prepend_price = 'data-'.$finance.'-prefix="' . $this->prepend_price . '" ';
 				}
 				$plans = $this->get_product_plans( $product );
 				include_once WP_PLUGIN_DIR . '/' . plugin_basename( dirname( __FILE__ ) ) . '/includes/widget.php';
 			}
+		}	
 		}
 		/**
 		 * Function to add finance product into admin view this add tabs
@@ -874,6 +885,7 @@ function woocommerce_finance_init() {
 					return;
 				endif;
 				$amount = WC()->cart->total;
+				$environment = $this->getFinanceEnv($this->api_key);
 				$plans  = $this->get_checkout_plans();
 				include_once WP_PLUGIN_DIR . '/' . plugin_basename( dirname( __FILE__ ) ) . '/includes/checkout.php';
 			}
@@ -1171,6 +1183,30 @@ function woocommerce_finance_init() {
 			}
 
 		}
+
+
+		//Get Finance Enviornment Function
+
+
+		public function getFinanceEnv($api_key){
+            $env               = $this->environments( $api_key );
+            $client            = new \GuzzleHttp\Client();
+            $httpClientWrapper = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
+                new \Divido\MerchantSDKGuzzle6\GuzzleAdapter($client),
+                \Divido\MerchantSDK\Environment::CONFIGURATION[$env]['base_uri'],
+                $this->api_key
+            );
+            $sdk  = new \Divido\MerchantSDK\Client( $httpClientWrapper, $env );
+
+            $response = $sdk->platformEnvironments()->getPlatformEnvironment();
+            $finance_env = $response->getBody()->getContents();
+            $decoded =json_decode($finance_env);
+            return $decoded->data->environment;
+
+        }
+
+
+
 
 		function wpdocs_enqueue_custom_admin_style( $hook_suffix ) {
 			// Check if it's the ?page=yourpagename. If not, just empty return before executing the folowing scripts.
