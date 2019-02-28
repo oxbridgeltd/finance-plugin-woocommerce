@@ -1,3 +1,4 @@
 <!-- TODO: Change attribute names  -->
+ 
+<div id="financeWidget"  data-<?php print $environment;?>-widget data-<?php print $environment;?>-mode="popup"  data-<?php print $environment;?>-calculator data-<?php print $environment;?>-plans="<?php print $plans;?>" data-<?php print $environment;?>-amount="<?php print $price; ?>" <?php print $prepend_price; ?>  <?php print $append_price; ?>></div>
 
-<div id="financeWidget"  data-divido-widget data-divido-mode="popup"  data-divido-calculator data-divido-plans="<?php print $plans; ?>" data-divido-amount="<?php print $price; ?>" <?php print $prepend_price; ?>  <?php print $append_price; ?> data-divido-title-logo></div>

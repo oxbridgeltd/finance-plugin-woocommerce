@@ -1,10 +1,10 @@
 <!-- TODO: Change attribute names -->
 
-<fieldset id="finance-checkout" class="finance-calculator" data-divido-amount="<?php print $amount; ?>" data-divido-plans="<?php print $plans; ?>">
+<fieldset id="finance-checkout" class="finance-calculator" data-<?php print $environment;?>-amount="<?php print $amount; ?>" data-<?php print $environment;?>-plans="<?php print $plans; ?>">
 <h1>
         <?php print (isset($this->settings['description'])) ? $this->settings['description']:""; ?>
     </h1>
-<div id="financeWidget" data-divido-widget data-divido-plans="<?php print $plans; ?>" data-divido-amount="<?php print $amount; ?>" ></div>
+<div id="financeWidget" data-<?php print $environment;?>-widget data-<?php print $environment;?>-plans="<?php print $plans; ?>" data-<?php print $environment;?>-amount="<?php print $amount; ?>" ></div>
 <script type="text/javascript">
         jQuery(document).ready(function($) {
                 waitForElementToDisplay('#financeWidget', 1000);
