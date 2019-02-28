@@ -168,7 +168,7 @@ function woocommerce_finance_init() {
 		 * @return void
 		 */
 		function enqueue() {
-			if ( $this->api_key && is_product() || is_checkout() ) {
+			if ( $this->api_key && is_product() || $this->api_key && is_checkout() ) {
 				$key      = preg_split( '/\./', $this->api_key );
 				$protocol = ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http'; // Input var okay.
 				$finance = $this->getFinanceEnv($this->api_key);
