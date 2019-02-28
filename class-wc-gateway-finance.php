@@ -435,7 +435,6 @@ function woocommerce_finance_init() {
 			if ( 'yes' !== $this->enabled ) {
 				return false;
 			}
-			$data;
 			if ( version_compare( $this->woo_version, '3.0.0' ) >= 0 ) {
 				if ( $product->get_type() === 'variation' ) {
 					$data = maybe_unserialize( get_post_meta( $product->get_parent_id(), 'woo_finance_product_tab', true ) );
@@ -501,7 +500,6 @@ function woocommerce_finance_init() {
 		public function product_widget( $product ) {
 			global $product;
 			if($this->api_key){
-			$finance = $this->getFinanceEnv($this->api_key);
 			$price = $this->get_price_including_tax( $product, '' );
 			$plans = $this->get_product_plans( $product );
 			$environment = $this->getFinanceEnv($this->api_key);
@@ -509,12 +507,12 @@ function woocommerce_finance_init() {
 				$append_price = '';
 				if ( ! empty( $this->append_price ) ) {
 					//TODO - Change this
-					$append_price = 'data-'.$finance.'-suffix="' . $this->append_price . '" ';
+					$append_price = 'data-'.$environment.'-suffix="' . $this->append_price . '" ';
 				}
 				$prepend_price = '';
 				if ( ! empty( $this->prepend_price ) ) {
 					//TODO - Change this
-					$prepend_price = 'data-'.$finance.'-prefix="' . $this->prepend_price . '" ';
+					$prepend_price = 'data-'.$environment.'-prefix="' . $this->prepend_price . '" ';
 				}
 				$plans = $this->get_product_plans( $product );
 				include_once WP_PLUGIN_DIR . '/' . plugin_basename( dirname( __FILE__ ) ) . '/includes/widget.php';
@@ -993,7 +991,7 @@ function woocommerce_finance_init() {
 					);
 				}
 				if ( '' !== $this->secret ) {
-					$secret = $this->create_signature($this->secret);
+					$secret = $this->create_signature([],$this->secret);
 				}
 				// Version 3.0+.
 				// Create an appication model with the application data.
@@ -1023,9 +1021,8 @@ function woocommerce_finance_init() {
 									'email'       => $order->get_billing_email(),
 									'addresses'   => array(
 										[
-											'postcode' => $order->get_billing_postcode(),
-											'street'   => $order->get_billing_address_1(),
-											'town'     => $order->get_billing_city(),
+											'text' => $order->get_billing_postcode() . $order->get_billing_address_1() . $order->get_billing_city()
+
 										],
 									),
 								],
@@ -1078,9 +1075,7 @@ function woocommerce_finance_init() {
 									'email'       => $order->billing_email,
 									'addresses'   => array(
 										[
-											'postcode' => $order->get_billing_postcode,
-											'street'   => $order->get_billing_address_1,
-											'town'     => $order->get_billing_city,
+											'text'	   => $order->get_billing_postcode() . $order->get_billing_address_1() . $order->get_billing_city()
 										],
 									),
 								],
