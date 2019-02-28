@@ -1,4 +1,4 @@
 <!-- TODO: Change attribute names  -->
  
-<div id="financeWidget"  data-<?=$environment;?>-widget data-<?=$environment;?>-mode="popup"  data-<?=$environment;?>-calculator data-<?=$environment;?>-plans="<?=$plans;?>" data-<?=$environment;?>-amount="<?=$price; ?>" <?=$prepend_price; ?>  <?=$append_price; ?> data-<?=$environment;?>-title-logo></div>
+<div id="financeWidget"  data-<?php print $environment;?>-widget data-<?php print $environment;?>-mode="popup"  data-<?php print $environment;?>-calculator data-<?php print $environment;?>-plans="<?php print $plans;?>" data-<?php print $environment;?>-amount="<?php print $price; ?>" <?php print $prepend_price; ?>  <?php print $append_price; ?>></div>
 
