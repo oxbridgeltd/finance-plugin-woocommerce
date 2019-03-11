@@ -1,10 +1,10 @@
 === Plugin Name ===
-Contributors:      <??>
+Contributors:      Divido Financial Services Ltd
 Plugin Name:       Finance Gateway for WooCommerce
-Plugin URI:        <Website URI>
+Plugin URI:        integrations.divido.com/woocommerce
 Tags:              woothemes,woocommerce,payment gateway,payment,module,ecommerce,online payments,
-Author URI:        <Website URI>
-Author:            <Author>
+Author URI:        integrations.divido.com
+Author:            Divido Financial Services Ltd
 Requires at least: 3.0.2 
 Tested up to:      5.0.1
 Stable tag:        1.0.0
@@ -43,4 +43,3 @@ The Finance plugin for WooCommerce allows you to accept finance payments in your
  Enable/Disable Automatic Fulfillment: Allows you to select wheather an "Activation" call should be made automatically to the lender once the order goes to "Completed" 
 
  == Changelog ==
-
