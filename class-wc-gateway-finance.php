@@ -4,7 +4,7 @@
  *
  * @package   WordPress
  * @author Divido <support@divido.com>
- * @copyright 2018 Divido Financial Services
+ * @copyright 2019 Divido Financial Services
  * @license MIT
  *
  * Plugin Name: Finance Payment Gateway for WooCommerce
