@@ -43,3 +43,4 @@ The Finance plugin for WooCommerce allows you to accept finance payments in your
  Enable/Disable Automatic Fulfillment: Allows you to select wheather an "Activation" call should be made automatically to the lender once the order goes to "Completed" 
 
  == Changelog ==
+ Version 1.0.0 Initial Release
