@@ -25,22 +25,19 @@ The Finance plugin for WooCommerce allows you to accept finance payments in your
 
 == Features ==
 
- Shared Secret: Allows you to verify webhooks calls.
- Checkout Title: Displays the name of the payment option in the checkout.
- Checkout Description: Description of the payment option in the checkout. 
-
- Display Plans: ALlows you to display all plans or only selected plans.
- Plans: Allows you to select the plans that you want to display.
- Cart Threshold: Minimum amount that needs to be reached for Finance to be available in the checkout. 
- Product Selection: Allows you to pick the products on which finance will be available. There are 3 possible options: All Products, Selected Products or Products above Defined Price
-
- Show Product Widget: Allows you to turn on/off the small widget which appears underneath the price on product pages.
- Show Calcualtor Widget: Allows you to turn on/off the Calcualtor widget which appears at the bottom of product pages.
- Widget Threshold: Allows you to set the minimum amount for the "Product Widget" to show.
- Widget Prefix: Allows you to add a prefix to the "Product Widget".
- Widget Suffix: Allows you to add a suffix to the "Product Widget".
-
- Enable/Disable Automatic Fulfillment: Allows you to select wheather an "Activation" call should be made automatically to the lender once the order goes to "Completed" 
+Shared Secret: Allows you to verify webhooks calls.
+Checkout Title: Displays the name of the payment option in the checkout.
+Checkout Description: Description of the payment option in the checkout. 
+Display Plans: Allows you to display all plans or only selected plans.
+Plans: Allows you to select the plans that you want to display.
+Cart Threshold: Minimum amount that needs to be reached for Finance to be available in the checkout. 
+Product Selection: Allows you to pick the products on which finance will be available. There are 3 possible options: All Products, Selected Products or Products above Defined Price
+Show Product Widget: Allows you to turn on/off the small widget which appears underneath the price on product pages.
+Show Calculator Widget: Allows you to turn on/off the Calculator widget which appears at the bottom of product pages.
+Widget Threshold: Allows you to set the minimum amount for the "Product Widget" to show.
+Widget Prefix: Allows you to add a prefix to the "Product Widget".
+Widget Suffix: Allows you to add a suffix to the "Product Widget".
+Enable/Disable Automatic Fulfillment: Allows you to select if an "Activation" call should be made automatically to the lender once the order goes to "Completed" 
 
  == Changelog ==
- Version 1.0.0 Initial Release
+Version 1.0.0 Initial Release
