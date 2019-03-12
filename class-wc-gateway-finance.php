@@ -3,15 +3,15 @@
  *  Finance Gateway for Woocommerce
  *
  * @package   WordPress
- * @author    "jonathan@divido.com"
- * @copyright "Enter copyright info here"
- * @license   MIT
+ * @author Divido <support@divido.com>
+ * @copyright 2018 Divido Financial Services
+ * @license MIT
  *
  * Plugin Name: Finance Payment Gateway for WooCommerce
  * Plugin URI: http://integrations.divido.com/finance-gateway-woocommerce
  * Description: The Finance Payment Gateway plugin for WooCommerce.
  * Version: 1.0.0
- * Author: Divido
+ * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
  * WC tested up to: 3.5.6
  */
@@ -1127,8 +1127,7 @@ function woocommerce_finance_init()
             try {
 
 				update_post_meta($order_id, '_finance_reference', $result_id);
-				//TODO - Is this working?
-                update_post_meta($order_id, '_divido_finance', $description);
+                update_post_meta($order_id, '_finance_description', $description);
                 update_post_meta($order_id, '_finance_amount', number_format($order->get_total(), 2, '.', ''));
                 return array(
                  'result'   => 'success',
