@@ -519,12 +519,10 @@ function woocommerce_finance_init()
                 if ($this->is_available($product) && $price > ( $this->widget_threshold ) ) {
                     $append_price = '';
                     if (! empty($this->append_price) ) {
-                        //TODO - Change this
                         $append_price = 'data-'.$environment.'-suffix="' . $this->append_price . '" ';
                     }
                     $prepend_price = '';
                     if (! empty($this->prepend_price) ) {
-                        //TODO - Change this
                         $prepend_price = 'data-'.$environment.'-prefix="' . $this->prepend_price . '" ';
                     }
                     $plans = $this->get_product_plans($product);
@@ -565,13 +563,12 @@ function woocommerce_finance_init()
          *
          * @return false
          */
-        public function product_write_panel() 
+        public function product_write_panel()
         {
-            if ('yes' !== $this->enabled ) {        
+            if ('yes' !== $this->enabled ) {
                 return false;
             }
             global $post;
-            // Pull the video tab data out of the database.
             $tab_data = maybe_unserialize(get_post_meta($post->ID, 'woo_finance_product_tab', true));
             if (empty($tab_data) ) {
                 $tab_data   = array();
@@ -629,7 +626,7 @@ function woocommerce_finance_init()
          * @param  [type] $post    The Post.
          * @return void
          */
-        public function product_save_data( $post_id, $post ) 
+        public function product_save_data( $post_id, $post )
         {
             $active   = isset($_POST['_tab_finance_active']) ? sanitize_text_field(wp_unslash($_POST['_tab_finance_active'])) : ''; // Input var okay.
             $finances = isset($_POST['_tab_finances']) ? wp_unslash($_POST['_tab_finances']) : ''; // Input var okay.
@@ -1129,7 +1126,8 @@ function woocommerce_finance_init()
             
             try {
 
-                update_post_meta($order_id, '_finance_reference', $result_id);
+				update_post_meta($order_id, '_finance_reference', $result_id);
+				//TODO - Is this working?
                 update_post_meta($order_id, '_divido_finance', $description);
                 update_post_meta($order_id, '_finance_amount', number_format($order->get_total(), 2, '.', ''));
                 return array(
@@ -1152,7 +1150,7 @@ function woocommerce_finance_init()
          * @param  boolean $selection true or false depending on checkout or widget use.
          * @return array Array of finances.
          */
-        function get_finances( $selection = false ) 
+        function get_finances( $selection = false )
         {
             if (! isset($this->finance_options) ) {
                 $this->finance_options = $this->get_all_finances($this->api_key, false);
@@ -1181,7 +1179,7 @@ function woocommerce_finance_init()
         /**
          * Define environment function
          *
-         *  @param [string] $key - The Divido API key.
+         *  @param [string] $key - The Platform API key.
          */
         function environments( $key ) 
         {
@@ -1203,10 +1201,11 @@ function woocommerce_finance_init()
 
         }
 
-
-        //Get Finance Enviornment Function
-
-
+        /**
+         * Get Finance Platform Environment function
+         *
+         *  @param [string] $api_key - The platform API key.
+         */
         public function getFinanceEnv($api_key)
         {
             $env               = $this->environments($api_key);
@@ -1311,7 +1310,7 @@ function woocommerce_finance_init()
          * @param  [object] $order Instance of wc_get_order.
          * @return array An array containing the finance reference number and the finance id.
          */
-        function get_ref_finance( $order ) 
+        function get_ref_finance( $order )
         {
             $result = array(
              'ref'     => false,
@@ -1355,7 +1354,7 @@ function woocommerce_finance_init()
         /**
          * Function that will activate an application or set to fulfilled on dividio.
          *
-         * @param  [string] $application_id   - The Divido Application ID - fea4dcb7-e474-4fba-b1a4-123.....
+         * @param  [string] $application_id   - The Finance Application ID - fea4dcb7-e474-4fba-b1a4-123.....
          * @param  [string] $order_total      - Total amount of the order.
          * @param  [string] $order_id         - The Order ID from WooCommerce.
          * @param  [string] $shipping_method  - If the shipping method is set we can apply it here.
