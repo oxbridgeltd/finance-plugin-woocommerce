@@ -59,7 +59,6 @@ function woocommerce_finance_init()
         {
             $this->id           = 'finance';
             $this->method_title = __('Finance', 'woothemes');
-            $this->icon         = WP_PLUGIN_URL . '/' . plugin_basename(dirname(__FILE__)) . '/images/finance-small.png';
             $this->has_fields   = true;
 
             // Load the settings.
@@ -540,8 +539,10 @@ function woocommerce_finance_init()
             if ('yes' !== $this->enabled ) {
                 return false;
             }
-            $tab_icon = WP_PLUGIN_URL . '/' . plugin_basename(dirname(__FILE__)) . '/images/finance-icon.png';
-            if (version_compare(WOOCOMMERCE_VERSION, '2.0.0') >= 0 ) {
+			$environment = $this->getFinanceEnv($this->api_key);
+			$tab_icon = 'https://s3-eu-west-1.amazonaws.com/content.divido.com/plugins/powered-by-divido/'.$environment.'/woocommerce/images/finance-icon.png';
+			
+			if (version_compare(WOOCOMMERCE_VERSION, '2.0.0') >= 0 ) {
                 $style        = 'content:"";padding:5px 5px 5px 22px; background-image:url(' . $tab_icon . '); background-repeat:no-repeat;background-size: 15px 15px;background-position:8px 8px;';
                 $active_style = '';
             } else {
