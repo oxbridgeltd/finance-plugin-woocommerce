@@ -74,6 +74,8 @@ function woocommerce_finance_init()
             $this->append_price     = ( ! empty($this->settings['appendPrice']) ) ? $this->settings['appendPrice'] : ' ';
             $this->cart_threshold   = ( ! empty($this->settings['cartThreshold']) ) ? $this->settings['cartThreshold'] : 250;
             $this->auto_fulfillment = ( ! empty($this->settings['autoFulfillment']) ) ? $this->settings['autoFulfillment'] : false;
+            $this->auto_refund      = ( ! empty($this->settings['autoRefund']) ) ? $this->settings['autoRefund'] : false;
+            $this->auto_cancel      = ( ! empty($this->settings['autoCancel']) ) ? $this->settings['autoCancel'] : false;
             $this->widget_threshold = ( ! empty($this->settings['widgetThreshold']) ) ? $this->settings['widgetThreshold'] : 250;
             $this->secret           = ( ! empty($this->settings['secret']) ) ? $this->settings['secret'] : '';
             $this->product_select   = ( ! empty($this->settings['productSelect']) ) ? $this->settings['productSelect'] : '';
@@ -120,6 +122,8 @@ function woocommerce_finance_init()
             add_action('wp_ajax_woocommerce_finance_callback', array( $this, 'callback' ));
             add_action('wp_head', array( $this, 'add_api_to_head' ));
             add_action('woocommerce_order_status_completed', array( $this, 'send_finance_fulfillment_request' ), 10, 1);
+            add_action('woocommerce_order_status_refunded', array( $this, 'send_refund_request' ), 10, 1);
+            add_action('woocommerce_order_status_cancelled', array( $this, 'send_cancellation_request' ), 10, 1);
             // scripts.
             add_action('wp_enqueue_scripts', array( $this, 'enqueue' ));
             add_action('admin_enqueue_scripts', array( $this, 'wpdocs_enqueue_custom_admin_style' ));
@@ -247,6 +251,8 @@ function woocommerce_finance_init()
          *
          * @return void
          */
+
+         
         function callback() 
         {
             if (isset($_SERVER['HTTP_RAW_POST_DATA']) && wp_unslash($_SERVER['HTTP_RAW_POST_DATA']) ) { // Input var okay.
@@ -809,6 +815,20 @@ function woocommerce_finance_init()
                           'description' => __('Automatically Send Fulfillment request on order completion', 'woothemes'),
                           'default'     => false,
                           ),
+                          'autoRefund' => array(
+                          'title'       => __('Enable/Disable Automatic Refunds', 'woothemes'),
+                          'label'       => __('Automatic Refunds', 'woothemes'),
+                          'type'        => 'checkbox',
+                          'description' => __('Automatically Send Refund request on order refunded', 'woothemes'),
+                          'default'     => false,
+                            ),
+                          'autoCancel' => array(
+                          'title'       => __('Enable/Disable Automatic Cancellations', 'woothemes'),
+                          'label'       => __('Automatic Cancellation', 'woothemes'),
+                          'type'        => 'checkbox',
+                          'description' => __('Automatically Send Cancel request on order Cancelled', 'woothemes'),
+                          'default'     => false,
+                                  ),  
                           )
                       );
                 } catch ( Exception $e ) {
@@ -1009,8 +1029,15 @@ function woocommerce_finance_init()
                      'price'    => $other,
                     );
                 }
+
+                if (isset($_SERVER['HTTP_RAW_POST_DATA']) && wp_unslash($_SERVER['HTTP_RAW_POST_DATA']) ) { // Input var okay.
+                    $data = file_get_contents(wp_unslash($_SERVER['HTTP_RAW_POST_DATA'])); // Input var okay.
+                } else {
+                    $data = file_get_contents('php://input');
+                }
+
                 if ('' !== $this->secret ) {
-                    $secret = $this->create_signature([], $this->secret);
+                    $secret = $this->create_signature($data, $this->secret);
                 }
                 // Version 3.0+.
                 // Create an appication model with the application data.
@@ -1063,8 +1090,8 @@ function woocommerce_finance_init()
                          'order_number' => $order_id,
                          ]
                      );
-                        
-                    $response                  = $sdk->applications()->createApplication($application, [], ['Content-Type' => 'application/json']);
+                      
+                    $response                  = $sdk->applications()->createApplication($application,[ 'X-Divido-Hmac-Sha256' => $secret],['Content-Type' => 'application/json']);
                     $application_response_body = $response->getBody()->getContents();
                     $decode                    = json_decode($application_response_body);
                     $result_id                 = $decode->data->id;
@@ -1262,12 +1289,11 @@ function woocommerce_finance_init()
          * @param  [string] $secret  The secret value saved on Finance portal and WordPress.
          * @return string Returns a base64 encoded string.
          */
-        public function create_signature( $payload, $secret ) 
-        {
-            $hmac      = hash_hmac('sha256', $payload, $secret, true);
-            $signature = base64_encode($hmac);
-            return $signature;
-        }
+        public function create_signature( $payload, $secret ) {
+			$hmac      = hash_hmac( 'sha256', $payload, $secret, true );
+			$signature = base64_encode( $hmac );
+			return $signature;
+		}
         /**
          * Wrapper function for sending JSON.
          *
@@ -1351,6 +1377,47 @@ function woocommerce_finance_init()
                 return false;
             }
         }
+
+        function send_refund_request( $order_id ) 
+        {
+            $wc_order_id = (string) $order_id;
+            $name        = get_post_meta($order_id, '_payment_method', true);
+            $order       = wc_get_order($order_id);
+            $order_total = $order->get_total();
+            if ('finance' === $name ) {
+                if ('no' !== $this->auto_refund ) {
+                    $ref_and_finance = $this->get_ref_finance($order);
+                    $this->logger->debug('Finance', 'Auto refund selected' . $ref_and_finance['ref']);
+                    $this->set_refund($ref_and_finance['ref'], $order_total, $wc_order_id);
+                    $order->add_order_note('Finance - Auto Refund Request Sent.');
+                } else {
+                    $this->logger->debug('Finance', 'Auto Refund not set');
+                }
+            } else {
+                return false;
+            }
+        }
+
+        function send_cancellation_request( $order_id ) 
+        {
+            $wc_order_id = (string) $order_id;
+            $name        = get_post_meta($order_id, '_payment_method', true);
+            $order       = wc_get_order($order_id);
+            $order_total = $order->get_total();
+            if ('finance' === $name ) {
+                if ('no' !== $this->auto_cancel ) {
+                    $ref_and_finance = $this->get_ref_finance($order);
+                    $this->logger->debug('Finance', 'Auto cancellation selected' . $ref_and_finance['ref']);
+                    $this->set_cancelled($ref_and_finance['ref'], $order_total, $wc_order_id);
+                    $order->add_order_note('Finance - Auto cancellation Request Sent.');
+                } else {
+                    $this->logger->debug('Finance', 'Auto cancellation not set');
+                }
+            } else {
+                return false;
+            }
+        }
+        
         /**
          * Function that will activate an application or set to fulfilled on dividio.
          *
@@ -1361,6 +1428,69 @@ function woocommerce_finance_init()
          * @param  [string] $tracking_numbers - If there are any tracking numbers to attach we apply here.
          * @return void
          */
+
+        function set_cancelled ($application_id, $order_total, $order_id) 
+        {
+             // First get the application you wish to refund.
+            $application = ( new \Divido\MerchantSDK\Models\Application() )
+            ->withId($application_id);
+             $items       = [
+              [
+               'name'     => "Order id: $order_id",
+               'quantity' => 1,
+               'price'    => $order_total * 100,
+              ],
+            ];
+             
+             $applicationRefund = (new \Divido\MerchantSDK\Models\ApplicationCancellation())
+             ->withAmount($items[0]['price'])
+             ->withOrderItems($items);
+
+            $env                      = $this->environments($this->api_key);
+            $client                   = new \GuzzleHttp\Client();
+            $httpClientWrapper        = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
+                new \Divido\MerchantSDKGuzzle6\GuzzleAdapter($client),
+                \Divido\MerchantSDK\Environment::CONFIGURATION[$env]['base_uri'],
+                $this->api_key
+            );
+             $sdk                    = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
+             $response = $sdk->applicationCancellations()->createApplicationCancellation($application, $applicationRefund);
+             $refundResponseBody = $response->getBody()->getContents();
+         
+        }
+
+        function set_refund ($application_id, $order_total, $order_id) 
+        {
+             // First get the application you wish to refund.
+            $application = ( new \Divido\MerchantSDK\Models\Application() )
+            ->withId($application_id);
+             $items       = [
+              [
+               'name'     => "Order id: $order_id",
+               'quantity' => 1,
+               'price'    => $order_total * 100,
+              ],
+            ];
+             
+             $applicationRefund = (new \Divido\MerchantSDK\Models\ApplicationRefund())
+             ->withAmount($items[0]['price'])
+             ->withOrderItems($items);
+
+            $env                      = $this->environments($this->api_key);
+            $client                   = new \GuzzleHttp\Client();
+            $httpClientWrapper        = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
+                new \Divido\MerchantSDKGuzzle6\GuzzleAdapter($client),
+                \Divido\MerchantSDK\Environment::CONFIGURATION[$env]['base_uri'],
+                $this->api_key
+            );
+             $sdk                    = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
+             $response = $sdk->applicationRefunds()->createApplicationRefund($application, $applicationRefund);
+             $refundResponseBody = $response->getBody()->getContents();
+         
+        }
+
+
+
         function set_fulfilled( $application_id, $order_total, $order_id, $shipping_method = null, $tracking_numbers = null ) 
         {
             // First get the application you wish to create an activation for.
