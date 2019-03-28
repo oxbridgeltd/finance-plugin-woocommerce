@@ -826,7 +826,7 @@ function woocommerce_finance_init()
                           'title'       => __('Enable/Disable Automatic Cancellations', 'woothemes'),
                           'label'       => __('Automatic Cancellation', 'woothemes'),
                           'type'        => 'checkbox',
-                          'description' => __('Automatically Send Cancel request on order Cancelled', 'woothemes'),
+                          'description' => __('Automatically Send Cancel request on order cancellation', 'woothemes'),
                           'default'     => false,
                                   ),  
                           )
