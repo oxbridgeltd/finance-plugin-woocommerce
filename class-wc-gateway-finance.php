@@ -60,7 +60,6 @@ function woocommerce_finance_init()
             $this->id           = 'finance';
             $this->method_title = __('Finance', 'woothemes');
             $this->has_fields   = true;
-
             // Load the settings.
             $this->init_settings();
             // Get setting values.
@@ -137,7 +136,7 @@ function woocommerce_finance_init()
          * @param  boolean  $reload  An optional parameter to say if the finances endpoint should be called again.
          * @return array
          */
-        function get_all_finances( $api_key, $reload = false ) 
+        function get_all_finances( $api_key, $reload ) 
         {
             $env               = $this->environments($api_key);
             $client            = new \GuzzleHttp\Client();
@@ -148,13 +147,14 @@ function woocommerce_finance_init()
             );
             $sdk = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
             
-            $finances       = false;
-            $transient_name = 'finances';
-            if ($reload ) {
-                   $finances = get_transient($transient_name);
-                   return $finances;
+                $finances       = false;
+                $transient_name = 'finances';
+                $finances = get_transient($transient_name);
+
+            if($finances != false){
+                return $finances;
             }
-            if (false === $finances ) {
+            elseif (false === $finances && $reload == true) {
                      $request_options = ( new \Divido\MerchantSDK\Handlers\ApiRequestOptions() );
                      // Retrieve all finance plans for the merchant.
                 try {
@@ -177,7 +177,7 @@ function woocommerce_finance_init()
             if ($this->api_key && is_product() || $this->api_key && is_checkout() ) {
                 $key      = preg_split('/\./', $this->api_key);
                 $protocol = ( isset($_SERVER['HTTPS']) && 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http'; // Input var okay.
-                $finance = $this->getFinanceEnv($this->api_key);
+                $finance = $this->getFinanceEnv($this->api_key, false);
                 wp_register_script('woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/calculator/v2.1/production/js/template.'.$finance.'.js', false, 1.0, true);
                 wp_register_script('woocoomerce-finance-gateway-calculator_price_update', plugins_url('', __FILE__) . '/js/widget_price_update.js', false, 1.0, true);
                 wp_register_style('woocommerce-finance-gateway-style', plugins_url('', __FILE__) . '/css/style.css', false, 1.0);
@@ -204,7 +204,7 @@ function woocommerce_finance_init()
                 $key = preg_split('/\./', $this->api_key);
                 
                 ?>
-               <script type='text/javascript'> var <?php echo ($this->getFinanceEnv($this->api_key))?>Key = '<?php echo esc_attr(strtolower($key[0])); ?>' </script>
+               <script type='text/javascript'> var <?php echo ($this->getFinanceEnv($this->api_key, false))?>Key = '<?php echo esc_attr(strtolower($key[0])); ?>' </script>
                <script>// <![CDATA[
         function waitForElementToDisplay(selector, time) {
        if(document.querySelector(selector)!== null) {
@@ -502,7 +502,7 @@ function woocommerce_finance_init()
         {
             global $product;
             if ($this->is_available($product) ) {
-                $environment = $this->getFinanceEnv($this->api_key);
+                $environment = $this->getFinanceEnv($this->api_key, false);
                 $plans = $this->get_product_plans($product);
                 $price = $this->get_price_including_tax($product, '');
                 include_once WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)) . '/includes/calculator.php';
@@ -520,7 +520,7 @@ function woocommerce_finance_init()
             if($this->api_key) {
                 $price = $this->get_price_including_tax($product, '');
                 $plans = $this->get_product_plans($product);
-                $environment = $this->getFinanceEnv($this->api_key);
+                $environment = $this->getFinanceEnv($this->api_key, false);
                 if ($this->is_available($product) && $price > ( $this->widget_threshold ) ) {
                     $append_price = '';
                     if (! empty($this->append_price) ) {
@@ -545,7 +545,7 @@ function woocommerce_finance_init()
             if ('yes' !== $this->enabled ) {
                 return false;
             }
-			$environment = $this->getFinanceEnv($this->api_key);
+			$environment = $this->getFinanceEnv($this->api_key, false);
 			$tab_icon = 'https://s3-eu-west-1.amazonaws.com/content.divido.com/plugins/powered-by-divido/'.$environment.'/woocommerce/images/finance-icon.png';
 			
 			if (version_compare(WOOCOMMERCE_VERSION, '2.0.0') >= 0 ) {
@@ -662,7 +662,7 @@ function woocommerce_finance_init()
          * Initialize Gateway Settings Form Fields.
          */
         function init_form_fields() 
-        {
+        { 
             $this->init_settings();
             $this->form_fields = array(
              'apiKey' => array(
@@ -673,7 +673,10 @@ function woocommerce_finance_init()
              ),
             );
             if (isset($this->api_key) && $this->api_key ) {
-                   $response = $this->get_all_finances($this->api_key, false);
+                delete_transient('finances');
+                delete_transient('environment');
+                   $response = $this->get_all_finances($this->api_key, true);
+                   $settings = $this->getFinanceEnv($this->api_key,true);
                    $finance  = [];
                 foreach ( $response as $finances ) {
                     $finance[ $finances->id ] = $finances->description;
@@ -921,7 +924,7 @@ function woocommerce_finance_init()
                     return;
                 endif;
                 $amount = WC()->cart->total;
-                $environment = $this->getFinanceEnv($this->api_key);
+                $environment = $this->getFinanceEnv($this->api_key, false);
                 $plans  = $this->get_checkout_plans();
                 include_once WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)) . '/includes/checkout.php';
             }
@@ -1233,7 +1236,7 @@ function woocommerce_finance_init()
          *
          *  @param [string] $api_key - The platform API key.
          */
-        public function getFinanceEnv($api_key)
+        public function getFinanceEnv($api_key, $reload)
         {
             $env               = $this->environments($api_key);
             $client            = new \GuzzleHttp\Client();
@@ -1244,15 +1247,21 @@ function woocommerce_finance_init()
             );
             $sdk  = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
 
-            $response = $sdk->platformEnvironments()->getPlatformEnvironment();
-            $finance_env = $response->getBody()->getContents();
-            $decoded =json_decode($finance_env);
-            return $decoded->data->environment;
+             $transient = 'environment';
+             $setting = get_transient($transient);
 
+            if($setting != false) {
+                return $setting;
+            }
+            elseif( $setting === false && $reload == true ) {
+                $response = $sdk->platformEnvironments()->getPlatformEnvironment();
+                $finance_env = $response->getBody()->getContents();
+                $decoded =json_decode($finance_env);
+                $global = $decoded->data->environment;
+                set_transient($transient, $global);
+                return $global;
+           }
         }
-
-
-
 
         function wpdocs_enqueue_custom_admin_style( $hook_suffix ) 
         {
