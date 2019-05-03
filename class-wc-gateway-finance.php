@@ -267,7 +267,14 @@ function woocommerce_finance_init()
                 $sign          = $this->create_signature($data, $this->secret);
                 if ($callback_sign !== $sign ) {
                     $this->logger->debug('FINANCE', 'ERROR: Hash error');
-                    $this->send_json('error', 'Hash error.');
+                    $data_json = json_decode($data);
+                    if (is_object($data_json) ) {
+                        if ($data_json->metadata->order_number ) {
+                            $order  = new WC_Order($data_json->metadata->order_number);
+                            $order->add_order_note('Shared Secret does not match');
+                            $this->send_json('error', "Invalids Hash error");
+                        }
+                    }
                     return;
                 }
             }
