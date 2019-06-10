@@ -43,7 +43,8 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
  == Changelog ==
 Version 1.0.2 
-Added a shortcode helper - to allo users to place the calculator on non-product pages
+Minor Formatting
+Added a shortcode helper finance_code - to allow users to place the calculator on non-product pages
 
 Version 1.0.1 
 Added the ability to Cancel and Refund applications through WooCommerce 
