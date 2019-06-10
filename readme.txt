@@ -6,9 +6,9 @@ Tags:              woothemes,woocommerce,payment gateway,payment,module,ecommerc
 Author URI:        integrations.divido.com
 Author:            Divido Financial Services Ltd
 Requires at least: 3.0.2 
-Tested up to:      5.1.1
-Stable tag:        1.0.1
-Version:           1.0.1
+Tested up to:      5.2.1
+Stable tag:        1.0.2
+Version:           1.0.2
 
 License: GPLv2 or later
 
@@ -42,12 +42,16 @@ Enable/Disable Automatic Refunds: Allows you to select if a "Refund" call should
 Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation" call should be made automatically to the lender once the order goes to "Cancelled" 
 
  == Changelog ==
-Version 1.0.0 Initial Release
+Version 1.0.2 
+Added a shortcode helper - to allo users to place the calculator on non-product pages
 
 Version 1.0.1 
-
 Added the ability to Cancel and Refund applications through WooCommerce 
 Added Transient (caching values) on WooCommerce to prevent unnecessary API calls
+
+Version 1.0.0 Initial Release
+
+
 
 
 

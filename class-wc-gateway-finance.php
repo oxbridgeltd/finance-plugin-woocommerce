@@ -10,10 +10,10 @@
  * Plugin Name: Finance Payment Gateway for WooCommerce
  * Plugin URI: http://integrations.divido.com/finance-gateway-woocommerce
  * Description: The Finance Payment Gateway plugin for WooCommerce.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
- * WC tested up to: 3.5.7
+ * WC tested up to: 3.6.4
  */
 
 /**
@@ -126,6 +126,37 @@ function woocommerce_finance_init()
             // scripts.
             add_action('wp_enqueue_scripts', array( $this, 'enqueue' ));
             add_action('admin_enqueue_scripts', array( $this, 'wpdocs_enqueue_custom_admin_style' ));
+            add_shortcode( 'finance_widget', array($this, 'anypage_widget' ));
+
+        }
+
+        /**
+         * Anypage Widget
+         *
+         * A helper for the shortcode widget
+         *
+         * @param  array  $atts  Optional Attributes array.
+         * @return mixed
+         */
+        public function anypage_widget( $atts ) {
+            if($this->api_key){
+                $finance = $this->getFinanceEnv($this->api_key, false);
+                wp_register_script('woocommerce-finance-gateway-calculator', '//cdn.divido.com/calculator/v2.1/production/js/template.'.$finance.'.js', false, 1.0, true);  
+                wp_enqueue_script('woocommerce-finance-gateway-calculator');
+             }
+ 
+             $attributes = shortcode_atts( array(
+                'price' => '250',
+                'calculator'=>false
+            ), $atts );
+    
+            if($attributes['calculator']){
+                $mode='data-divido-mode';
+            }else{
+                $mode='data-divido-mode="popup"';
+            }
+    
+            return '<div id="financeWidget" data-divido-widget '.$mode.'  data-divido-calculator  data-divido-plans data-divido-amount="'. esc_attr($attributes["price"]) .'"></div>';
         }
         /**
          * Get  Finances Wrapper
@@ -1529,7 +1560,11 @@ function woocommerce_finance_init()
             $response                 = $sdk->applicationActivations()->createApplicationActivation($application, $application_activation);
             $activation_response_body = $response->getBody()->getContents();
         }
-    } // end woocommerce_finance.
+    } 
+    
+
+
+    // end woocommerce_finance.
     global $woocommerce_finance;
     $woocommerce_finance = new WC_Gateway_Finance();
 }
