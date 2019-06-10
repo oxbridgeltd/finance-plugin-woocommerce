@@ -1173,10 +1173,9 @@ function woocommerce_finance_init()
                      );
                     if ('' !== $this->secret ) {
                         $secret                = $this->create_signature(json_encode($application->getPayload()), $this->secret);
-                        $response                  = $sdk->applications()->createApplication($application,[],['Content-Type' => 'application/json', 'X-Divido-Hmac-Sha256' => $secret]);
-  
+                        $response              = $sdk->applications()->createApplication($application,[],['Content-Type' => 'application/json', 'X-Divido-Hmac-Sha256' => $secret]);
                     }else{
-                        $response                  = $sdk->applications()->createApplication($application,[],['Content-Type' => 'application/json']);
+                        $response              = $sdk->applications()->createApplication($application,[],['Content-Type' => 'application/json']);
                     }
                     $application_response_body = $response->getBody()->getContents();
                     $decode                    = json_decode($application_response_body);
