@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 /**
  *  Finance Gateway for Woocommerce
  *
@@ -139,13 +140,13 @@ function woocommerce_finance_init()
          * @return mixed
          */
         public function anypage_widget( $atts ) {
-            if($this->api_key){
-                $finance = $this->getFinanceEnv($this->api_key, false);
-                wp_register_script('woocommerce-finance-gateway-calculator', '//cdn.divido.com/calculator/v2.1/production/js/template.'.$finance.'.js', false, 1.0, true);  
-                wp_enqueue_script('woocommerce-finance-gateway-calculator');
-             }
- 
-             $attributes = shortcode_atts( array(
+            if ('yes' !== $this->enabled || '' === $this->api_key ) {
+                return false;
+            }
+            $finance = $this->getFinanceEnv($this->api_key, false);
+            wp_register_script('woocommerce-finance-gateway-calculator', '//cdn.divido.com/calculator/v2.1/production/js/template.'.$finance.'.js', false, 1.0, true);  
+            wp_enqueue_script('woocommerce-finance-gateway-calculator');
+            $attributes = shortcode_atts( array(
                 'price' => '250',
                 'calculator'=>false
             ), $atts );
