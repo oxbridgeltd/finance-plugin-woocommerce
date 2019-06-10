@@ -318,7 +318,7 @@ function woocommerce_finance_init()
                         if ($data_json->metadata->order_number ) {
                             $order  = new WC_Order($data_json->metadata->order_number);
                             $order->add_order_note('Shared Secret does not match');
-                            $this->send_json('error', "Invalids Hash error");
+                            $this->send_json('error', "Invalid Hash error");
                         }
                     }
                     return;
