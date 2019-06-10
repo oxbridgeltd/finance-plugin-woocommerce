@@ -313,7 +313,14 @@ function woocommerce_finance_init()
                 $sign          = $this->create_signature($data, $this->secret);
                 if ($callback_sign !== $sign ) {
                     $this->logger->debug('FINANCE', 'ERROR: Hash error');
-                    $this->send_json('error', 'Hash error.');
+                    $data_json = json_decode($data);
+                    if (is_object($data_json) ) {
+                        if ($data_json->metadata->order_number ) {
+                            $order  = new WC_Order($data_json->metadata->order_number);
+                            $order->add_order_note('Shared Secret does not match');
+                            $this->send_json('error', "Invalid Hash error");
+                        }
+                    }
                     return;
                 }
             }
@@ -1112,10 +1119,7 @@ function woocommerce_finance_init()
                 } else {
                     $data = file_get_contents('php://input');
                 }
-
-                if ('' !== $this->secret ) {
-                    $secret = $this->create_signature($data, $this->secret);
-                }
+ 
                 // Version 3.0+.
                 // Create an appication model with the application data.
                 if (version_compare($this->get_woo_version(), '3.0.0') >= 0 ) {
@@ -1167,8 +1171,12 @@ function woocommerce_finance_init()
                          'order_number' => $order_id,
                          ]
                      );
-                      
-                    $response                  = $sdk->applications()->createApplication($application,[ 'X-Divido-Hmac-Sha256' => $secret],['Content-Type' => 'application/json']);
+                    if ('' !== $this->secret ) {
+                        $secret                = $this->create_signature(json_encode($application->getPayload()), $this->secret);
+                        $response              = $sdk->applications()->createApplication($application,[],['Content-Type' => 'application/json', 'X-Divido-Hmac-Sha256' => $secret]);
+                    }else{
+                        $response              = $sdk->applications()->createApplication($application,[],['Content-Type' => 'application/json']);
+                    }
                     $application_response_body = $response->getBody()->getContents();
                     $decode                    = json_decode($application_response_body);
                     $result_id                 = $decode->data->id;
@@ -1301,7 +1309,7 @@ function woocommerce_finance_init()
             case 'SANDBOX':
                 return constant("Divido\MerchantSDK\Environment::$environment");
               break;
-                
+              
             default:
                 return constant("Divido\MerchantSDK\Environment::SANDBOX");
               break;
