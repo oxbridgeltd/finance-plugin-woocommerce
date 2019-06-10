@@ -1,3 +1,4 @@
+<?php defined( 'ABSPATH' ) or die( 'Denied' ); ?>
 <fieldset id="finance-checkout" class="finance-calculator" data-<?php print $environment;?>-amount="<?php print $amount; ?>" data-<?php print $environment;?>-plans="<?php print $plans; ?>">
 <h1>
         <?php print (isset($this->settings['description'])) ? $this->settings['description']:""; ?>
