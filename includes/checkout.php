@@ -3,7 +3,14 @@
 <h1>
         <?php print (isset($this->settings['description'])) ? $this->settings['description']:""; ?>
     </h1>
-<div id="financeWidget" data-<?php print $environment;?>-widget data-<?php print $environment;?>-plans="<?php print $plans; ?>" data-<?php print $environment;?>-amount="<?php print $amount; ?>" ></div>
+<div id="financeWidget"  
+    data-calculator-widget 
+    data-mode="calculator"  
+    data-plans="<?php print $plans; ?>" 
+    data-amount="<?php print $amount; ?>" 
+    >
+</div>
+
 <script type="text/javascript">
         jQuery(document).ready(function($) {
                 waitForElementToDisplay('#financeWidget', 1000);
