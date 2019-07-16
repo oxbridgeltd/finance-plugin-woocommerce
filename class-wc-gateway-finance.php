@@ -148,15 +148,23 @@ function woocommerce_finance_init()
                 return false;
             }
             $finance = $this->getFinanceEnv($this->api_key, false);
-            wp_register_script('woocommerce-finance-gateway-calculator', '//cdn.divido.com/widget/dist/'.$finance.'.calculator.js', false, 1.0, true);  
+            wp_register_script('woocommerce-finance-gateway-calculator', '//cdn.divido.com/widget/dist/'.$finance.'.calculator.js', false, 1.0, true);
             wp_enqueue_script('woocommerce-finance-gateway-calculator');
+
             $attributes = shortcode_atts( array(
                 'amount' => '250',
                 'mode'=>'lightbox',
                 'buttonText'=>'',
                 'plans'=>'',
                 'footnote'=>''
-            ), $atts );
+            ), $atts ,'finance_widget');
+
+            if(is_array($atts)){
+                foreach($atts as $key => $value){
+                    $attributes[$key]=$value;
+                }
+            }
+
             $mode='data-mode="lightbox"';
             if($attributes['mode']!='lightbox'){
                 $mode = ' data-mode="calculator"';
@@ -166,10 +174,6 @@ function woocommerce_finance_init()
             if($attributes["plans"] !=''){
                 $plans  = ' data-plans="'.$attributes["plans"].'"';
             }
-            $amount='';
-            if($attributes["amount"] !=''){
-                $amount  = ' data-amount="'.$attributes["amount"].'"';
-            }
 
             $buttonText='';
             if($attributes["buttonText"] !=''){
@@ -178,9 +182,10 @@ function woocommerce_finance_init()
             $footnote='';
             if($attributes["footnote"] !=''){
                 $footnote    = ' data-footnote="'.$attributes["footnote"].'"';
-            }       
+            }
             return '<div data-calculator-widget '.$mode.' data-amount="'. esc_attr($attributes["amount"]) .'" '.$buttonText.' '.$footnote.' '.$plans.' ></div>';
         }
+
 
         /**
          * Get  Finances Wrapper
@@ -274,7 +279,7 @@ function woocommerce_finance_init()
                <script>// <![CDATA[
         function waitForElementToDisplay(selector, time) {
        if(document.querySelector(selector)!== null) {
-        //TemplateCalculator.reload();
+        __widgetInstance.init()
         return;
        }
        else {
