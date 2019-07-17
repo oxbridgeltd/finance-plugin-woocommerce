@@ -1,2 +1,9 @@
 <?php defined( 'ABSPATH' ) or die( 'Denied' ); ?>
-<div id="financeCalculator"  data-<?php print $environment;?>-widget  data-<?php print $environment;?>-calculator data-<?php print $environment;?>-plans="<?php print $plans; ?>" data-<?php print $environment;?>-amount="<?php print $price; ?>"></div>
+<div id="financeCalculator"  
+    data-calculator-widget 
+    data-mode="calculator"  
+    data-plans="<?php print $plans;?>" 
+    data-amount="<?php print $price; ?>" 
+ >
+</div>
+

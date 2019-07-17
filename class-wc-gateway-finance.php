@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) or die( 'Denied' );
  * Plugin Name: Finance Payment Gateway for WooCommerce
  * Plugin URI: http://integrations.divido.com/finance-gateway-woocommerce
  * Description: The Finance Payment Gateway plugin for WooCommerce.
- * Version: 1.0.2
+ * Version: 2.0.0
  * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
  * WC tested up to: 3.6.4
@@ -70,8 +70,8 @@ function woocommerce_finance_init()
             $this->description      = ( ! empty($this->settings['description']) ) ? $this->settings['description'] : '';
             $this->enabled          = ( ! empty($this->settings['enabled']) ) ? $this->settings['enabled'] : false;
             $this->api_key          = ( ! empty($this->settings['apiKey']) ) ? $this->settings['apiKey'] : '';
-            $this->prepend_price    = ( ! empty($this->settings['prependPrice']) ) ? $this->settings['prependPrice'] : ' ';
-            $this->append_price     = ( ! empty($this->settings['appendPrice']) ) ? $this->settings['appendPrice'] : ' ';
+            $this->buttonText    = ( ! empty($this->settings['widgetButtonText']) ) ? $this->settings['widgetButtonText'] : ' ';
+            $this->footnote     = ( ! empty($this->settings['widgetFootnote']) ) ? $this->settings['widgetFootnote'] : ' ';
             $this->cart_threshold   = ( ! empty($this->settings['cartThreshold']) ) ? $this->settings['cartThreshold'] : 250;
             $this->auto_fulfillment = ( ! empty($this->settings['autoFulfillment']) ) ? $this->settings['autoFulfillment'] : false;
             $this->auto_refund      = ( ! empty($this->settings['autoRefund']) ) ? $this->settings['autoRefund'] : false;
@@ -148,21 +148,45 @@ function woocommerce_finance_init()
                 return false;
             }
             $finance = $this->getFinanceEnv($this->api_key, false);
-            wp_register_script('woocommerce-finance-gateway-calculator', '//cdn.divido.com/calculator/v2.1/production/js/template.'.$finance.'.js', false, 1.0, true);  
+            wp_register_script('woocommerce-finance-gateway-calculator', '//cdn.divido.com/widget/dist/'.$finance.'.calculator.js', false, 1.0, true);
             wp_enqueue_script('woocommerce-finance-gateway-calculator');
+
             $attributes = shortcode_atts( array(
-                'price' => '250',
-                'calculator'=>false
-            ), $atts );
-    
-            if($attributes['calculator']){
-                $mode='data-divido-mode';
-            }else{
-                $mode='data-divido-mode="popup"';
+                'amount' => '250',
+                'mode'=>'lightbox',
+                'buttonText'=>'',
+                'plans'=>'',
+                'footnote'=>''
+            ), $atts ,'finance_widget');
+
+            if(is_array($atts)){
+                foreach($atts as $key => $value){
+                    $attributes[$key]=$value;
+                }
             }
-    
-            return '<div id="financeWidget" data-divido-widget '.$mode.'  data-divido-calculator  data-divido-plans data-divido-amount="'. esc_attr($attributes["price"]) .'"></div>';
+
+            $mode='data-mode="lightbox"';
+            if($attributes['mode']!='lightbox'){
+                $mode = ' data-mode="calculator"';
+            }
+
+            $plans='';
+            if($attributes["plans"] !=''){
+                $plans  = ' data-plans="'.$attributes["plans"].'"';
+            }
+
+            $buttonText='';
+            if($attributes["buttonText"] !=''){
+                $buttonText  = ' data-button-text="'.$attributes["buttonText"].'"';
+            }
+            $footnote='';
+            if($attributes["footnote"] !=''){
+                $footnote    = ' data-footnote="'.$attributes["footnote"].'"';
+            }
+            return '<div data-calculator-widget '.$mode.' data-amount="'. esc_attr($attributes["amount"]) .'" '.$buttonText.' '.$footnote.' '.$plans.' ></div>';
         }
+
+
         /**
          * Get  Finances Wrapper
          *
@@ -218,7 +242,7 @@ function woocommerce_finance_init()
                 $key      = preg_split('/\./', $this->api_key);
                 $protocol = ( isset($_SERVER['HTTPS']) && 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http'; // Input var okay.
                 $finance = $this->getFinanceEnv($this->api_key, false);
-                wp_register_script('woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/calculator/v2.1/production/js/template.'.$finance.'.js', false, 1.0, true);
+                wp_register_script('woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/widget/dist/'.$finance.'.calculator.js', false, 1.0, true);
                 wp_register_script('woocoomerce-finance-gateway-calculator_price_update', plugins_url('', __FILE__) . '/js/widget_price_update.js', false, 1.0, true);
                 wp_register_style('woocommerce-finance-gateway-style', plugins_url('', __FILE__) . '/css/style.css', false, 1.0);
                 $array = array(
@@ -246,11 +270,16 @@ function woocommerce_finance_init()
                 $key = preg_split('/\./', $this->api_key);
                 
                 ?>
-               <script type='text/javascript'> var <?php echo ($this->getFinanceEnv($this->api_key, false))?>Key = '<?php echo esc_attr(strtolower($key[0])); ?>' </script>
+               <script type='text/javascript'> 
+               window.__widgetConfig = {
+                     apiKey: '<?php echo esc_attr(strtolower($key[0])); ?>'
+                };
+
+               var <?php echo ($this->getFinanceEnv($this->api_key, false))?>Key = '<?php echo esc_attr(strtolower($key[0])); ?>' </script>
                <script>// <![CDATA[
         function waitForElementToDisplay(selector, time) {
        if(document.querySelector(selector)!== null) {
-        TemplateCalculator.reload();
+        __widgetInstance.init()
         return;
        }
        else {
@@ -402,9 +431,9 @@ function woocommerce_finance_init()
                     'price' => '',
                     )
                 );
-                return $product->get_price_including_tax($args['qty'], $args['price']);
+                return $product->get_price_including_tax($args['qty'], $args['price']) * 100;
             } else {
-                return wc_get_price_including_tax($product, $args);
+                return wc_get_price_including_tax($product, $args) * 100;
             }
         }
         /**
@@ -589,14 +618,15 @@ function woocommerce_finance_init()
                 $plans = $this->get_product_plans($product);
                 $environment = $this->getFinanceEnv($this->api_key, false);
                 if ($this->is_available($product) && $price > ( $this->widget_threshold ) ) {
-                    $append_price = '';
-                    if (! empty($this->append_price) ) {
-                        $append_price = 'data-'.$environment.'-suffix="' . $this->append_price . '" ';
+                    $button_text = '';
+                    if (! empty($this->button_text) ) {
+                        $button_text = 'data-buttontext="' . $this->button_text . '" ';
                     }
-                    $prepend_price = '';
-                    if (! empty($this->prepend_price) ) {
-                        $prepend_price = 'data-'.$environment.'-prefix="' . $this->prepend_price . '" ';
+                    $footnote = '';
+                    if (! empty($this->footnote) ) {
+                        $footnote = 'data-footnote="' . $this->footnote . '" ';
                     }
+                    
                     $plans = $this->get_product_plans($product);
                     include_once WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)) . '/includes/widget.php';
                 }
@@ -870,14 +900,14 @@ function woocommerce_finance_init()
                           'description' => __('Product widget will only appear on products above this value'),
                           'default'     => '250',
                           ),
-                          'prependPrice'    => array(
-                          'title'       => __('Widget Prefix', 'finance_gateway_plugin_domain'),
+                          'buttonText'    => array(
+                          'title'       => __('Widget Button Text', 'finance_gateway_plugin_domain'),
                           'type'        => 'text',
-                          'description' => __('Eg. "Available on instalments"', 'finance_gateway_plugin_domain'),
+                          'description' => __('Eg. "or from $p per "', 'finance_gateway_plugin_domain'),
                           'default'     => '',
                           ),
-                          'appendPrice'     => array(
-                          'title'       => __('Widget Suffix', 'finance_gateway_plugin_domain'),
+                          'footnote'     => array(
+                          'title'       => __('Footnote', 'finance_gateway_plugin_domain'),
                           'type'        => 'text',
                           'description' => __('Eg. "Available on instalments"', 'finance_gateway_plugin_domain'),
                           'default'     => '',
@@ -1001,7 +1031,7 @@ function woocommerce_finance_init()
                     esc_html_e('Finance payment method is not available in your country.', 'finance_gateway_plugin_domain');
                     return;
                 endif;
-                $amount = WC()->cart->total;
+                $amount = WC()->cart->total * 100;
                 $environment = $this->getFinanceEnv($this->api_key, false);
                 $plans  = $this->get_checkout_plans();
                 include_once WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)) . '/includes/checkout.php';

@@ -7,8 +7,8 @@ Author URI:        integrations.divido.com
 Author:            Divido Financial Services Ltd
 Requires at least: 3.0.2 
 Tested up to:      5.2.1
-Stable tag:        1.0.2
-Version:           1.0.2
+Stable tag:        2.0.0
+Version:           2.0.0
 
 License: GPLv2 or later
 
@@ -42,7 +42,13 @@ Enable/Disable Automatic Refunds: Allows you to select if a "Refund" call should
 Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation" call should be made automatically to the lender once the order goes to "Cancelled" 
 
  == Changelog ==
+Version 2.0.0
+Updated Calculator Widget
+Replaces prepend and append strings with button text and footnote controls
+Updated shortcode helper
+
 Version 1.0.2 
+Fix to Shared Secret Functionality
 Minor Formatting
 Added a shortcode helper finance_code - to allow users to place the calculator on non-product pages
 Added a settings link to plugins page - quick jump to finance settings.
