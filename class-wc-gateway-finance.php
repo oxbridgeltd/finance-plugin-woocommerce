@@ -1186,7 +1186,7 @@ function woocommerce_finance_init()
                          ]
                      )
                      ->withOrderItems($products)
-                     ->withDepositPercentage($deposit/100)
+                     ->withDepositPercentage($deposit / $order_total)
                      ->withFinalisationRequired(false)
                      ->withMerchantReference('')
                      ->withUrls(
