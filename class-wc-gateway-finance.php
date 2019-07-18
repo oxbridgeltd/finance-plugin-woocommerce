@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) or die( 'Denied' );
  * Plugin Name: Finance Payment Gateway for WooCommerce
  * Plugin URI: http://integrations.divido.com/finance-gateway-woocommerce
  * Description: The Finance Payment Gateway plugin for WooCommerce.
- * Version: 2.0.0
+ * Version: 2.0.1
  * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
  * WC tested up to: 3.6.4
@@ -1186,7 +1186,7 @@ function woocommerce_finance_init()
                          ]
                      )
                      ->withOrderItems($products)
-                     ->withDepositPercentage($deposit/100)
+                     ->withDepositPercentage($deposit / $order_total)
                      ->withFinalisationRequired(false)
                      ->withMerchantReference('')
                      ->withUrls(
