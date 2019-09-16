@@ -42,7 +42,7 @@ function woocommerce_finance_init()
          *
          * @var array  $avaiable_countries A hardcoded array of countries.
          */
-        public $avaiable_countries = array( 'GB', 'SE', 'NO', 'DK' );
+        public $avaiable_countries = array( 'GB', 'SE', 'NO', 'DK','ES' );
         /**
          * Api Key
          *
@@ -70,8 +70,8 @@ function woocommerce_finance_init()
             $this->description      = ( ! empty($this->settings['description']) ) ? $this->settings['description'] : '';
             $this->enabled          = ( ! empty($this->settings['enabled']) ) ? $this->settings['enabled'] : false;
             $this->api_key          = ( ! empty($this->settings['apiKey']) ) ? $this->settings['apiKey'] : '';
-            $this->buttonText    = ( ! empty($this->settings['widgetButtonText']) ) ? $this->settings['widgetButtonText'] : ' ';
-            $this->footnote     = ( ! empty($this->settings['widgetFootnote']) ) ? $this->settings['widgetFootnote'] : ' ';
+            $this->buttonText       = ( ! empty($this->settings['widgetButtonText']) ) ? $this->settings['widgetButtonText'] : ' ';
+            $this->footnote         = ( ! empty($this->settings['widgetFootnote']) ) ? $this->settings['widgetFootnote'] : ' ';
             $this->cart_threshold   = ( ! empty($this->settings['cartThreshold']) ) ? $this->settings['cartThreshold'] : 250;
             $this->auto_fulfillment = ( ! empty($this->settings['autoFulfillment']) ) ? $this->settings['autoFulfillment'] : false;
             $this->auto_refund      = ( ! empty($this->settings['autoRefund']) ) ? $this->settings['autoRefund'] : false;
@@ -129,8 +129,7 @@ function woocommerce_finance_init()
             add_action('admin_enqueue_scripts', array( $this, 'wpdocs_enqueue_custom_admin_style' ));
             //Since 1.0.2
             add_shortcode( 'finance_widget', array($this, 'anypage_widget' ));
-            add_action( 'plugin_action_links', array( $this, 'finance_gateway_action_links' ));
-
+            add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), array($this,'finance_gateway_settings_link' ));
         }
 
         /**
@@ -198,7 +197,7 @@ function woocommerce_finance_init()
          * @param  boolean  $reload  An optional parameter to say if the finances endpoint should be called again.
          * @return array
          */
-        function get_all_finances( $api_key, $reload ) 
+        function get_all_finances( $api_key, $reload )
         {
             $env               = $this->environments($api_key);
             $client            = new \GuzzleHttp\Client();
@@ -1677,10 +1676,11 @@ function woocommerce_finance_init()
          * @param  array  $links List of existing plugin action links.
          * @return array         List of modified plugin action links.
          */
-        function finance_gateway_action_links( $links ) {
-            $links = array_merge( array(
-                '<a href="' . esc_url( admin_url( '/admin.php?page=wc-settings&tab=checkout&section=finance' ) ) . '">' . __( 'Settings', 'finance_gateway_plugin_domain' ) . '</a>'
-            ), $links );
+        function finance_gateway_settings_link( $links ) {
+
+            $_link ='<a href="' . esc_url( admin_url( '/admin.php?page=wc-settings&tab=checkout&section=finance' ) ) . '">' . __( 'Settings', 'finance_gateway_plugin_domain' ) . '</a>';
+            $links[] = $_link;
+
             return $links;
         }
     } 
