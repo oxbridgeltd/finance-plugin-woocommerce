@@ -43,8 +43,9 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
  == Changelog ==
 Version 2.0.2
-Bugfix for Settings
 Added Environment Testing
+Bugfix for Settings link
+Add ES as accepted country
 
 Version 2.0.1
 Bugfix for Deposit Percentage
