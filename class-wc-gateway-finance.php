@@ -1166,7 +1166,6 @@ function woocommerce_finance_init()
                     $sdk = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
                     $application               = ( new \Divido\MerchantSDK\Models\Application() )
                      ->withCountryId($order->get_billing_country())
-                     ->withCurrencyId('GBP')
                      ->withLanguageId('en')
                      ->withFinancePlanId($finance)
                      ->withApplicants(
