@@ -42,8 +42,8 @@ Enable/Disable Automatic Refunds: Allows you to select if a "Refund" call should
 Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation" call should be made automatically to the lender once the order goes to "Cancelled" 
 
  == Changelog ==
-
 Version 2.0.2
+Added Environment Testing
 Bugfix for Settings link
 Add ES as accepted country
 

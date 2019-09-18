@@ -1340,6 +1340,10 @@ function woocommerce_finance_init()
                 return constant("Divido\MerchantSDK\Environment::$environment");
               break;
               
+            case 'TESTING':
+              return constant("Divido\MerchantSDK\Environment::$environment");
+            break;
+              
             default:
                 return constant("Divido\MerchantSDK\Environment::SANDBOX");
               break;
