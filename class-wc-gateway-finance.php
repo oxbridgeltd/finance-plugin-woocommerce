@@ -42,7 +42,7 @@ function woocommerce_finance_init()
          *
          * @var array  $avaiable_countries A hardcoded array of countries.
          */
-        public $avaiable_countries = array( 'GB', 'SE', 'NO', 'DK','ES' );
+        public $avaiable_countries = array( 'GB', 'SE', 'NO', 'DK','ES','FI' );
         /**
          * Api Key
          *
@@ -1224,8 +1224,6 @@ function woocommerce_finance_init()
                     $sdk                       = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
                     $application               = ( new \Divido\MerchantSDK\Models\Application() )
                      ->withCountryId($order->billing_country)
-                     ->withCurrencyId('GBP')
-                     ->withLanguageId('en')
                      ->withFinancePlanId($finance)
                      ->withApplicants(
                          [
