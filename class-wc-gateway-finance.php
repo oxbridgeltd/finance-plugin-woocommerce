@@ -1333,24 +1333,9 @@ function woocommerce_finance_init()
         {
             $array       = explode('_', $key);
             $environment = strtoupper($array[0]);
-            switch ($environment) {
-            case 'LIVE':
-                return constant('Divido\MerchantSDK\Environment::' . $environment);
-              break;
-
-            case 'SANDBOX':
-                return constant("Divido\MerchantSDK\Environment::$environment");
-              break;
-              
-            case 'TESTING':
-              return constant("Divido\MerchantSDK\Environment::$environment");
-            break;
-              
-            default:
-                return constant("Divido\MerchantSDK\Environment::SANDBOX");
-              break;
-            }
-
+            return ('LIVE' == $environment) 
+                ? constant("Divido\MerchantSDK\Environment::PRODUCTION") 
+                : constant("Divido\MerchantSDK\Environment::$environment");
         }
 
         /**
