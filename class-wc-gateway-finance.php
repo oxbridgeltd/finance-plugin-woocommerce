@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) or die( 'Denied' );
  * Plugin Name: Finance Payment Gateway for WooCommerce
  * Plugin URI: http://integrations.divido.com/finance-gateway-woocommerce
  * Description: The Finance Payment Gateway plugin for WooCommerce.
- * Version: 2.0.2
+ * Version: 2.0.3
  * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
  * WC tested up to: 3.6.4
@@ -73,6 +73,7 @@ function woocommerce_finance_init()
             $this->buttonText       = ( ! empty($this->settings['widgetButtonText']) ) ? $this->settings['widgetButtonText'] : ' ';
             $this->footnote         = ( ! empty($this->settings['widgetFootnote']) ) ? $this->settings['widgetFootnote'] : ' ';
             $this->cart_threshold   = ( ! empty($this->settings['cartThreshold']) ) ? $this->settings['cartThreshold'] : 250;
+            $this->max_loan_amount   = ( ! empty($this->settings['maxLoanAmount']) ) ? $this->settings['maxLoanAmount'] : 25000;
             $this->auto_fulfillment = ( ! empty($this->settings['autoFulfillment']) ) ? $this->settings['autoFulfillment'] : false;
             $this->auto_refund      = ( ! empty($this->settings['autoRefund']) ) ? $this->settings['autoRefund'] : false;
             $this->auto_cancel      = ( ! empty($this->settings['autoCancel']) ) ? $this->settings['autoCancel'] : false;
@@ -479,11 +480,15 @@ function woocommerce_finance_init()
             global $woocommerce;
             $settings  = $this->settings;
             $threshold = $this->cart_threshold;
+            $upperLimit = $this->max_loan_amount;
             $cart      = $woocommerce->cart;
             if (empty($cart) ) {
                 return false;
             }
             if ($threshold > $cart->subtotal ) {
+                return false;
+            }
+            if ($upperLimit < $cart->subtotal ) {
                 return false;
             }
             if ('all' === $settings['productSelect'] ) {
