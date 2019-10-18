@@ -871,84 +871,84 @@ function woocommerce_finance_init()
                           'type'    => 'select',
                           'default' => 'All',
                           'options' => array(
-                          'all'      => __('All products', 'finance_gateway_plugin_domain'),
-                          'selected' => __('Selected products', 'finance_gateway_plugin_domain'),
-                          'price'    => __('All products above a defined price.', 'finance_gateway_plugin_domain'),
+                              'all'      => __('All products', 'finance_gateway_plugin_domain'),
+                              'selected' => __('Selected products', 'finance_gateway_plugin_domain'),
+                              'price'    => __('All products above a defined price.', 'finance_gateway_plugin_domain'),
                           ),
                           ),
                           'priceSelection'  => array(
-                          'title'       => __('Price', 'finance_gateway_plugin_domain'),
-                          'type'        => 'text',
-                          'description' => __('Finance payment method will be available on all products above this price.', 'finance_gateway_plugin_domain'),
-                          'default'     => '350',
+                              'title'       => __('Price', 'finance_gateway_plugin_domain'),
+                              'type'        => 'text',
+                              'description' => __('Finance payment method will be available on all products above this price.', 'finance_gateway_plugin_domain'),
+                              'default'     => '350',
                           ),
                           'Widget Settings' => array(
-                          'title' => __('Widget Settings', 'finance_gateway_plugin_domain'),
-                          'type'  => 'title',
-                          'class' => 'border',
+                              'title' => __('Widget Settings', 'finance_gateway_plugin_domain'),
+                              'type'  => 'title',
+                              'class' => 'border',
                           ),
                           'showWidget'      => array(
-                          'title'   => __('Show Product Widget', 'finance_gateway_plugin_domain'),
-                          'type'    => 'select',
-                          'default' => 'show',
-                          'options' => array(
-                          'show'     => __('Yes', 'finance_gateway_plugin_domain'),
-                          'disabled' => __('No', 'finance_gateway_plugin_domain'),
-                          ),
+                              'title'   => __('Show Product Widget', 'finance_gateway_plugin_domain'),
+                              'type'    => 'select',
+                              'default' => 'show',
+                              'options' => array(
+                                  'show'     => __('Yes', 'finance_gateway_plugin_domain'),
+                                  'disabled' => __('No', 'finance_gateway_plugin_domain'),
+                              ),
                           ),
                           'calculatorTheme' => array(
-                          'title'   => __('Show Calculator Widget', 'finance_gateway_plugin_domain'),
-                          'type'    => 'select',
-                          'default' => 'enabled',
-                          'options' => array(
-                          'enabled'  => __('Yes', 'finance_gateway_plugin_domain'),
-                          'disabled' => __('No', 'finance_gateway_plugin_domain'),
-                          ),
+                              'title'   => __('Show Calculator Widget', 'finance_gateway_plugin_domain'),
+                              'type'    => 'select',
+                              'default' => 'enabled',
+                              'options' => array(
+                                  'enabled'  => __('Yes', 'finance_gateway_plugin_domain'),
+                                  'disabled' => __('No', 'finance_gateway_plugin_domain'),
+                              ),
                           ),
                           'widgetThreshold' => array(
-                          'title'       => __('Widget threshold', 'finance_gateway_plugin_domain'),
-                          'type'        => 'text',
-                          'description' => __('Product widget will only appear on products above this value'),
-                          'default'     => '250',
+                              'title'       => __('Widget threshold', 'finance_gateway_plugin_domain'),
+                              'type'        => 'text',
+                              'description' => __('Product widget will only appear on products above this value'),
+                              'default'     => '250',
                           ),
                           'buttonText'    => array(
-                          'title'       => __('Widget Button Text', 'finance_gateway_plugin_domain'),
-                          'type'        => 'text',
-                          'description' => __('Eg. "or from $p per "', 'finance_gateway_plugin_domain'),
-                          'default'     => '',
+                              'title'       => __('Widget Button Text', 'finance_gateway_plugin_domain'),
+                              'type'        => 'text',
+                              'description' => __('Eg. "or from $p per "', 'finance_gateway_plugin_domain'),
+                              'default'     => '',
                           ),
                           'footnote'     => array(
-                          'title'       => __('Footnote', 'finance_gateway_plugin_domain'),
-                          'type'        => 'text',
-                          'description' => __('Eg. "Available on instalments"', 'finance_gateway_plugin_domain'),
-                          'default'     => '',
+                              'title'       => __('Footnote', 'finance_gateway_plugin_domain'),
+                              'type'        => 'text',
+                              'description' => __('Eg. "Available on instalments"', 'finance_gateway_plugin_domain'),
+                              'default'     => '',
                           ),
                           'Order Settings'  => array(
-                          'title' => __('Order Settings', 'finance_gateway_plugin_domain'),
-                          'type'  => 'title',
-                          'class' => 'border',
+                              'title' => __('Order Settings', 'finance_gateway_plugin_domain'),
+                              'type'  => 'title',
+                              'class' => 'border',
                           ),
                           'autoFulfillment' => array(
-                          'title'       => __('Enable/Disable Automatic Fulfillment', 'finance_gateway_plugin_domain'),
-                          'label'       => __('Automatic Fulfillment', 'finance_gateway_plugin_domain'),
-                          'type'        => 'checkbox',
-                          'description' => __('Automatically Send Fulfillment request on order completion', 'finance_gateway_plugin_domain'),
-                          'default'     => false,
+                              'title'       => __('Enable/Disable Automatic Fulfillment', 'finance_gateway_plugin_domain'),
+                              'label'       => __('Automatic Fulfillment', 'finance_gateway_plugin_domain'),
+                              'type'        => 'checkbox',
+                              'description' => __('Automatically Send Fulfillment request on order completion', 'finance_gateway_plugin_domain'),
+                              'default'     => false,
                           ),
                           'autoRefund' => array(
-                          'title'       => __('Enable/Disable Automatic Refunds', 'finance_gateway_plugin_domain'),
-                          'label'       => __('Automatic Refunds', 'finance_gateway_plugin_domain'),
-                          'type'        => 'checkbox',
-                          'description' => __('Automatically Send Refund request on order refunded', 'finance_gateway_plugin_domain'),
-                          'default'     => false,
+                              'title'       => __('Enable/Disable Automatic Refunds', 'finance_gateway_plugin_domain'),
+                              'label'       => __('Automatic Refunds', 'finance_gateway_plugin_domain'),
+                              'type'        => 'checkbox',
+                              'description' => __('Automatically Send Refund request on order refunded', 'finance_gateway_plugin_domain'),
+                              'default'     => false,
                             ),
                           'autoCancel' => array(
-                          'title'       => __('Enable/Disable Automatic Cancellations', 'finance_gateway_plugin_domain'),
-                          'label'       => __('Automatic Cancellation', 'finance_gateway_plugin_domain'),
-                          'type'        => 'checkbox',
-                          'description' => __('Automatically Send Cancel request on order cancellation', 'finance_gateway_plugin_domain'),
-                          'default'     => false,
-                                  ),
+                              'title'       => __('Enable/Disable Automatic Cancellations', 'finance_gateway_plugin_domain'),
+                              'label'       => __('Automatic Cancellation', 'finance_gateway_plugin_domain'),
+                              'type'        => 'checkbox',
+                              'description' => __('Automatically Send Cancel request on order cancellation', 'finance_gateway_plugin_domain'),
+                              'default'     => false,
+                          ),
                           )
                       );
                 } catch ( Exception $e ) {
@@ -1251,11 +1251,11 @@ function woocommerce_finance_init()
                      ->withMetadata([
                          'order_number' => $order_id,
                      ]);
-                    $response                  = $sdk->applications()->createApplication($application, [], ['Content-Type: application/json']);
+                    $response  = $sdk->applications()->createApplication($application, [], ['Content-Type: application/json']);
                     $application_response_body = $response->getBody()->getContents();
-                    $decode                    = json_decode($application_response_body);
-                    $result_id                 = $decode->data->id;
-                    $result_redirect           = $decode->data->urls->application_url;
+                    $decode = json_decode($application_response_body);
+                    $result_id = $decode->data->id;
+                    $result_redirect = $decode->data->urls->application_url;
                 }
             }
 
