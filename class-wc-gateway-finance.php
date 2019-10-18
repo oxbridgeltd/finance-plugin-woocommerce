@@ -1178,20 +1178,19 @@ function woocommerce_finance_init()
                     $application               = ( new \Divido\MerchantSDK\Models\Application() )
                      ->withCountryId($order->get_billing_country())
                      ->withFinancePlanId($finance)
-                     ->withApplicants(
-                         [
-                         [
-                         'firstName'   => $order->get_billing_first_name(),
-                         'lastName'    => $order->get_billing_last_name(),
-                         'phoneNumber' => $order->get_billing_phone(),
-                         'email'       => $order->get_billing_email(),
-                         'addresses'   => array(
-                         [
-                         'text' => $order->get_billing_postcode() . $order->get_billing_address_1() . $order->get_billing_city()
+                     ->withApplicants([
+                             [
+                                 'firstName'   => $order->get_billing_first_name(),
+                                 'lastName'    => $order->get_billing_last_name(),
+                                 'phoneNumber' => $order->get_billing_phone(),
+                                 'email'       => $order->get_billing_email(),
+                                 'addresses'   => array(
+                                         [
+                                         'text' => $order->get_billing_postcode() . $order->get_billing_address_1() . $order->get_billing_city()
 
-                         ],
-                         ),
-                         ],
+                                         ],
+                                     ),
+                                 ],
                          ]
                      )
                      ->withOrderItems($products)
