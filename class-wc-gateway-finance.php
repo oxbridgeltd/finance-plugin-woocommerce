@@ -485,10 +485,10 @@ function woocommerce_finance_init()
             if (empty($cart) ) {
                 return false;
             }
-            if ($threshold > $cart->subtotal ) {
+            if ($threshold > $cart->total ) {
                 return false;
             }
-            if ($upperLimit < $cart->subtotal ) {
+            if ($upperLimit < $cart->total ) {
                 return false;
             }
             if ('all' === $settings['productSelect'] ) {
@@ -855,10 +855,16 @@ function woocommerce_finance_init()
                           $this->form_fields,
                           array(
                           'cartThreshold'   => array(
-                          'title'       => __('Cart Threshold', 'finance_gateway_plugin_domain'),
-                          'type'        => 'text',
-                          'description' => __('Under this amount, Finance is not available as a payment option.', 'finance_gateway_plugin_domain'),
-                          'default'     => '250',
+                              'title'       => __('Min cart threshold', 'finance_gateway_plugin_domain'),
+                              'type'        => 'text',
+                              'description' => __('Under this amount, Finance is not available as a payment option.', 'finance_gateway_plugin_domain'),
+                              'default'     => '250',
+                              ),
+                          'maxLoanAmount'   => array(
+                              'title'       => __('Max loan amount', 'finance_gateway_plugin_domain'),
+                              'type'        => 'text',
+                              'description' => __('Over this amount, Finance is not available as a payment option.', 'finance_gateway_plugin_domain'),
+                              'default'     => '25000',
                           ),
                           'productSelect'   => array(
                           'title'   => __('Product Selection', 'finance_gateway_plugin_domain'),
