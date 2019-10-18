@@ -1077,24 +1077,23 @@ function woocommerce_finance_init()
                 }
             }
             if (isset($_finance) ) {
-                $deposit     = ( isset($_POST['divido_deposit']) && intval($_POST['divido_deposit']) > 0 ) ? sanitize_text_field(wp_unslash($_POST['divido_deposit'])) : $min_deposit; // Input var okay.
                 $products    = array();
                 $order_total = 0;
                 foreach ( $woocommerce->cart->get_cart() as $item ) {
                     if (version_compare($this->get_woo_version(), '3.0.0') >= 0 ) {
                         $_product = wc_get_product($item['data']->get_id());
-                        $name     = $_product->get_title();
+                        $name = $_product->get_title();
                     } else {
                         $_product = $item['data']->post;
-                        $name     = $_product->post_title;
+                        $name = $_product->post_title;
                     }
-                    $quantity     = $item['quantity'];
-                    $price        = $item['line_subtotal'] / $quantity * 100;
+                    $quantity = $item['quantity'];
+                    $price = $item['line_subtotal'] / $quantity * 100;
                     $order_total += $item['line_subtotal'];
                     $products[]   = array(
-                     'name'     => $name,
-                     'quantity' => (int)$quantity,
-                     'price'    => $price,
+                         'name' => $name,
+                         'quantity' => (int)$quantity,
+                         'price' => $price,
                     );
                 }
                 $deposit = ( isset($_POST['divido_deposit']) && intval($_POST['divido_deposit']) > 0 ) ? sanitize_text_field(wp_unslash($_POST['divido_deposit'])) : $min_deposit; // Input var okay.
@@ -1103,37 +1102,37 @@ function woocommerce_finance_init()
                     $shipping   = (float) $shipping;
 
                     $products[] = array(
-                     'name'     => 'Shipping and handling',
-                     'quantity' => 1,
-                     'price'    => $shipping * 100,
+                         'name' => 'Shipping and handling',
+                         'quantity' => 1,
+                         'price' => $shipping * 100,
                     );
-                    // Add shipping to ordertotal.
+                    // Add shipping to order total.
                     $order_total += $shipping;
                 }
                 foreach ( $woocommerce->cart->get_taxes() as $tax ) {
                     $products[] = array(
-                     'name'     => 'Taxes',
-                     'quantity' => 1,
-                     'price'    => $tax * 100,
+                        'name'     => 'Taxes',
+                        'quantity' => 1,
+                        'price'    => $tax * 100,
                     );
                     // Add tax to ordertotal.
                     $order_total += $tax;
                 }
                 foreach ( $woocommerce->cart->get_fees() as $fee ) {
                     $products[] = array(
-                     'name'     => 'Fees',
-                     'quantity' => 1,
-                     'price'    => $fee->amount * 100,
+                        'name'     => 'Fees',
+                        'quantity' => 1,
+                        'price'    => $fee->amount * 100,
                     );
                     if ($fee->taxable ) {
-                                 $products[]   = array(
-                                  'name'     => 'Fees-tax',
-                                  'quantity' => 1,
-                                  'price'    => $fee->tax * 100,
-                                 );
-                                 $order_total += $fee->tax;
+                        $products[]   = array(
+                            'name'     => 'Fees-tax',
+                            'quantity' => 1,
+                            'price'    => $fee->tax * 100,
+                        );
+                        $order_total += $fee->tax;
                     }
-                    // Add Fee to ordertotal.
+                    // Add Fee to order total.
                     $order_total += $fee->amount;
                 }
                 // Gets the total discount amount(including coupons) - both Taxed and untaxed.
@@ -1165,8 +1164,8 @@ function woocommerce_finance_init()
                 // Create an appication model with the application data.
                 if (version_compare($this->get_woo_version(), '3.0.0') >= 0 ) {
 
-                    $env                       = $this->environments($this->api_key);
-                    $client                    = new \GuzzleHttp\Client();
+                    $env = $this->environments($this->api_key);
+                    $client = new \GuzzleHttp\Client();
 
                     $httpClientWrapper = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
                         new \Divido\MerchantSDKGuzzle6\GuzzleAdapter($client),
@@ -1175,96 +1174,83 @@ function woocommerce_finance_init()
                     );
 
                     $sdk = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
-                    $application               = ( new \Divido\MerchantSDK\Models\Application() )
+                    $application = ( new \Divido\MerchantSDK\Models\Application() )
                      ->withCountryId($order->get_billing_country())
                      ->withFinancePlanId($finance)
                      ->withApplicants([
                              [
-                                 'firstName'   => $order->get_billing_first_name(),
-                                 'lastName'    => $order->get_billing_last_name(),
+                                 'firstName' => $order->get_billing_first_name(),
+                                 'lastName' => $order->get_billing_last_name(),
                                  'phoneNumber' => $order->get_billing_phone(),
-                                 'email'       => $order->get_billing_email(),
-                                 'addresses'   => array(
-                                         [
+                                 'email' => $order->get_billing_email(),
+                                 'addresses'   => array([
                                          'text' => $order->get_billing_postcode() . $order->get_billing_address_1() . $order->get_billing_city()
-
-                                         ],
-                                     ),
-                                 ],
+                                 ]),
+                             ],
                          ]
                      )
                      ->withOrderItems($products)
                      ->withDepositPercentage($deposit / $order_total)
                      ->withFinalisationRequired(false)
                      ->withMerchantReference('')
-                     ->withUrls(
-                         [
+                     ->withUrls
+                     ([
                          'merchant_redirect_url' => $order->get_checkout_order_received_url(),
                          'merchant_checkout_url' => wc_get_checkout_url(),
                          'merchant_response_url' => admin_url('admin-ajax.php') . '?action=woocommerce_finance_callback',
-                         ]
-                     )
-                     ->withMetadata(
-                         [
+                     ])
+                     ->withMetadata([
                          'order_number' => $order_id,
-                         ]
-                     );
+                     ]);
                     if ('' !== $this->secret ) {
-                        $secret                = $this->create_signature(json_encode($application->getPayload()), $this->secret);
-                        $response              = $sdk->applications()->createApplication($application,[],['Content-Type' => 'application/json', 'X-Divido-Hmac-Sha256' => $secret]);
-                    }else{
-                        $response              = $sdk->applications()->createApplication($application,[],['Content-Type' => 'application/json']);
+                        $secret = $this->create_signature(json_encode($application->getPayload()), $this->secret);
+                        $response = $sdk->applications()->createApplication($application,[],['Content-Type' => 'application/json', 'X-Divido-Hmac-Sha256' => $secret]);
+                    } else {
+                        $response = $sdk->applications()->createApplication($application,[],['Content-Type' => 'application/json']);
                     }
                     $application_response_body = $response->getBody()->getContents();
-                    $decode                    = json_decode($application_response_body);
-                    $result_id                 = $decode->data->id;
-                    $result_redirect           = $decode->data->urls->application_url;
+                    $decode = json_decode($application_response_body);
+                    $result_id = $decode->data->id;
+                    $result_redirect  = $decode->data->urls->application_url;
                 } else {
-                    //
-                    // Version ~2.0.
-                    //
-                    $env                       = $this->environments($this->api_key);
-                    $client                    = new \GuzzleHttp\Client();
-                    $httpClientWrapper            = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
+
+                    $env = $this->environments($this->api_key);
+                    $client = new \GuzzleHttp\Client();
+                    $httpClientWrapper = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
                         new \Divido\MerchantSDKGuzzle6\GuzzleAdapter($client),
                         \Divido\MerchantSDK\Environment::CONFIGURATION[$env]['base_uri'],
                         $this->api_key
                     );
-                    $sdk                       = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
-                    $application               = ( new \Divido\MerchantSDK\Models\Application() )
+                    $sdk = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
+                    $application = ( new \Divido\MerchantSDK\Models\Application() )
                      ->withCountryId($order->billing_country)
                      ->withFinancePlanId($finance)
-                     ->withApplicants(
-                         [
-                         [
-                         'firstName'   => $order->billing_first_name,
-                         'lastName'    => $order->billing_last_name,
-                         'phoneNumber' => $order->billing_phone,
-                         'email'       => $order->billing_email,
-                         'addresses'   => array(
-                         [
-                         'text'       => $order->get_billing_postcode() . $order->get_billing_address_1() . $order->get_billing_city()
-                         ],
-                         ),
-                         ],
+                     ->withApplicants([
+                             [
+                                 'firstName'   => $order->billing_first_name,
+                                 'lastName'    => $order->billing_last_name,
+                                 'phoneNumber' => $order->billing_phone,
+                                 'email'       => $order->billing_email,
+                                 'addresses'   => array(
+                                     [
+                                         'text'       => $order->get_billing_postcode() . $order->get_billing_address_1() . $order->get_billing_city()
+                                     ],
+                                 ),
+                             ],
                          ]
                      )
                      ->withOrderItems($products)
                      ->withDepositPercentage($deposit/100)
                      ->withFinalisationRequired(false)
                      ->withMerchantReference('')
-                     ->withUrls(
-                         [
+                     ->withUrls([
                          'merchant_redirect_url' => $order->get_checkout_order_received_url(),
                          'merchant_checkout_url' => wc_get_checkout_url(),
                          'merchant_response_url' => admin_url('admin-ajax.php') . '?action=woocommerce_finance_callback',
-                         ]
-                     )
-                     ->withMetadata(
-                         [
+                     ])
+                     ->withMetadata([
                          'order_number' => $order_id,
-                         ]
-                     );
+                     ]);
                     $response                  = $sdk->applications()->createApplication($application, [], ['Content-Type: application/json']);
                     $application_response_body = $response->getBody()->getContents();
                     $decode                    = json_decode($application_response_body);
