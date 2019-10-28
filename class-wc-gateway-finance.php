@@ -73,7 +73,7 @@ function woocommerce_finance_init()
             $this->enabled = (!empty($this->settings['enabled'])) ? $this->settings['enabled'] : false;
             $this->api_key = (!empty($this->settings['apiKey'])) ? $this->settings['apiKey'] : '';
             $this->buttonText = (!empty($this->settings['widgetButtonText'])) ? $this->settings['widgetButtonText'] : ' ';
-            $this->footnote = (!empty($this->settings['widgetFootnote'])) ? $this->settings['widgetFootnote'] : ' ';
+            $this->footnote = (!empty($this->settings['footnote'])) ? $this->settings['footnote'] : ' ';
             $this->cart_threshold = (!empty($this->settings['cartThreshold'])) ? $this->settings['cartThreshold'] : 250;
             $this->max_loan_amount = (!empty($this->settings['maxLoanAmount'])) ? $this->settings['maxLoanAmount'] : 25000;
             $this->auto_fulfillment = (!empty($this->settings['autoFulfillment'])) ? $this->settings['autoFulfillment'] : false;
@@ -1081,6 +1081,7 @@ function woocommerce_finance_init()
                 $amount = WC()->cart->total * 100;
                 $environment = $this->getFinanceEnv($this->api_key, false);
                 $plans = $this->get_checkout_plans();
+                $footnote = $this->footnote;
                 include_once WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)) . '/includes/checkout.php';
             }
         }

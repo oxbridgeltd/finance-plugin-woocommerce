@@ -1,14 +1,15 @@
 <?php defined( 'ABSPATH' ) or die( 'Denied' ); ?>
-<fieldset id="finance-checkout" class="finance-calculator" data-<?php print $environment;?>-amount="<?php print $amount; ?>" data-<?php print $environment;?>-plans="<?php print $plans; ?>">
+<fieldset id="finance-checkout" class="finance-calculator" data-<?php print $environment;?>-amount="<?php print $amount; ?>" data-<?php print $environment;?>-plans="<?php print $plans; ?>" data-footnote->
 <h1>
         <?php print (isset($this->settings['description'])) ? $this->settings['description']:""; ?>
     </h1>
-<div id="financeWidget"  
-    data-calculator-widget 
-    data-mode="calculator"  
-    data-plans="<?php print $plans; ?>" 
-    data-amount="<?php print $amount; ?>" 
-    >
+<div id="financeWidget"
+    data-calculator-widget
+    data-mode="calculator"
+    data-plans="<?php print $plans; ?>"
+    data-amount="<?php print $amount; ?>"
+    data-footnote="<?php print $footnote; ?>"
+>
 </div>
 
 <script type="text/javascript">
