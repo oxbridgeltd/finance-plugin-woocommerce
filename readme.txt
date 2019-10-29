@@ -5,15 +5,15 @@ Plugin URI:        integrations.divido.com/woocommerce
 Tags:              woothemes,woocommerce,payment gateway,payment,module,ecommerce,online payments,
 Author URI:        integrations.divido.com
 Author:            Divido Financial Services Ltd
-Requires at least: 3.0.2 
+Requires at least: 3.0.2
 Tested up to:      5.3.0
-Stable tag:        2.0.3
-Version:           2.0.3
+Stable tag:        2.0.4
+Version:           2.0.4
 
 License: GPLv2 or later
 
 == Description ==
-The Finance plugin for WooCommerce allows you to accept finance payments in your WooCommerce store. To get started download the Finance plugin, configure it in settings with your api-key and you’re good to go. 
+The Finance plugin for WooCommerce allows you to accept finance payments in your WooCommerce store. To get started download the Finance plugin, configure it in settings with your api-key and you’re good to go.
 
 == Installation ==
 <strong>Simply follow these steps to install:</strong><br>
@@ -27,23 +27,27 @@ The Finance plugin for WooCommerce allows you to accept finance payments in your
 
 Shared Secret: Allows you to verify webhooks calls.
 Checkout Title: Displays the name of the payment option in the checkout.
-Checkout Description: Description of the payment option in the checkout. 
+Checkout Description: Description of the payment option in the checkout.
 Display Plans: Allows you to display all plans or only selected plans.
 Plans: Allows you to select the plans that you want to display.
-Cart Threshold: Minimum amount that needs to be reached for Finance to be available in the checkout. 
+Cart Threshold: Minimum amount that needs to be reached for Finance to be available in the checkout.
 Product Selection: Allows you to pick the products on which finance will be available. There are 3 possible options: All Products, Selected Products or Products above Defined Price
 Show Product Widget: Allows you to turn on/off the small widget which appears underneath the price on product pages.
 Show Calculator Widget: Allows you to turn on/off the Calculator widget which appears at the bottom of product pages.
 Widget Threshold: Allows you to set the minimum amount for the "Product Widget" to show.
 Widget Prefix: Allows you to add a prefix to the "Product Widget".
 Widget Suffix: Allows you to add a suffix to the "Product Widget".
-Enable/Disable Automatic Fulfillment: Allows you to select if an "Activation" call should be made automatically to the lender once the order goes to "Completed" 
-Enable/Disable Automatic Refunds: Allows you to select if a "Refund" call should be made automatically to the lender once the order goes to "Refunded" 
-Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation" call should be made automatically to the lender once the order goes to "Cancelled" 
+Enable/Disable Automatic Fulfillment: Allows you to select if an "Activation" call should be made automatically to the lender once the order goes to "Completed"
+Enable/Disable Automatic Refunds: Allows you to select if a "Refund" call should be made automatically to the lender once the order goes to "Refunded"
+Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation" call should be made automatically to the lender once the order goes to "Cancelled"
 
  == Changelog ==
+Version 2.0.4
+Fixed footnote and button text
+Fixed widget threshold
+
 Version 2.0.3
-Added FI as accepted county 
+Added FI as accepted county
 Added Max Loan amount
 
 Version 2.0.2
@@ -59,15 +63,15 @@ Updated Calculator Widget
 Replaces prepend and append strings with button text and footnote controls
 Updated shortcode helper
 
-Version 1.0.2 
+Version 1.0.2
 Fix to Shared Secret Functionality
 Minor Formatting
 Added a shortcode helper finance_code - to allow users to place the calculator on non-product pages
 Added a settings link to plugins page - quick jump to finance settings.
 Added version from @ to comments
 
-Version 1.0.1 
-Added the ability to Cancel and Refund applications through WooCommerce 
+Version 1.0.1
+Added the ability to Cancel and Refund applications through WooCommerce
 Added Transient (caching values) on WooCommerce to prevent unnecessary API calls
 
 Version 1.0.0 Initial Release
