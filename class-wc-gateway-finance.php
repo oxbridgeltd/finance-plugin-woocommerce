@@ -636,7 +636,7 @@ function woocommerce_finance_init()
                 $price = $this->get_price_including_tax($product, '');
                 $plans = $this->get_product_plans($product);
                 $environment = $this->getFinanceEnv($this->api_key, false);
-                if ($this->is_available($product) && $price > ($this->widget_threshold)) {
+                if ($this->is_available($product) && $price > ($this->widget_threshold * 100)) {
                     $button_text = '';
                     if (!empty($this->button_text)) {
                         $button_text = 'data-buttontext="' . $this->button_text . '" ';
