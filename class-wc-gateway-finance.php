@@ -14,7 +14,7 @@ defined('ABSPATH') or die('Denied');
  * Version: 2.0.4
  * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
- * WC tested up to: 3.6.4
+ * WC tested up to: 3.7.1
  */
 
 /**
