@@ -42,6 +42,10 @@ Enable/Disable Automatic Refunds: Allows you to select if a "Refund" call should
 Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation" call should be made automatically to the lender once the order goes to "Cancelled"
 
  == Changelog ==
+Version 2.0.4
+Fixed footnote and button text
+Fixed widget threshold
+
 Version 2.0.3
 Added FI as accepted county
 Added Max Loan amount
