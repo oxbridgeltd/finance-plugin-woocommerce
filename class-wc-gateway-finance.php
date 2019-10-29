@@ -72,7 +72,7 @@ function woocommerce_finance_init()
             $this->description = (!empty($this->settings['description'])) ? $this->settings['description'] : '';
             $this->enabled = (!empty($this->settings['enabled'])) ? $this->settings['enabled'] : false;
             $this->api_key = (!empty($this->settings['apiKey'])) ? $this->settings['apiKey'] : '';
-            $this->buttonText = (!empty($this->settings['widgetButtonText'])) ? $this->settings['widgetButtonText'] : ' ';
+            $this->buttonText = (!empty($this->settings['buttonText'])) ? $this->settings['buttonText'] : ' ';
             $this->footnote = (!empty($this->settings['widgetFootnote'])) ? $this->settings['widgetFootnote'] : ' ';
             $this->cart_threshold = (!empty($this->settings['cartThreshold'])) ? $this->settings['cartThreshold'] : 250;
             $this->max_loan_amount = (!empty($this->settings['maxLoanAmount'])) ? $this->settings['maxLoanAmount'] : 25000;
@@ -636,11 +636,12 @@ function woocommerce_finance_init()
                 $price = $this->get_price_including_tax($product, '');
                 $plans = $this->get_product_plans($product);
                 $environment = $this->getFinanceEnv($this->api_key, false);
-                if ($this->is_available($product) && $price > ($this->widget_threshold)) {
+                if ($this->is_available($product) && $price > ($this->widget_threshold * 100)) {
                     $button_text = '';
-                    if (!empty($this->button_text)) {
-                        $button_text = 'data-buttontext="' . $this->button_text . '" ';
+                    if (!empty($this->buttonText)) {
+                        $button_text = $this->buttonText;
                     }
+
                     $footnote = '';
                     if (!empty($this->footnote)) {
                         $footnote = 'data-footnote="' . $this->footnote . '" ';
