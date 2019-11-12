@@ -11,7 +11,7 @@ defined('ABSPATH') or die('Denied');
  * Plugin Name: Finance Payment Gateway for WooCommerce
  * Plugin URI: http://integrations.divido.com/finance-gateway-woocommerce
  * Description: The Finance Payment Gateway plugin for WooCommerce.
- * Version: 2.0.4
+ * Version: 2.0.5
  * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
  * WC tested up to: 3.7.1
@@ -1199,9 +1199,8 @@ function woocommerce_finance_init()
                     $data = file_get_contents('php://input');
                 }
 
-                // Version 3.0+.
-                // Create an appication model with the application data.
-                if (version_compare($this->get_woo_version(), '3.0.0') >= 0) {
+
+                if (empty(get_post_meta($order_id, "_finance_reference", true))) {
 
                     $env = $this->environments($this->api_key);
                     $client = new \GuzzleHttp\Client();
@@ -1213,6 +1212,7 @@ function woocommerce_finance_init()
                     );
 
                     $sdk = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
+
                     $application = (new \Divido\MerchantSDK\Models\Application())
                         ->withCountryId($order->get_billing_country())
                         ->withFinancePlanId($finance)
@@ -1252,37 +1252,40 @@ function woocommerce_finance_init()
                     $result_id = $decode->data->id;
                     $result_redirect = $decode->data->urls->application_url;
                 } else {
-
                     $env = $this->environments($this->api_key);
                     $client = new \GuzzleHttp\Client();
+
                     $httpClientWrapper = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
                         new \Divido\MerchantSDKGuzzle6\GuzzleAdapter($client),
                         \Divido\MerchantSDK\Environment::CONFIGURATION[$env]['base_uri'],
                         $this->api_key
                     );
+
                     $sdk = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
+                    $applicationId = get_post_meta($order_id, "_finance_reference", true);
+
                     $application = (new \Divido\MerchantSDK\Models\Application())
-                        ->withCountryId($order->billing_country)
+                        ->withId($applicationId)
+                        ->withCountryId($order->get_billing_country())
                         ->withFinancePlanId($finance)
                         ->withApplicants([
                                 [
-                                    'firstName' => $order->billing_first_name,
-                                    'lastName' => $order->billing_last_name,
-                                    'phoneNumber' => $order->billing_phone,
-                                    'email' => $order->billing_email,
-                                    'addresses' => array(
-                                        [
-                                            'text' => $order->get_billing_postcode() . $order->get_billing_address_1() . $order->get_billing_city()
-                                        ],
-                                    ),
+                                    'firstName' => $order->get_billing_first_name(),
+                                    'lastName' => $order->get_billing_last_name(),
+                                    'phoneNumber' => $order->get_billing_phone(),
+                                    'email' => $order->get_billing_email(),
+                                    'addresses' => array([
+                                        'text' => $order->get_billing_postcode() . $order->get_billing_address_1() . $order->get_billing_city()
+                                    ]),
                                 ],
                             ]
                         )
                         ->withOrderItems($products)
-                        ->withDepositPercentage($deposit / 100)
+                        ->withDepositPercentage($deposit / $order_total)
                         ->withFinalisationRequired(false)
                         ->withMerchantReference('')
-                        ->withUrls([
+                        ->withUrls
+                        ([
                             'merchant_redirect_url' => $order->get_checkout_order_received_url(),
                             'merchant_checkout_url' => wc_get_checkout_url(),
                             'merchant_response_url' => admin_url('admin-ajax.php') . '?action=woocommerce_finance_callback',
@@ -1290,7 +1293,12 @@ function woocommerce_finance_init()
                         ->withMetadata([
                             'order_number' => $order_id,
                         ]);
-                    $response = $sdk->applications()->createApplication($application, [], ['Content-Type: application/json']);
+                    if ('' !== $this->secret) {
+                        $secret = $this->create_signature(json_encode($application->getPayload()), $this->secret);
+                        $response = $sdk->applications()->updateApplication($application, [], ['Content-Type' => 'application/json', 'X-Divido-Hmac-Sha256' => $secret]);
+                    } else {
+                        $response = $sdk->applications()->updateApplication($application, [], ['Content-Type' => 'application/json']);
+                    }
                     $application_response_body = $response->getBody()->getContents();
                     $decode = json_decode($application_response_body);
                     $result_id = $decode->data->id;
