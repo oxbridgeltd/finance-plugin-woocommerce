@@ -55,7 +55,26 @@ function woocommerce_finance_init()
         public $api_key;
 
         function wpdocs_load_textdomain() {
-            load_plugin_textdomain('woocommerce-finance-gateway', false, dirname(plugin_basename(__FILE__)).'/i18n/languages');
+            if  (!load_plugin_textdomain(
+                    'woocommerce-finance-gateway', 
+                    false, 
+                    dirname(plugin_basename(__FILE__)).'/i18n/languages'
+                )
+            ){
+                $locale = determine_locale();
+                $split = explode("_",$locale,1);
+                $iso = $split[0];
+                $dumb_locale = "{$iso}_".strtoupper($iso);
+                if(!load_textdomain(
+                    'woocommerce-finance-gateway', 
+                    WP_PLUGIN_DIR.'/'.dirname(plugin_basename(__FILE__))."/i18n/languages/woocommerce-finance-gateway-{$dumb_locale}.mo"
+                )) {
+                    load_textdomain(
+                        'woocommerce-finance-gateway', 
+                        WP_PLUGIN_DIR.'/'.dirname(plugin_basename(__FILE__)).'/i18n/languages/woocommerce-finance-gateway-en_GB.mo'
+                    );
+                }
+            }
         }
 
         /**
@@ -852,11 +871,11 @@ function woocommerce_finance_init()
                                 'title' => __('backend/configplugin_active_label', 'woocommerce-finance-gateway'),
                                 'label' => __('backend/pluginenabled_option', 'woocommerce-finance-gateway'),
                                 'type' => 'checkbox',
-                                'description' => __('backend/configplugin_active_description'),
+                                'description' => __('backend/configplugin_active_description', 'woocommerce-finance-gateway'),
                                 'default' => 'no',
                             ),
                             'title' => array(
-                                'title' => __('backend/configcheckot_title_label', 'woocommerce-finance-gateway'),
+                                'title' => __('backend/configcheckout_title_label', 'woocommerce-finance-gateway'),
                                 'type' => 'text',
                                 'description' => __('backend/configcheckout_title_description', 'woocommerce-finance-gateway'),
                                 'default' => __('frontend/checkoutcheckout_title_default', 'woocommerce-finance-gateway'),
@@ -875,7 +894,7 @@ function woocommerce_finance_init()
                         )
                     );
                     $this->form_fields['showFinanceOptions'] = array(
-                        'title' => __('backend/configlimit_plans_list', 'woocommerce-finance-gateway'),
+                        'title' => __('backend/configlimit_plans_label', 'woocommerce-finance-gateway'),
                         'type' => 'select',
                         'description' => __('backend/configlimit_plans_description', 'woocommerce-finance-gateway'),
                         'default' => 'all',
@@ -967,7 +986,7 @@ function woocommerce_finance_init()
                                 'default' => '',
                             ),
                             'Order Settings' => array(
-                                'title' => __('backend/configorder_settings_label', 'woocommerce-finance-gateway'),
+                                'title' => __('backend/configorder_settings_header', 'woocommerce-finance-gateway'),
                                 'type' => 'title',
                                 'class' => 'border',
                             ),
