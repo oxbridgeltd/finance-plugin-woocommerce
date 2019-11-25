@@ -89,15 +89,16 @@ function woocommerce_finance_init()
             add_action('init', array($this,'wpdocs_load_textdomain'));
 
             $this->id = 'finance';
-            $this->method_title = __('backend/config', 'woocommerce-finance-gateway');
+            $this->method_title = __('globalplugin_title', 'woocommerce-finance-gateway');
+            $this->method_description = __('globalplugin_description', 'woocommerce-finance-gateway');
             $this->has_fields = true;
             // Load the settings.
             $this->init_settings();
             // Get setting values.
-            $this->title = (!empty($this->settings['title'])) ? $this->settings['title'] : __('backend/configplugin_title', 'woocommerce-finance-gateway');
+            $this->title = (!empty($this->settings['title'])) ? $this->settings['title'] : __('configplugin_title', 'woocommerce-finance-gateway');
+            $this->description = (!empty($this->settings['description'])) ? $this->settings['description'] : __('frontend/checkoutcheckout_description_default', 'woocommerce-finance-gateway');
             $this->calculator_theme = (!empty($this->settings['calculatorTheme'])) ? $this->settings['calculatorTheme'] : 'enabled';
             $this->show_widget = (!empty($this->settings['showWidget'])) ? $this->settings['showWidget'] : true;
-            $this->description = (!empty($this->settings['description'])) ? $this->settings['description'] : '';
             $this->enabled = (!empty($this->settings['enabled'])) ? $this->settings['enabled'] : false;
             $this->api_key = (!empty($this->settings['apiKey'])) ? $this->settings['apiKey'] : '';
             $this->footnote = (!empty($this->settings['footnote'])) ? $this->settings['footnote'] : ' ';
