@@ -7,7 +7,7 @@ Author URI:        integrations.divido.com
 Author:            Divido Financial Services Ltd
 Requires at least: 3.0.2
 Tested up to:      5.3.0
-Stable tag:        2.0.5
+Stable tag:        2.1.0
 Version:           2.1.0
 
 License: GPLv2 or later
@@ -41,7 +41,17 @@ Enable/Disable Automatic Fulfillment: Allows you to select if an "Activation" ca
 Enable/Disable Automatic Refunds: Allows you to select if a "Refund" call should be made automatically to the lender once the order goes to "Refunded"
 Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation" call should be made automatically to the lender once the order goes to "Cancelled"
 
+
+
  == Changelog ==
+Version 2.1.0
+Added Translation for DE
+Added Translation for GB
+Added Translation for US
+Added Translation for FI
+Added Translation for FR
+Adjusted Deposit handling from percentage to Amount
+
 Version 2.0.5
 Added PATCH application support
 Removed support for Woocommerce less than version 3.0.0
