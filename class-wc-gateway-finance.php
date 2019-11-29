@@ -95,7 +95,7 @@ function woocommerce_finance_init()
             // Load the settings.
             $this->init_settings();
             // Get setting values.
-            $this->title = (!empty($this->settings['title'])) ? $this->settings['title'] : __('configplugin_title', 'woocommerce-finance-gateway');
+            $this->title = (!empty($this->settings['title'])) ? $this->settings['title'] : __('frontend/checkoutcheckout_title_default', 'woocommerce-finance-gateway');
             $this->description = (!empty($this->settings['description'])) ? $this->settings['description'] : __('frontend/checkoutcheckout_description_default', 'woocommerce-finance-gateway');
             $this->calculator_theme = (!empty($this->settings['calculatorTheme'])) ? $this->settings['calculatorTheme'] : 'enabled';
             $this->show_widget = (!empty($this->settings['showWidget'])) ? $this->settings['showWidget'] : true;
