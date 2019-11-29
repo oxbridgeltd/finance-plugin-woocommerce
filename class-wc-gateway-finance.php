@@ -1166,7 +1166,7 @@ function woocommerce_finance_init()
                         'price' => $price,
                     );
                 }
-                $deposit = (isset($_POST['divido_deposit']) && intval($_POST['divido_deposit']) > 0) ? sanitize_text_field(wp_unslash($_POST['divido_deposit'])) : $min_deposit; // Input var okay.
+                $deposit = (isset($_POST['divido_deposit']) && round($_POST['divido_deposit']) > 0) ? sanitize_text_field(wp_unslash($_POST['divido_deposit'])) : $min_deposit; // Input var okay.
                 if ($woocommerce->cart->needs_shipping()) {
                     $shipping = $order->get_total_shipping();
                     $shipping = (float)$shipping;
@@ -1260,7 +1260,7 @@ function woocommerce_finance_init()
                             ]
                         )
                         ->withOrderItems($products)
-                        ->withDepositAmount((int)($deposit) )
+                        ->withDepositAmount(round($deposit) )
                         ->withFinalisationRequired(false)
                         ->withMerchantReference('')
                         ->withUrls
@@ -1280,6 +1280,7 @@ function woocommerce_finance_init()
                     }
                     $application_response_body = $response->getBody()->getContents();
                     $decode = json_decode($application_response_body);
+
                     $result_id = $decode->data->id;
                     $result_redirect = $decode->data->urls->application_url;
                 } else {
@@ -1312,7 +1313,7 @@ function woocommerce_finance_init()
                             ]
                         )
                         ->withOrderItems($products)
-                        ->withDepositAmount((int)($deposit) )
+                        ->withDepositAmount(round(($deposit)) )
                         ->withFinalisationRequired(false)
                         ->withMerchantReference('')
                         ->withUrls
