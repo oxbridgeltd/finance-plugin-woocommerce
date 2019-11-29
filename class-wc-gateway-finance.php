@@ -484,13 +484,16 @@ function woocommerce_finance_init()
          */
         public function is_available($product = false)
         {
+
+            if ('yes' !== $this->enabled || '' === $this->api_key) {
+                return false;
+            }
+
             $checkout_finance_options = $this->get_checkout_plans();
             if (!$checkout_finance_options) {
                 return false;
             }
-            if ('yes' !== $this->enabled || '' === $this->api_key) {
-                return false;
-            }
+
             if (is_object($product)) {
                 if (version_compare($this->woo_version, '3.0.0') >= 0) {
                     $data = maybe_unserialize(get_post_meta($product->get_id(), 'woo_finance_product_tab', true));
