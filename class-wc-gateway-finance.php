@@ -855,7 +855,9 @@ function woocommerce_finance_init()
                 $settings = $this->getFinanceEnv($this->api_key, true);
                 $finance = [];
                 foreach ($response as $finances) {
-                    $finance[$finances->id] = $finances->description;
+                    if($finances->active){
+                        $finance[$finances->id] = $finances->description;
+                    }
                 }
                 $options = array();
 
