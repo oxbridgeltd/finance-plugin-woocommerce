@@ -56,8 +56,8 @@ function woocommerce_finance_init()
 
         function wpdocs_load_textdomain() {
             if  (!load_plugin_textdomain(
-                    'woocommerce-finance-gateway', 
-                    false, 
+                    'woocommerce-finance-gateway',
+                    false,
                     dirname(plugin_basename(__FILE__)).'/i18n/languages'
                 )
             ){
@@ -66,11 +66,11 @@ function woocommerce_finance_init()
                 $iso = $split[0];
                 $dumb_locale = "{$iso}_".strtoupper($iso);
                 if(!load_textdomain(
-                    'woocommerce-finance-gateway', 
+                    'woocommerce-finance-gateway',
                     WP_PLUGIN_DIR.'/'.dirname(plugin_basename(__FILE__))."/i18n/languages/woocommerce-finance-gateway-{$dumb_locale}.mo"
                 )) {
                     load_textdomain(
-                        'woocommerce-finance-gateway', 
+                        'woocommerce-finance-gateway',
                         WP_PLUGIN_DIR.'/'.dirname(plugin_basename(__FILE__)).'/i18n/languages/woocommerce-finance-gateway-en_GB.mo'
                     );
                 }
@@ -484,6 +484,10 @@ function woocommerce_finance_init()
          */
         public function is_available($product = false)
         {
+            $checkout_finance_options = $this->get_checkout_plans();
+            if (!$checkout_finance_options) {
+                return false;
+            }
             if ('yes' !== $this->enabled || '' === $this->api_key) {
                 return false;
             }
@@ -536,10 +540,7 @@ function woocommerce_finance_init()
                     return false;
                 }
             }
-            $checkout_finance_options = $this->get_checkout_plans();
-            if (!$checkout_finance_options) {
-                return false;
-            }
+
             return true;
         }
 
