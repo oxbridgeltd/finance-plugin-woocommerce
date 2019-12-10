@@ -45,7 +45,7 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
  == Changelog ==
 
-Version 2.1.1
+Version 2.1.2
 Bugfix - getCheckoutFinanceOptions running on page other than checkout
 
 Version 2.1.1
