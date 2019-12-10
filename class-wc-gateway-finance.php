@@ -561,14 +561,16 @@ function woocommerce_finance_init()
                 return false;
             }
             $finance_options = array();
-            foreach ($woocommerce->cart->get_cart() as $item) {
-                $product = $item['data'];
-                $finances = $this->getProductFinanceOptions($product);
-                if (!$finances && !is_array($finances)) {
-                    return false;
-                }
-                foreach ($finances as $finance) {
-                    $finance_options[$finance] = $finance;
+            if( is_checkout() ) {
+                foreach ($woocommerce->cart->get_cart() as $item) {
+                    $product = $item['data'];
+                    $finances = $this->getProductFinanceOptions($product);
+                    if (!$finances && !is_array($finances)) {
+                        return false;
+                    }
+                    foreach ($finances as $finance) {
+                        $finance_options[$finance] = $finance;
+                    }
                 }
             }
             return (count($finance_options) > 0) ? $finance_options : array();
