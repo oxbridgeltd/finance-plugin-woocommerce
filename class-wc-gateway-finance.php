@@ -1262,6 +1262,7 @@ function woocommerce_finance_init()
                                     'phoneNumber' => $order->get_billing_phone(),
                                     'email' => $order->get_billing_email(),
                                     'addresses' => array([
+                                        'postcode' => $order->get_billing_postcode(),
                                         'text' => $order->get_billing_postcode() . $order->get_billing_address_1() . $order->get_billing_city()
                                     ]),
                                 ],
@@ -1315,6 +1316,7 @@ function woocommerce_finance_init()
                                     'phoneNumber' => $order->get_billing_phone(),
                                     'email' => $order->get_billing_email(),
                                     'addresses' => array([
+                                        'postcode' => $order->get_billing_postcode(),
                                         'text' => $order->get_billing_postcode() . $order->get_billing_address_1() . $order->get_billing_city()
                                     ]),
                                 ],
