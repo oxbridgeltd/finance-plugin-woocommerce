@@ -554,14 +554,14 @@ function woocommerce_finance_init()
          *
          * @return array
          */
-        public function getCheckoutFinanceOptions()
+        public function getFinanceOptions()
         {
             global $woocommerce;
             if ('yes' !== $this->enabled) {
                 return false;
             }
             $finance_options = array();
-            if( is_checkout() ) {
+            if( is_checkout() || is_product()) {
                 foreach ($woocommerce->cart->get_cart() as $item) {
                     $product = $item['data'];
                     $finances = $this->getProductFinanceOptions($product);
@@ -618,7 +618,7 @@ function woocommerce_finance_init()
          */
         public function get_checkout_plans()
         {
-            $finances = $this->get_finances($this->getCheckoutFinanceOptions());
+            $finances = $this->get_finances($this->getFinanceOptions());
             if (is_array($finances)) {
                 $plans = array_keys($finances);
             }
@@ -1107,7 +1107,7 @@ function woocommerce_finance_init()
          */
         function payment_fields()
         {
-            $finances = $this->get_finances($this->getCheckoutFinanceOptions());
+            $finances = $this->get_finances($this->getFinanceOptions());
             if ($finances) {
                 $user_country = $this->get_country_code();
                 if (empty($user_country)) :
@@ -1145,7 +1145,7 @@ function woocommerce_finance_init()
                 }
             }
 
-            $finances = $this->get_finances($this->getCheckoutFinanceOptions());
+            $finances = $this->get_finances($this->getFinanceOptions());
             foreach ($finances as $_finance => $value) {
                 if (isset($_POST['divido_plan']) && $_finance === $_POST['divido_plan']) { // Input var okay.
                     $finance = $_finance;
