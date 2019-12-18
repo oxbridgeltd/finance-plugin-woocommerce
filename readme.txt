@@ -7,8 +7,8 @@ Author URI:        integrations.divido.com
 Author:            Divido Financial Services Ltd
 Requires at least: 3.0.2
 Tested up to:      5.3.0
-Stable tag:        2.1.3
-Version:           2.1.3
+Stable tag:        2.1.4
+Version:           2.1.4
 
 License: GPLv2 or later
 
@@ -44,6 +44,8 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
+ Version 2.1.4
+Fix bug on widget on product page
 
  Version 2.1.3
 Add postcode as address sanity value so that non-existent addresses are cleared
