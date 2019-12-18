@@ -44,8 +44,11 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
-  Unreleased 
-Adjust naming of functions for consistency
+ 
+  Version 2.1.5
+Chore  - Adjust naming of functions for consistency
+Bugfix - Product edit pages displaing plans that are not active
+Chore  - Update Finish Translations
 
  Version 2.1.4
 Fix bug on widget on product page
