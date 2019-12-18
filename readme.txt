@@ -44,6 +44,9 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
+  Unreleased 
+Adjust naming of functions for consistency
+
  Version 2.1.4
 Fix bug on widget on product page
 
