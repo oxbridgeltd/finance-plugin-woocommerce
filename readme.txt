@@ -44,6 +44,8 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
+ Version 2.1.4
+Fix bug on widget on product page
 
  Version 2.1.3
 Add postcode as address sanity value so that non-existent addresses are cleared
