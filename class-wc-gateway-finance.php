@@ -1386,13 +1386,15 @@ function woocommerce_finance_init()
 
             try {
                 foreach ($response as $_finance) {
-                    if ((!$selection && !is_array($selection)) || in_array($_finance->id, $selection, true)) {
-                        $finances[$_finance->id] = $_finance->description;
-                        $finances[$_finance->id] = array(
-                            'description' => $_finance->description,
-                            'min_deposit' => $_finance->deposit->minimum_percentage,
-                            'max_deposit' => $_finance->deposit->maximum_percentage,
-                        );
+                    if($_finance->active){
+                        if ((!$selection && !is_array($selection)) || in_array($_finance->id, $selection, true)) {
+                            $finances[$_finance->id] = $_finance->description;
+                            $finances[$_finance->id] = array(
+                                'description' => $_finance->description,
+                                'min_deposit' => $_finance->deposit->minimum_percentage,
+                                'max_deposit' => $_finance->deposit->maximum_percentage,
+                            );
+                        }    
                     }
                 }
             } catch (Exception $e) {
