@@ -11,7 +11,7 @@ defined('ABSPATH') or die('Denied');
  * Plugin Name: Finance Payment Gateway for WooCommerce
  * Plugin URI: http://integrations.divido.com/finance-gateway-woocommerce
  * Description: The Finance Payment Gateway plugin for WooCommerce.
- * Version: 2.1.4
+ * Version: 2.1.5
  * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
  * Text Domain: woocommerce-finance-gateway
@@ -724,7 +724,7 @@ function woocommerce_finance_init()
             </style>
             <?php
 
-            echo '<li class="finance_tab"><a href="#finance_tab"><span>' . esc_attr(__('backend/orderfinance_label', 'woocommerce-finance-gateway')) . '</span></a></li>';
+            echo '<li class="finance_tab"><a href="#finance_tab"><span>' . esc_attr(__('globalplugin_title', 'woocommerce-finance-gateway')) . '</span></a></li>';
         }
 
         /**
@@ -756,7 +756,7 @@ function woocommerce_finance_init()
             ?>
             <div id="finance_tab" class="panel woocommerce_options_panel">
                 <p class="form-field _hide_title_field ">
-                    <label for="_available"><?php esc_html_e('backend/configavailable_on_finance_label', 'woocommerce-finance-gateway'); ?></label>
+                    <label for="_available"><?php esc_html_e('frontend/productavailable_on_finance_label', 'woocommerce-finance-gateway'); ?></label>
 
                     <input type="radio" class="checkbox" name="_tab_finance_active" id="finance_active_default"
                            value="default" <?php print ('default' === $tab_data[0]['active']) ? 'checked' : ''; ?> > <?php esc_html_e('frontend/productdefault_settings_label', 'woocommerce-finance-gateway'); ?>
