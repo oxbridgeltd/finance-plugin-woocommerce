@@ -46,6 +46,7 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
  == Changelog ==
   Version 2.1.6
 Chore  - Additional translations
+BugFix - Widget was not displaying unless item was in basket
 
   Version 2.1.5
 Chore  - Adjust naming of functions for consistency
