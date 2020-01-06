@@ -1180,7 +1180,6 @@ function woocommerce_finance_init()
                     $shipping = (float)$shipping;
 
                     $products[] = array(
-                        //'Shipping and handling'
                         'name' =>  __('global/ordershipping_label', 'woocommerce-finance-gateway') ,
                         'quantity' => 1,
                         'price' => $shipping * 100,
@@ -1190,8 +1189,7 @@ function woocommerce_finance_init()
                 }
                 foreach ($woocommerce->cart->get_taxes() as $tax) {
                     $products[] = array(
-                        //Taxes
-                        'name' =>  __('global/order taxes_label', 'woocommerce-finance-gateway') ,
+                        'name' =>  __('global/ordertaxes_label', 'woocommerce-finance-gateway') ,
                         'quantity' => 1,
                         'price' => $tax * 100,
                     );
@@ -1200,15 +1198,13 @@ function woocommerce_finance_init()
                 }
                 foreach ($woocommerce->cart->get_fees() as $fee) {
                     $products[] = array(
-                        //Feees
                         'name' =>  __('global/orderfees_label', 'woocommerce-finance-gateway') ,
                         'quantity' => 1,
                         'price' => $fee->amount * 100,
                     );
                     if ($fee->taxable) {
                         $products[] = array(
-                            //Fees-tax
-                            'name' =>  __('global/order fee_tax_label', 'woocommerce-finance-gateway') ,
+                            'name' =>  __('global/orderfee_tax_label', 'woocommerce-finance-gateway') ,
                             'quantity' => 1,
                             'price' => $fee->tax * 100,
                         );
@@ -1220,8 +1216,7 @@ function woocommerce_finance_init()
                 // Gets the total discount amount(including coupons) - both Taxed and untaxed.
                 if ($woocommerce->cart->get_cart_discount_total()) {
                     $products[] = array(
-                        //Discount
-                        'name' =>  __('global/order discount_label', 'woocommerce-finance-gateway') ,
+                        'name' =>  __('global/orderdiscount_label', 'woocommerce-finance-gateway') ,
                         'quantity' => 1,
                         'price' => -$woocommerce->cart->get_cart_discount_total() * 100,
                     );
@@ -1231,8 +1226,7 @@ function woocommerce_finance_init()
                 $other = $order->get_total() - $order_total;
                 if (0 !== $other) {
                     $products[] = array(
-                        //Other
-                        'name' =>  __('globalorder_other_label', 'woocommerce-finance-gateway') ,
+                        'name' =>  __('global/orderother_label', 'woocommerce-finance-gateway') ,
                         'quantity' => 1,
                         'price' => $other,
                     );
