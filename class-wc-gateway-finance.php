@@ -46,7 +46,7 @@ function woocommerce_finance_init()
          *
          * @var array $avaiable_countries A hardcoded array of countries.
          */
-        public $avaiable_countries = array('GB', 'SE', 'NO', 'DK', 'ES', 'FI');
+        public $avaiable_countries = array('GB', 'SE', 'NO', 'DK', 'ES', 'FI', "DE", "FR");
         /**
          * Api Key
          *
@@ -488,14 +488,14 @@ function woocommerce_finance_init()
             if ('yes' !== $this->enabled || '' === $this->api_key) {
                 return false;
             }
-            
+
             if(is_checkout()){
                 $checkout_finance_options = $this->get_checkout_plans();
                 if (!$checkout_finance_options) {
                     return false;
                 }
             }
- 
+
             if (is_object($product)) {
                 if (version_compare($this->woo_version, '3.0.0') >= 0) {
                     $data = maybe_unserialize(get_post_meta($product->get_id(), 'woo_finance_product_tab', true));
@@ -1396,7 +1396,7 @@ function woocommerce_finance_init()
                                 'min_deposit' => $_finance->deposit->minimum_percentage,
                                 'max_deposit' => $_finance->deposit->maximum_percentage,
                             );
-                        }    
+                        }
                     }
                 }
             } catch (Exception $e) {
