@@ -135,11 +135,13 @@ function woocommerce_finance_init()
             }
             add_action('woocommerce_process_product_meta', array($this, 'product_save_data'), 10, 2);
             // product page.
-            if ('disabled' !== $this->calculator_theme) {
-                add_action('woocommerce_after_single_product_summary', array($this, 'product_calculator'));
-            }
+
             if ('disabled' !== $this->show_widget) {
-                add_action('woocommerce_single_product_summary', array($this, 'product_widget'), 15);
+                if ('disabled' !== $this->calculator_theme) {
+                    add_action('woocommerce_after_single_product_summary', array($this, 'product_calculator'));
+                } else {
+                    add_action('woocommerce_single_product_summary', array($this, 'product_widget'), 15);
+                }
             }
             // order admin page (making sure it only adds once).
             global $finances_set_admin_order_display;
