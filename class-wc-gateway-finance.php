@@ -158,6 +158,7 @@ function woocommerce_finance_init()
             add_action('woocommerce_order_status_completed', array($this, 'send_finance_fulfillment_request'), 10, 1);
             add_action('woocommerce_order_status_refunded', array($this, 'send_refund_request'), 10, 1);
             add_action('woocommerce_order_status_cancelled', array($this, 'send_cancellation_request'), 10, 1);
+
             // scripts.
             add_action('wp_enqueue_scripts', array($this, 'enqueue'));
             add_action('admin_enqueue_scripts', array($this, 'wpdocs_enqueue_custom_admin_style'));
@@ -677,13 +678,13 @@ function woocommerce_finance_init()
                 $environment = $this->get_finance_env($this->api_key, false);
                 if ($this->is_available($product) && $price > ($this->widget_threshold * 100)) {
                     $button_text = '';
-                    if ($this->buttonText != ' ') {
-                        $button_text = 'data-button-text="' . $this->buttonText .'" ';
+                    if (!empty(sanitize_text_field($this->buttonText))) {
+                        $button_text = 'data-button-text="' . sanitize_text_field($this->buttonText) .'" ';
                     }
 
                     $footnote = '';
-                    if (!empty($this->footnote)) {
-                        $footnote = 'data-footnote="' . $this->footnote . '" ';
+                    if (!empty(sanitize_text_field($this->footnote))) {
+                        $footnote = 'data-footnote="' . sanitize_text_field($this->footnote) . '" ';
                     }
 
                     $plans = $this->get_product_plans($product);
