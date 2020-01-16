@@ -11,7 +11,7 @@ defined('ABSPATH') or die('Denied');
  * Plugin Name: Finance Payment Gateway for WooCommerce
  * Plugin URI: http://integrations.divido.com/finance-gateway-woocommerce
  * Description: The Finance Payment Gateway plugin for WooCommerce.
- * Version: 2.1.6
+ * Version: 2.1.7
  * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
  * Text Domain: woocommerce-finance-gateway
@@ -135,11 +135,13 @@ function woocommerce_finance_init()
             }
             add_action('woocommerce_process_product_meta', array($this, 'product_save_data'), 10, 2);
             // product page.
-            if ('disabled' !== $this->calculator_theme) {
-                add_action('woocommerce_after_single_product_summary', array($this, 'product_calculator'));
-            }
+
             if ('disabled' !== $this->show_widget) {
-                add_action('woocommerce_single_product_summary', array($this, 'product_widget'), 15);
+                if ('disabled' !== $this->calculator_theme) {
+                    add_action('woocommerce_after_single_product_summary', array($this, 'product_calculator'));
+                } else {
+                    add_action('woocommerce_single_product_summary', array($this, 'product_widget'), 15);
+                }
             }
             // order admin page (making sure it only adds once).
             global $finances_set_admin_order_display;
@@ -675,8 +677,8 @@ function woocommerce_finance_init()
                 $environment = $this->get_finance_env($this->api_key, false);
                 if ($this->is_available($product) && $price > ($this->widget_threshold * 100)) {
                     $button_text = '';
-                    if (!empty($this->buttonText)) {
-                        $button_text = $this->buttonText;
+                    if ($this->buttonText != ' ') {
+                        $button_text = 'data-button-text="' . $this->buttonText .'" ';
                     }
 
                     $footnote = '';
