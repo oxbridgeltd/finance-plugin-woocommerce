@@ -112,6 +112,11 @@ function woocommerce_finance_init()
             $this->secret = (!empty($this->settings['secret'])) ? $this->settings['secret'] : '';
             $this->product_select = (!empty($this->settings['productSelect'])) ? $this->settings['productSelect'] : '';
 
+
+
+            $this->title = $this->title. $this->get_finance_env($this->api_key, true);
+
+
             // Load logger.
             if (version_compare(WC_VERSION, '2.7', '<')) {
                 $this->logger = new WC_Logger();
