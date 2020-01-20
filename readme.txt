@@ -7,8 +7,8 @@ Author URI:        integrations.divido.com
 Author:            Divido Financial Services Ltd
 Requires at least: 3.0.2
 Tested up to:      5.3.2
-Stable tag:        2.1.7
-Version:           2.1.7
+Stable tag:        2.1.8
+Version:           2.1.8
 
 License: GPLv2 or later
 
@@ -44,6 +44,9 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
+
+ Version 2.1.8
+BugFix - Update widget price for variable products
 
  Version 2.1.7
 BugFix - Widget was not displaying default button text

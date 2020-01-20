@@ -4,7 +4,7 @@ jQuery(document).on('woocommerce_variation_select_change', function() {
         jQuery(this).on('found_variation', function(event, variation) {
             var new_price = variation.display_price;
             var widget = jQuery("[data-calculator-widget]");
-            widget.attr("data-amount", new_price * 100);
+            widget.attr("data-amount", Math.round(new_price * 100));
             __widgetInstance.init();
         });
     });
