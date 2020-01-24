@@ -7,8 +7,8 @@ Author URI:        integrations.divido.com
 Author:            Divido Financial Services Ltd
 Requires at least: 3.0.2
 Tested up to:      5.3.2
-Stable tag:        2.1.9
-Version:           2.1.9
+Stable tag:        2.1.10
+Version:           2.1.10
 
 License: GPLv2 or later
 
@@ -44,6 +44,9 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
+
+Version 2.1.10
+Fix - Editable payment method logo styling
 
 Version 2.1.9
 Feature - Add editable payment method logo to checkout
