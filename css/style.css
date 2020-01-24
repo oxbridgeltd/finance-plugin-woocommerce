@@ -10,3 +10,17 @@
 
 	height:70px !important;
 }
+
+
+
+#payment > ul > li.wc_payment_method.payment_method_finance > label > img{
+	margin-left:7px;
+	float:none;
+	vertical-align:middle;
+	height:18px;
+	display:inline-block;
+}
+
+#payment .payment_methods li img{
+	float:none;
+}

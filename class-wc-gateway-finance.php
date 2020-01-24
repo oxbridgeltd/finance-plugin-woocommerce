@@ -113,8 +113,8 @@ function woocommerce_finance_init()
             $this->product_select = (!empty($this->settings['productSelect'])) ? $this->settings['productSelect'] : '';
 
             $environment = $this->get_finance_env($this->api_key, true);
-            $this->title = "$this->title  <img class='finance-gateway-logo' src='https://cdn.divido.com/widget/themes/$environment/logo.png' />";
 
+            $this->icon="https://cdn.divido.com/widget/themes/$environment/logo.png";
             // Load logger.
             if (version_compare(WC_VERSION, '2.7', '<')) {
                 $this->logger = new WC_Logger();
