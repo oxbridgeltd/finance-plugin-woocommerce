@@ -1450,18 +1450,15 @@ function woocommerce_finance_init()
 
             if ($setting != false) {
                 return $setting;
-            } elseif ($setting === false && $reload == true && !empty($api_key) ) {
+            } elseif ($setting === false && $reload == true ) {
                 $response = $sdk->platformEnvironments()->getPlatformEnvironment();
                 $finance_env = $response->getBody()->getContents();
                 $decoded = json_decode($finance_env);
                 $global = $decoded->data->environment;
                 set_transient($transient, $global);
                 return $global;
-            }else{
-                set_transient($transient, 'divido');
-                return '';
+                }
             }
-        }
 
         /**
          * Enque Admin Styles Updates.
