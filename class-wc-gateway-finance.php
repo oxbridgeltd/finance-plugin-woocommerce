@@ -11,12 +11,12 @@ defined('ABSPATH') or die('Denied');
  * Plugin Name: Finance Payment Gateway for WooCommerce
  * Plugin URI: http://integrations.divido.com/finance-gateway-woocommerce
  * Description: The Finance Payment Gateway plugin for WooCommerce.
- * Version: 2.1.10
+ * Version: 2.1.11
  * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
  * Text Domain: woocommerce-finance-gateway
  * Domain Path: /i18n/languages/
- * WC tested up to: 3.8.1
+ * WC tested up to: 3.9.1
  */
 
 /**
@@ -111,10 +111,8 @@ function woocommerce_finance_init()
             $this->widget_threshold = (!empty($this->settings['widgetThreshold'])) ? $this->settings['widgetThreshold'] : 250;
             $this->secret = (!empty($this->settings['secret'])) ? $this->settings['secret'] : '';
             $this->product_select = (!empty($this->settings['productSelect'])) ? $this->settings['productSelect'] : '';
-
-            $environment = $this->get_finance_env($this->api_key, true);
-
-            $this->icon="https://cdn.divido.com/widget/themes/$environment/logo.png";
+            $this->icon = (empty($this->api_key)) ? 'https://cdn.divido.com/widget/themes/divido/logo.png' : "https://cdn.divido.com/widget/themes/". $this->get_finance_env($this->api_key, true) ."/logo.png";
+           
             // Load logger.
             if (version_compare(WC_VERSION, '2.7', '<')) {
                 $this->logger = new WC_Logger();
@@ -1452,15 +1450,15 @@ function woocommerce_finance_init()
 
             if ($setting != false) {
                 return $setting;
-            } elseif ($setting === false && $reload == true) {
+            } elseif ($setting === false && $reload == true ) {
                 $response = $sdk->platformEnvironments()->getPlatformEnvironment();
                 $finance_env = $response->getBody()->getContents();
                 $decoded = json_decode($finance_env);
                 $global = $decoded->data->environment;
                 set_transient($transient, $global);
                 return $global;
+                }
             }
-        }
 
         /**
          * Enque Admin Styles Updates.

@@ -7,8 +7,8 @@ Author URI:        integrations.divido.com
 Author:            Divido Financial Services Ltd
 Requires at least: 3.0.2
 Tested up to:      5.3.2
-Stable tag:        2.1.10
-Version:           2.1.10
+Stable tag:        2.1.11
+Version:           2.1.11
 
 License: GPLv2 or later
 
@@ -44,6 +44,9 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
+
+Version 2.1.11
+Fix - Plugin installation issue
 
 Version 2.1.10
 Fix - Editable payment method logo styling
