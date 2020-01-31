@@ -111,10 +111,8 @@ function woocommerce_finance_init()
             $this->widget_threshold = (!empty($this->settings['widgetThreshold'])) ? $this->settings['widgetThreshold'] : 250;
             $this->secret = (!empty($this->settings['secret'])) ? $this->settings['secret'] : '';
             $this->product_select = (!empty($this->settings['productSelect'])) ? $this->settings['productSelect'] : '';
-
-            $environment = $this->get_finance_env($this->api_key, true);
-
-            $this->icon="https://cdn.divido.com/widget/themes/$environment/logo.png";
+            $this->icon= (empty($this->api_key)) ? 'https://cdn.divido.com/widget/themes/divido/logo.png' : "https://cdn.divido.com/widget/themes/". $this->get_finance_env($this->api_key, true) ."/logo.png";
+           
             // Load logger.
             if (version_compare(WC_VERSION, '2.7', '<')) {
                 $this->logger = new WC_Logger();
@@ -1452,13 +1450,16 @@ function woocommerce_finance_init()
 
             if ($setting != false) {
                 return $setting;
-            } elseif ($setting === false && $reload == true) {
+            } elseif ($setting === false && $reload == true && !empty($api_key) ) {
                 $response = $sdk->platformEnvironments()->getPlatformEnvironment();
                 $finance_env = $response->getBody()->getContents();
                 $decoded = json_decode($finance_env);
                 $global = $decoded->data->environment;
                 set_transient($transient, $global);
                 return $global;
+            }else{
+                set_transient($transient, 'divido');
+                return '';
             }
         }
 
