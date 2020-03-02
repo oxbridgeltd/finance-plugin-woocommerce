@@ -46,7 +46,7 @@ function woocommerce_finance_init()
          *
          * @var array $avaiable_countries A hardcoded array of countries.
          */
-        public $avaiable_countries = array('GB', 'SE', 'NO', 'DK', 'ES', 'FI', 'DE', 'FR');
+        public $avaiable_countries = array('GB', 'SE', 'NO', 'DK', 'ES', 'FI', 'DE', 'FR', 'PE', 'CO', 'BR');
         /**
          * Api Key
          *
