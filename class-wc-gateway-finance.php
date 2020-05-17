@@ -185,7 +185,7 @@ function woocommerce_finance_init()
                 return false;
             }
             $finance = $this->get_finance_env($this->api_key, false);
-            wp_register_script('woocommerce-finance-gateway-calculator', '//cdn.divido.com/widget/dist/' . $finance . '.calculator.js', false, 1.0, true);
+            wp_register_script('woocommerce-finance-gateway-calculator', '//cdn.divido.com/widget/v3/' . $finance . '.calculator.js', false, 1.0, true);
             wp_enqueue_script('woocommerce-finance-gateway-calculator');
 
             $attributes = shortcode_atts(array(
@@ -279,7 +279,7 @@ function woocommerce_finance_init()
                 $key = preg_split('/\./', $this->api_key);
                 $protocol = (isset($_SERVER['HTTPS']) && 'on' === $_SERVER['HTTPS']) ? 'https' : 'http'; // Input var okay.
                 $finance = $this->get_finance_env($this->api_key, false);
-                wp_register_script('woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/widget/dist/' . $finance . '.calculator.js', false, 1.0, true);
+                wp_register_script('woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/widget/v3/' . $finance . '.calculator.js', false, 1.0, true);
                 wp_register_script('woocoomerce-finance-gateway-calculator_price_update', plugins_url('', __FILE__) . '/js/widget_price_update.js', false, 1.0, true);
                 wp_register_style('woocommerce-finance-gateway-style', plugins_url('', __FILE__) . '/css/style.css', false, 1.0);
                 $array = array(
