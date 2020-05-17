@@ -11,7 +11,7 @@ defined('ABSPATH') or die('Denied');
  * Plugin Name: Finance Payment Gateway for WooCommerce
  * Plugin URI: http://integrations.divido.com/finance-gateway-woocommerce
  * Description: The Finance Payment Gateway plugin for WooCommerce.
- * Version: 2.1.13
+ * Version: 2.1.
  * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
  * Text Domain: woocommerce-finance-gateway
@@ -857,8 +857,6 @@ function woocommerce_finance_init()
                 ),
             );
             if (isset($this->api_key) && $this->api_key) {
-                delete_transient('finances');
-                delete_transient('environment');
                 $response = $this->get_all_finances($this->api_key, true);
                 $settings = $this->get_finance_env($this->api_key, true);
                 $finance = [];
@@ -1145,11 +1143,12 @@ function woocommerce_finance_init()
         {
             global $woocommerce;
             $order = new WC_Order($order_id);
-            if (isset($_POST['submit-payment-form-nonce'])) { // Input var okay.
-                if (!wp_verify_nonce(sanitize_key($_POST['submit-payment-form-nonce']), 'submit-payment-form')) { // Input var okay.
-                    return;
-                }
-            }
+            if ( 
+                ! isset( $_POST['submit-payment-form-nonce'] ) 
+                || ! wp_verify_nonce( $_POST['submit-payment-form-nonce'], 'submit-payment-form' ) 
+            ) {
+                return;
+            } 
 
             $finances = $this->get_finances($this->get_finance_options());
             foreach ($finances as $_finance => $value) {
@@ -1265,7 +1264,7 @@ function woocommerce_finance_init()
                                 [
                                     'firstName' => $order->get_billing_first_name(),
                                     'lastName' => $order->get_billing_last_name(),
-                                    'phoneNumber' => $order->get_billing_phone(),
+                                    'phoneNumber' => str_replace(' ', '', $order->get_billing_phone()),
                                     'email' => $order->get_billing_email(),
                                     'addresses' => array([
                                         'postcode' => $order->get_billing_postcode(),
@@ -1319,7 +1318,7 @@ function woocommerce_finance_init()
                                 [
                                     'firstName' => $order->get_billing_first_name(),
                                     'lastName' => $order->get_billing_last_name(),
-                                    'phoneNumber' => $order->get_billing_phone(),
+                                    'phoneNumber' => str_replace(' ', '', $order->get_billing_phone()),
                                     'email' => $order->get_billing_email(),
                                     'addresses' => array([
                                         'postcode' => $order->get_billing_postcode(),
