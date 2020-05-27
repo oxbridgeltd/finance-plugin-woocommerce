@@ -112,7 +112,7 @@ function woocommerce_finance_init()
             $this->secret = (!empty($this->settings['secret'])) ? $this->settings['secret'] : '';
             $this->product_select = (!empty($this->settings['productSelect'])) ? $this->settings['productSelect'] : '';
             $this->icon = (empty($this->api_key)) ? 'https://cdn.divido.com/widget/themes/divido/logo.png' : "https://cdn.divido.com/widget/themes/". $this->get_finance_env($this->api_key, true) ."/logo.png";
-           
+
             // Load logger.
             if (version_compare(WC_VERSION, '2.7', '<')) {
                 $this->logger = new WC_Logger();
@@ -1143,12 +1143,12 @@ function woocommerce_finance_init()
         {
             global $woocommerce;
             $order = new WC_Order($order_id);
-            if ( 
-                ! isset( $_POST['submit-payment-form-nonce'] ) 
-                || ! wp_verify_nonce( $_POST['submit-payment-form-nonce'], 'submit-payment-form' ) 
+            if (
+                ! isset( $_POST['submit-payment-form-nonce'] )
+                || ! wp_verify_nonce( $_POST['submit-payment-form-nonce'], 'submit-payment-form' )
             ) {
                 return;
-            } 
+            }
 
             $finances = $this->get_finances($this->get_finance_options());
             foreach ($finances as $_finance => $value) {
@@ -1673,8 +1673,7 @@ function woocommerce_finance_init()
                 ],
             ];
 
-            $applicationRefund = (new \Divido\MerchantSDK\Models\ApplicationCancellation())
-                ->withAmount($items[0]['price'])
+            $applicationCancellation = (new \Divido\MerchantSDK\Models\ApplicationCancellation())
                 ->withOrderItems($items);
 
             $env = $this->environments($this->api_key);
@@ -1685,7 +1684,7 @@ function woocommerce_finance_init()
                 $this->api_key
             );
             $sdk = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
-            $response = $sdk->applicationCancellations()->createApplicationCancellation($application, $applicationRefund);
+            $response = $sdk->applicationCancellations()->createApplicationCancellation($application, $applicationCancellation);
             $refundResponseBody = $response->getBody()->getContents();
 
         }
@@ -1704,7 +1703,6 @@ function woocommerce_finance_init()
             ];
 
             $applicationRefund = (new \Divido\MerchantSDK\Models\ApplicationRefund())
-                ->withAmount($items[0]['price'])
                 ->withOrderItems($items);
 
             $env = $this->environments($this->api_key);
