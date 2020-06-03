@@ -242,7 +242,7 @@ function woocommerce_finance_init()
             $httpClientWrapper = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
                 new \Divido\MerchantSDKGuzzle6\GuzzleAdapter($client),
                 \Divido\MerchantSDK\Environment::CONFIGURATION[$env]['base_uri'],
-                $this->api_key
+                $api_key
             );
             $sdk = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
 
@@ -250,9 +250,9 @@ function woocommerce_finance_init()
             $transient_name = 'finances';
             $finances = get_transient($transient_name);
 
-            if ($finances != false) {
+            if (!$reload) {
                 return $finances;
-            } elseif (false === $finances && $reload == true) {
+            } else {
                 $request_options = (new \Divido\MerchantSDK\Handlers\ApiRequestOptions());
                 // Retrieve all finance plans for the merchant.
                 try {
@@ -856,8 +856,10 @@ function woocommerce_finance_init()
                     'default' => '',
                 ),
             );
+
             if (isset($this->api_key) && $this->api_key) {
                 $response = $this->get_all_finances($this->api_key, true);
+
                 $settings = $this->get_finance_env($this->api_key, true);
                 $finance = [];
                 foreach ($response as $finances) {
@@ -1284,7 +1286,7 @@ function woocommerce_finance_init()
                             'merchant_response_url' => admin_url('admin-ajax.php') . '?action=woocommerce_finance_callback',
                         ])
                         ->withMetadata([
-                            'order_number' => $order_id,
+                            'order_number' => $order_id
                         ]);
                     if ('' !== $this->secret) {
                         $secret = $this->create_signature(json_encode($application->getPayload()), $this->secret);
