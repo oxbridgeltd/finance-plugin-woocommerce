@@ -1279,7 +1279,7 @@ function woocommerce_finance_init()
                         ->withOrderItems($products)
                         ->withDepositAmount(round($deposit) )
                         ->withFinalisationRequired(false)
-                        ->withMerchantReference($order_id)
+                        ->withMerchantReference(strval($order_id))
                         ->withUrls
                         ([
                             'merchant_redirect_url' => $order->get_checkout_order_received_url(),
