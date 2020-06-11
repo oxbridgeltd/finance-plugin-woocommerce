@@ -48,7 +48,7 @@ Version 2.1.15
 Chore - Add additional metadata for orders
 Fix - Reload finances when when app settings are saved
 Chore - Add order id to merchant reference
-Fix - Refund and cancellation webhoook
+Fix - Refund and cancellation webhook
 
 Version 2.1.14
 Feature - Upgrade Calculator Widget
