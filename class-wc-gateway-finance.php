@@ -112,7 +112,7 @@ function woocommerce_finance_init()
             $this->secret = (!empty($this->settings['secret'])) ? $this->settings['secret'] : '';
             $this->product_select = (!empty($this->settings['productSelect'])) ? $this->settings['productSelect'] : '';
             $this->icon = (empty($this->api_key)) ? 'https://cdn.divido.com/widget/themes/divido/logo.png' : "https://cdn.divido.com/widget/themes/". $this->get_finance_env($this->api_key, true) ."/logo.png";
-
+            $this->plugin_version= '2.1.14';
             // Load logger.
             if (version_compare(WC_VERSION, '2.7', '<')) {
                 $this->logger = new WC_Logger();
@@ -1285,6 +1285,10 @@ function woocommerce_finance_init()
                         ])
                         ->withMetadata([
                             'order_number' => $order_id,
+                            'ecom_platform'         => 'woocommerce',
+                            'ecom_platform_version' => WC_VERSION,
+                            'ecom_base_url'         => wc_get_checkout_url(),
+                            'plugin_version'        => $this->plugin_version,
                         ]);
                     if ('' !== $this->secret) {
                         $secret = $this->create_signature(json_encode($application->getPayload()), $this->secret);
@@ -1339,6 +1343,10 @@ function woocommerce_finance_init()
                         ])
                         ->withMetadata([
                             'order_number' => $order_id,
+                            'ecom_platform'         => 'woocommerce',
+                            'ecom_platform_version' => WC_VERSION,
+                            'ecom_base_url'         => wc_get_checkout_url(),
+                            'plugin_version'        => $this->plugin_version,
                         ]);
                     if ('' !== $this->secret) {
                         $secret = $this->create_signature(json_encode($application->getPayload()), $this->secret);
