@@ -45,6 +45,7 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
  == Changelog ==
 Version 2.1.15
+Chore - Add additional metadata for orders
 Fix - Reload finances when when app settings are saved
 Chore - Add order id to merchant reference
 Fix - Refund and cancellation webhoook
