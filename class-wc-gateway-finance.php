@@ -11,12 +11,13 @@ defined('ABSPATH') or die('Denied');
  * Plugin Name: Finance Payment Gateway for WooCommerce
  * Plugin URI: http://integrations.divido.com/finance-gateway-woocommerce
  * Description: The Finance Payment Gateway plugin for WooCommerce.
- * Version: 2.1.14
+ * Version: 2.1.15
+ *
  * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
  * Text Domain: woocommerce-finance-gateway
  * Domain Path: /i18n/languages/
- * WC tested up to: 3.9.2
+ * WC tested up to: 4.2.0
  */
 
 /**
@@ -112,7 +113,7 @@ function woocommerce_finance_init()
             $this->secret = (!empty($this->settings['secret'])) ? $this->settings['secret'] : '';
             $this->product_select = (!empty($this->settings['productSelect'])) ? $this->settings['productSelect'] : '';
             $this->icon = (empty($this->api_key)) ? 'https://cdn.divido.com/widget/themes/divido/logo.png' : "https://cdn.divido.com/widget/themes/". $this->get_finance_env($this->api_key, true) ."/logo.png";
-            $this->plugin_version= '2.1.14';
+            $this->plugin_version= '2.1.15';
             // Load logger.
             if (version_compare(WC_VERSION, '2.7', '<')) {
                 $this->logger = new WC_Logger();
@@ -242,7 +243,7 @@ function woocommerce_finance_init()
             $httpClientWrapper = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
                 new \Divido\MerchantSDKGuzzle6\GuzzleAdapter($client),
                 \Divido\MerchantSDK\Environment::CONFIGURATION[$env]['base_uri'],
-                $this->api_key
+                $api_key
             );
             $sdk = new \Divido\MerchantSDK\Client($httpClientWrapper, $env);
 
@@ -250,9 +251,9 @@ function woocommerce_finance_init()
             $transient_name = 'finances';
             $finances = get_transient($transient_name);
 
-            if ($finances != false) {
+            if (!$reload) {
                 return $finances;
-            } elseif (false === $finances && $reload == true) {
+            } else {
                 $request_options = (new \Divido\MerchantSDK\Handlers\ApiRequestOptions());
                 // Retrieve all finance plans for the merchant.
                 try {
@@ -856,8 +857,10 @@ function woocommerce_finance_init()
                     'default' => '',
                 ),
             );
+
             if (isset($this->api_key) && $this->api_key) {
                 $response = $this->get_all_finances($this->api_key, true);
+
                 $settings = $this->get_finance_env($this->api_key, true);
                 $finance = [];
                 foreach ($response as $finances) {
@@ -1276,7 +1279,7 @@ function woocommerce_finance_init()
                         ->withOrderItems($products)
                         ->withDepositAmount(round($deposit) )
                         ->withFinalisationRequired(false)
-                        ->withMerchantReference('')
+                        ->withMerchantReference(strval($order_id))
                         ->withUrls
                         ([
                             'merchant_redirect_url' => $order->get_checkout_order_received_url(),
