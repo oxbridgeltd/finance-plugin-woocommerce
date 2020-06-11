@@ -17,7 +17,7 @@ defined('ABSPATH') or die('Denied');
  * Author URI: www.divido.com
  * Text Domain: woocommerce-finance-gateway
  * Domain Path: /i18n/languages/
- * WC tested up to: 3.9.2
+ * WC tested up to: 4.2.0
  */
 
 /**
