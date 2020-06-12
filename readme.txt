@@ -7,8 +7,8 @@ Author URI:        integrations.divido.com
 Author:            Divido Financial Services Ltd
 Requires at least: 3.0.2
 Tested up to:      5.4.1
-Stable tag:        2.1.15
-Version:           2.1.15
+Stable tag:        2.1.16
+Version:           2.1.16
 
 License: GPLv2 or later
 
@@ -44,6 +44,9 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
+Version 2.1.16
+Fix - Add order id to merchant reference for patch requests
+
 Version 2.1.15
 Chore - Add additional metadata for orders
 Fix - Reload finances when when app settings are saved
