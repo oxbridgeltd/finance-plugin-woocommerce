@@ -251,8 +251,10 @@ function woocommerce_finance_init()
             $finances = false;
             $transient_name = 'finances';
             $finances = get_transient($transient_name);
+            $apiKey = get_transient("api_key");
 
-            if (!$reload) {
+            // only fetch new finances if the api key is different
+            if ($apiKey === $this->api_key || $this->api_key = "") {
                 return $finances;
             } else {
                 $request_options = (new \Divido\MerchantSDK\Handlers\ApiRequestOptions());
@@ -261,6 +263,7 @@ function woocommerce_finance_init()
                     $plans = $sdk->getAllPlans($request_options);
                     $plans = $plans->getResources();
                     set_transient($transient_name, $plans);
+                    set_transient("api_key", $this->api_key);
                     return $plans;
                 } catch (Exception $e) {
                     return [];
@@ -860,9 +863,8 @@ function woocommerce_finance_init()
             );
 
             if (isset($this->api_key) && $this->api_key) {
-                $response = $this->get_all_finances($this->api_key, true);
+                $response = $this->get_all_finances($this->api_key, false);
 
-                $settings = $this->get_finance_env($this->api_key, true);
                 $finance = [];
                 foreach ($response as $finances) {
                     if($finances->active){
