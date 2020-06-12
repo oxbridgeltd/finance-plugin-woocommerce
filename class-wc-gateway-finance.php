@@ -1180,7 +1180,7 @@ function woocommerce_finance_init()
                     $products[] = array(
                         'name' => $name,
                         'quantity' => (int)$quantity,
-                        'price' => $price,
+                        'price' => round($price)
                     );
                 }
                 $deposit = (isset($_POST['divido_deposit']) && round($_POST['divido_deposit']) > 0) ? sanitize_text_field(wp_unslash($_POST['divido_deposit'])) : $min_deposit; // Input var okay.
@@ -1191,7 +1191,7 @@ function woocommerce_finance_init()
                     $products[] = array(
                         'name' =>  __('global/ordershipping_label', 'woocommerce-finance-gateway') ,
                         'quantity' => 1,
-                        'price' => $shipping * 100,
+                        'price' => round($shipping * 100),
                     );
                     // Add shipping to order total.
                     $order_total += $shipping;
@@ -1200,7 +1200,7 @@ function woocommerce_finance_init()
                     $products[] = array(
                         'name' =>  __('global/ordertaxes_label', 'woocommerce-finance-gateway') ,
                         'quantity' => 1,
-                        'price' => $tax * 100,
+                        'price' => round($tax * 100),
                     );
                     // Add tax to ordertotal.
                     $order_total += $tax;
@@ -1209,13 +1209,13 @@ function woocommerce_finance_init()
                     $products[] = array(
                         'name' =>  __('global/orderfees_label', 'woocommerce-finance-gateway') ,
                         'quantity' => 1,
-                        'price' => $fee->amount * 100,
+                        'price' => round($fee->amount * 100),
                     );
                     if ($fee->taxable) {
                         $products[] = array(
                             'name' =>  __('global/orderfee_tax_label', 'woocommerce-finance-gateway') ,
                             'quantity' => 1,
-                            'price' => $fee->tax * 100,
+                            'price' => round($fee->tax * 100),
                         );
                         $order_total += $fee->tax;
                     }
@@ -1227,7 +1227,7 @@ function woocommerce_finance_init()
                     $products[] = array(
                         'name' =>  __('global/orderdiscount_label', 'woocommerce-finance-gateway') ,
                         'quantity' => 1,
-                        'price' => -$woocommerce->cart->get_cart_discount_total() * 100,
+                        'price' => round(-$woocommerce->cart->get_cart_discount_total() * 100),
                     );
                     // Deduct total discount.
                     $order_total -= $woocommerce->cart->get_cart_discount_total();
@@ -1237,7 +1237,7 @@ function woocommerce_finance_init()
                     $products[] = array(
                         'name' =>  __('global/orderother_label', 'woocommerce-finance-gateway') ,
                         'quantity' => 1,
-                        'price' => $other,
+                        'price' => round($other),
                     );
                 }
 
