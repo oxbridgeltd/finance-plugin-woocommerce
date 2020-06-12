@@ -1681,7 +1681,7 @@ function woocommerce_finance_init()
                 [
                     'name' => __('globalorder_id_label', 'woocommerce-finance-gateway').": $order_id",
                     'quantity' => 1,
-                    'price' => $order_total * 100,
+                    'price' => round($order_total * 100),
                 ],
             ];
 
@@ -1710,7 +1710,7 @@ function woocommerce_finance_init()
                 [
                     'name' => __('globalorder_id_label', 'woocommerce-finance-gateway').": $order_id",
                     'quantity' => 1,
-                    'price' => $order_total * 100,
+                    'price' => round($order_total * 100),
                 ],
             ];
 
@@ -1740,7 +1740,7 @@ function woocommerce_finance_init()
                 [
                     'name' => __('globalorder_id_label', 'woocommerce-finance-gateway').": $order_id",
                     'quantity' => 1,
-                    'price' => $order_total * 100,
+                    'price' => round($order_total * 100),
                 ],
             ];
             // Create a new application activation model.
