@@ -237,7 +237,7 @@ function woocommerce_finance_init()
          * @param  boolean $reload An optional parameter to say if the finances endpoint should be called again.
          * @return array
          */
-        function get_all_finances($api_key, $reload)
+        function get_all_finances($api_key)
         {
             $env = $this->environments($api_key);
             $client = new \GuzzleHttp\Client();
@@ -863,7 +863,7 @@ function woocommerce_finance_init()
             );
 
             if (isset($this->api_key) && $this->api_key) {
-                $response = $this->get_all_finances($this->api_key, false);
+                $response = $this->get_all_finances($this->api_key);
 
                 $finance = [];
                 foreach ($response as $finances) {
@@ -1057,7 +1057,7 @@ function woocommerce_finance_init()
                 <h3 style="border-bottom:1px solid"><?php esc_html_e('backend/configgeneral_settings_header', 'woocommerce-finance-gateway'); ?></h3>
                 <?php
                 if (isset($this->api_key) && $this->api_key) {
-                    $response = $this->get_all_finances($this->api_key, false);
+                    $response = $this->get_all_finances($this->api_key);
                     $options = array();
                     if ([] === $response) {
                         ?>
@@ -1398,7 +1398,7 @@ function woocommerce_finance_init()
         function get_finances($selection = false)
         {
             if (!isset($this->finance_options)) {
-                $this->finance_options = $this->get_all_finances($this->api_key, false);
+                $this->finance_options = $this->get_all_finances($this->api_key);
             }
             $response = $this->finance_options; // array.
             $finances = array();
