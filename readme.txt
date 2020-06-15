@@ -44,6 +44,10 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
+Version 2.1.17
+Fix - reduce reload
+Chore - add css description id
+
 Version 2.1.16
 Fix - Add order id to merchant reference for patch requests
 
