@@ -254,14 +254,16 @@ function woocommerce_finance_init()
             $apiKey = get_transient("api_key");
 
             // only fetch new finances if the api key is different
-            if ($apiKey === $this->api_key || $this->api_key = "") {
-                if(empty($finances)){
+            // OR API key transisent is not set
+            // OR finances transient is not set
+            if ($apiKey !== $this->api_key || empty($apiKey) || empty($finances)) {
+
                     $request_options = (new \Divido\MerchantSDK\Handlers\ApiRequestOptions());
                     // Retrieve all finance plans for the merchant.
                     try {
                         $plans = $sdk->getAllPlans($request_options);
                         $plans = $plans->getResources();
-                        set_transient($transient_name, $plans , 60*60*1);
+                        set_transient($transient_name, $plans , 20);
                         set_transient("api_key", $this->api_key);
                         return $plans;
                     } catch (Exception $e) {
@@ -270,19 +272,7 @@ function woocommerce_finance_init()
                 } else {
                     return $finances;
                 }
-            } else {
-                $request_options = (new \Divido\MerchantSDK\Handlers\ApiRequestOptions());
-                // Retrieve all finance plans for the merchant.
-                try {
-                    $plans = $sdk->getAllPlans($request_options);
-                    $plans = $plans->getResources();
-                    set_transient($transient_name, $plans , 60*60*1);
-                    set_transient("api_key", $this->api_key);
-                    return $plans;
-                } catch (Exception $e) {
-                    return [];
-                }
-            }
+
         }
 
         /**
@@ -878,7 +868,7 @@ function woocommerce_finance_init()
 
             if (isset($this->api_key) && $this->api_key) {
                 $response = $this->get_all_finances($this->api_key);
-
+               // $settings = $this->get_finance_env($this->api_key, true);
                 $finance = [];
                 foreach ($response as $finances) {
                     if($finances->active){
