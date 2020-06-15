@@ -263,7 +263,7 @@ function woocommerce_finance_init()
                     try {
                         $plans = $sdk->getAllPlans($request_options);
                         $plans = $plans->getResources();
-                        set_transient($transient_name, $plans , 20);
+                        set_transient($transient_name, $plans , 60*60*1);
                         set_transient("api_key", $this->api_key);
                         return $plans;
                     } catch (Exception $e) {
