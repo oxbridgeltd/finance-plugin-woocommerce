@@ -1,5 +1,5 @@
 <?php defined( 'ABSPATH' ) or die( 'Denied' ); ?>
-<h1>
+<h1 id="finance-payment-description">
         <?php print (isset($this->settings['description'])) ? $this->settings['description']:""; ?>
     </h1>
 <div id="financeWidget"
