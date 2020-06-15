@@ -107,9 +107,9 @@ function woocommerce_finance_init()
             $this->buttonText = (!empty($this->settings['buttonText'])) ? $this->settings['buttonText'] : ' ';
             $this->cart_threshold = (!empty($this->settings['cartThreshold'])) ? $this->settings['cartThreshold'] : 250;
             $this->max_loan_amount = (!empty($this->settings['maxLoanAmount'])) ? $this->settings['maxLoanAmount'] : 25000;
-            $this->auto_fulfillment = (!empty($this->settings['autoFulfillment'])) ? $this->settings['autoFulfillment'] : false;
-            $this->auto_refund = (!empty($this->settings['autoRefund'])) ? $this->settings['autoRefund'] : false;
-            $this->auto_cancel = (!empty($this->settings['autoCancel'])) ? $this->settings['autoCancel'] : false;
+            $this->auto_fulfillment = (!empty($this->settings['autoFulfillment'])) ? $this->settings['autoFulfillment'] : true;
+            $this->auto_refund = (!empty($this->settings['autoRefund'])) ? $this->settings['autoRefund'] : true;
+            $this->auto_cancel = (!empty($this->settings['autoCancel'])) ? $this->settings['autoCancel'] : true;
             $this->widget_threshold = (!empty($this->settings['widgetThreshold'])) ? $this->settings['widgetThreshold'] : 250;
             $this->secret = (!empty($this->settings['secret'])) ? $this->settings['secret'] : '';
             $this->product_select = (!empty($this->settings['productSelect'])) ? $this->settings['productSelect'] : '';
