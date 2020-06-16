@@ -44,7 +44,7 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
-Version 2.1.17
+Version 2.2.0
 Fix - reduce reload
 Chore - add css description id
 Chore - set activations, refunds and cancellations to true as default
