@@ -44,6 +44,9 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
+Version 2.2.1
+Remove redirection message
+
 Version 2.2.0
 Fix - reduce reload
 Chore - add css description id
