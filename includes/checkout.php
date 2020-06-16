@@ -17,6 +17,5 @@
         });
         </script>
 <div class="clear"></div>
-        <p style="font-style:italic;margin-top:10px;"><?php _e('frontend/paymentredirection_msg', 'woocommerce-finance-gateway'); ?></p>
 </fieldset>
 <?php wp_nonce_field( 'submit-payment-form','submit-payment-form-nonce' ); ?>
