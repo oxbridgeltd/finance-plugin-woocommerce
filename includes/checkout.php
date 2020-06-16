@@ -1,7 +1,7 @@
 <?php defined( 'ABSPATH' ) or die( 'Denied' ); ?>
-<h1>
+<p id="finance-payment-description">
         <?php print (isset($this->settings['description'])) ? $this->settings['description']:""; ?>
-    </h1>
+    </p>
 <div id="financeWidget"
     data-calculator-widget
     data-mode="calculator"
