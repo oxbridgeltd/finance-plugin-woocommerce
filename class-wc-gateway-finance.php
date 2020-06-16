@@ -11,7 +11,7 @@ defined('ABSPATH') or die('Denied');
  * Plugin Name: Finance Payment Gateway for WooCommerce
  * Plugin URI: http://integrations.divido.com/finance-gateway-woocommerce
  * Description: The Finance Payment Gateway plugin for WooCommerce.
- * Version: 2.1.16
+ * Version: 2.1.17
  *
  * Author: Divido Financial Services Ltd
  * Author URI: www.divido.com
@@ -87,7 +87,7 @@ function woocommerce_finance_init()
          */
         function __construct()
         {
-            $this->plugin_version= '2.1.16';
+            $this->plugin_version= '2.1.17';
             add_action('init', array($this,'wpdocs_load_textdomain'));
 
             $this->id = 'finance';
@@ -237,7 +237,7 @@ function woocommerce_finance_init()
          * @param  boolean $reload An optional parameter to say if the finances endpoint should be called again.
          * @return array
          */
-        function get_all_finances($api_key, $reload)
+        function get_all_finances($api_key)
         {
             $env = $this->environments($api_key);
             $client = new \GuzzleHttp\Client();
@@ -251,21 +251,28 @@ function woocommerce_finance_init()
             $finances = false;
             $transient_name = 'finances';
             $finances = get_transient($transient_name);
+            $apiKey = get_transient("api_key");
 
-            if (!$reload) {
-                return $finances;
-            } else {
-                $request_options = (new \Divido\MerchantSDK\Handlers\ApiRequestOptions());
-                // Retrieve all finance plans for the merchant.
-                try {
-                    $plans = $sdk->getAllPlans($request_options);
-                    $plans = $plans->getResources();
-                    set_transient($transient_name, $plans);
-                    return $plans;
-                } catch (Exception $e) {
-                    return [];
+            // only fetch new finances if the api key is different
+            // OR API key transisent is not set
+            // OR finances transient is not set
+            if ($apiKey !== $this->api_key || empty($apiKey) || empty($finances)) {
+
+                    $request_options = (new \Divido\MerchantSDK\Handlers\ApiRequestOptions());
+                    // Retrieve all finance plans for the merchant.
+                    try {
+                        $plans = $sdk->getAllPlans($request_options);
+                        $plans = $plans->getResources();
+                        set_transient($transient_name, $plans , 60*60*1);
+                        set_transient("api_key", $this->api_key);
+                        return $plans;
+                    } catch (Exception $e) {
+                        return [];
+                    }
+                } else {
+                    return $finances;
                 }
-            }
+
         }
 
         /**
@@ -860,9 +867,8 @@ function woocommerce_finance_init()
             );
 
             if (isset($this->api_key) && $this->api_key) {
-                $response = $this->get_all_finances($this->api_key, true);
-
-                $settings = $this->get_finance_env($this->api_key, true);
+                $response = $this->get_all_finances($this->api_key);
+               // $settings = $this->get_finance_env($this->api_key, true);
                 $finance = [];
                 foreach ($response as $finances) {
                     if($finances->active){
@@ -1055,7 +1061,7 @@ function woocommerce_finance_init()
                 <h3 style="border-bottom:1px solid"><?php esc_html_e('backend/configgeneral_settings_header', 'woocommerce-finance-gateway'); ?></h3>
                 <?php
                 if (isset($this->api_key) && $this->api_key) {
-                    $response = $this->get_all_finances($this->api_key, false);
+                    $response = $this->get_all_finances($this->api_key);
                     $options = array();
                     if ([] === $response) {
                         ?>
@@ -1396,7 +1402,7 @@ function woocommerce_finance_init()
         function get_finances($selection = false)
         {
             if (!isset($this->finance_options)) {
-                $this->finance_options = $this->get_all_finances($this->api_key, false);
+                $this->finance_options = $this->get_all_finances($this->api_key);
             }
             $response = $this->finance_options; // array.
             $finances = array();
