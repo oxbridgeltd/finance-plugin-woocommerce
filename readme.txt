@@ -47,6 +47,7 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 Version 2.1.17
 Fix - reduce reload
 Chore - add css description id
+Chore - set activations, refunds and cancellations to true as default
 
 Version 2.1.16
 Fix - Add order id to merchant reference for patch requests
