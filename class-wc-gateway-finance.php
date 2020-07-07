@@ -1299,6 +1299,7 @@ function woocommerce_finance_init()
                             'ecom_platform_version' => WC_VERSION,
                             'ecom_base_url'         => wc_get_checkout_url(),
                             'plugin_version'        => $this->plugin_version,
+                            'merchant_reference'    => strval($order_id)
                         ]);
                     if ('' !== $this->secret) {
                         $secret = $this->create_signature(json_encode($application->getPayload()), $this->secret);
@@ -1357,6 +1358,7 @@ function woocommerce_finance_init()
                             'ecom_platform_version' => WC_VERSION,
                             'ecom_base_url'         => wc_get_checkout_url(),
                             'plugin_version'        => $this->plugin_version,
+                            'merchant_reference'    => strval($order_id)
                         ]);
                     if ('' !== $this->secret) {
                         $secret = $this->create_signature(json_encode($application->getPayload()), $this->secret);
