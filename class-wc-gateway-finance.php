@@ -1453,8 +1453,9 @@ function woocommerce_finance_init()
          *
          * @param [string] $api_key - The platform API key.
          */
-        public function get_finance_env($api_key, $reload)
+        public function get_finance_env($api_key)
         {
+
             $env = $this->environments($api_key);
             $client = new \GuzzleHttp\Client();
             $httpClientWrapper = new \Divido\MerchantSDK\HttpClient\HttpClientWrapper(
@@ -1467,14 +1468,15 @@ function woocommerce_finance_init()
             $transient = 'environment';
             $setting = get_transient($transient);
 
-            if ($setting != false) {
+            if (!empty($setting)) {
                 return $setting;
-            } elseif ($setting === false && $reload == true ) {
+            } else {
                 $response = $sdk->platformEnvironments()->getPlatformEnvironment();
                 $finance_env = $response->getBody()->getContents();
                 $decoded = json_decode($finance_env);
                 $global = $decoded->data->environment;
                 set_transient($transient, $global);
+                echo $global;
                 return $global;
                 }
             }
