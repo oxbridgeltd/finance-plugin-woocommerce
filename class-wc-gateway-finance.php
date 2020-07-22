@@ -809,6 +809,7 @@ function woocommerce_finance_init()
                         <br style="clear:both;"/>
                     <?php } ?>
                 </p>
+            </div>
             <script type="text/javascript">
                 function checkActive() {
                     jQuery("#selectedFinance").hide();
