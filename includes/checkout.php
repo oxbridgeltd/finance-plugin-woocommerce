@@ -8,6 +8,7 @@
     data-plans="<?php print $plans; ?>"
     data-amount="<?php print $amount; ?>"
     data-footnote="<?php print $footnote; ?>"
+    <?php print $language; ?>
 >
 </div>
 

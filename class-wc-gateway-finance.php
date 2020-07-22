@@ -114,6 +114,7 @@ function woocommerce_finance_init()
             $this->secret = (!empty($this->settings['secret'])) ? $this->settings['secret'] : '';
             $this->product_select = (!empty($this->settings['productSelect'])) ? $this->settings['productSelect'] : '';
             $this->icon = (empty($this->api_key)) ? 'https://cdn.divido.com/widget/themes/divido/logo.png' : "https://cdn.divido.com/widget/themes/". $this->get_finance_env($this->api_key, true) ."/logo.png";
+            $this->useStoreLanguage = (!empty($this->settings['useStoreLanguage'])) ? $this->settings['useStoreLanguage'] : '';
 
             // Load logger.
             if (version_compare(WC_VERSION, '2.7', '<')) {
@@ -320,6 +321,7 @@ function woocommerce_finance_init()
                 <script type='text/javascript'>
                     window.__widgetConfig = {
                         apiKey: '<?php echo esc_attr(strtolower($key[0])); ?>'
+
                     };
 
                     var <?php echo($this->get_finance_env($this->api_key, false))?>Key = '<?php echo esc_attr(strtolower($key[0])); ?>' </script>
@@ -667,6 +669,10 @@ function woocommerce_finance_init()
                 $environment = $this->get_finance_env($this->api_key, false);
                 $plans = $this->get_product_plans($product);
                 $price = $this->get_price_including_tax($product, '');
+                $language = '';
+                if($this->useStoreLanguage === "yes"){
+                   $language = 'data-language="'.$this->get_language().'" ';
+                }
                 include_once WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)) . '/includes/calculator.php';
             }
         }
@@ -698,7 +704,16 @@ function woocommerce_finance_init()
                     }
 
                     $plans = $this->get_product_plans($product);
+
+                    $language = '';
+                    if($this->useStoreLanguage === "yes"){
+                        $language = 'data-language="'.$this->get_language().'" ';
+                    }
+
                     include_once WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)) . '/includes/widget.php';
+
+
+
                 }
             }
         }
@@ -794,7 +809,6 @@ function woocommerce_finance_init()
                         <br style="clear:both;"/>
                     <?php } ?>
                 </p>
-            </div>
             <script type="text/javascript">
                 function checkActive() {
                     jQuery("#selectedFinance").hide();
@@ -934,6 +948,7 @@ function woocommerce_finance_init()
                         'default' => 'all',
                         'class' => 'border_height',
                     );
+
                     $this->form_fields = array_merge(
                         $this->form_fields,
                         array(
@@ -1008,6 +1023,13 @@ function woocommerce_finance_init()
                                 'description' => __('backend/configwidget_footnote_description', 'woocommerce-finance-gateway'),
                                 'default' => '',
                             ),
+                            'useStoreLanguage' => array(
+                                'title' => "Use store language",
+                                'label' => "Enabled",
+                                'type' => 'checkbox',
+                                'description' => "Override the language of the finance calculator with store language",
+                                'default' => 'no'
+                            ),
                             'Order Settings' => array(
                                 'title' => __('backend/configorder_settings_header', 'woocommerce-finance-gateway'),
                                 'type' => 'title',
@@ -1041,6 +1063,15 @@ function woocommerce_finance_init()
                 }
             }
         }
+
+        /**
+        * take language part of locale
+        * @return bool|string
+         */
+        public function get_language() {
+            return substr(get_locale(), 0,2);
+        }
+
 
         /**
          * Admin Panel Options
@@ -1121,6 +1152,7 @@ function woocommerce_finance_init()
          */
         function payment_fields()
         {
+
             $finances = $this->get_finances($this->get_finance_options());
             if ($finances) {
                 $user_country = $this->get_country_code();
@@ -1136,6 +1168,10 @@ function woocommerce_finance_init()
                 $environment = $this->get_finance_env($this->api_key, false);
                 $plans = $this->get_checkout_plans();
                 $footnote = $this->footnote;
+                $language = '';
+                if($this->useStoreLanguage === "yes"){
+                   $language = 'data-language="'.$this->get_language().'" ';
+                }
                 include_once WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)) . '/includes/checkout.php';
             }
         }
