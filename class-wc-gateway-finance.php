@@ -1024,10 +1024,10 @@ function woocommerce_finance_init()
                                 'default' => '',
                             ),
                             'useStoreLanguage' => array(
-                                'title' => "Use store language",
-                                'label' => "Enabled",
+                                'title' => __('backend/configuse_store_language_label', 'woocommerce-finance-gateway'),
+                                'label' => __('backend/pluginenabled_option', 'woocommerce-finance-gateway'),
                                 'type' => 'checkbox',
-                                'description' => "Override the language of the finance calculator with store language",
+                                'description' => __('backend/configuse_store_language_description', 'woocommerce-finance-gateway'),
                                 'default' => 'no'
                             ),
                             'Order Settings' => array(
