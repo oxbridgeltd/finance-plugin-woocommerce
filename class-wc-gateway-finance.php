@@ -186,7 +186,7 @@ function woocommerce_finance_init()
             if ('yes' !== $this->enabled || '' === $this->api_key) {
                 return false;
             }
-            $finance = $this->get_finance_env($this->api_key, false);
+            $finance = $this->get_finance_env($this->api_key);
             wp_register_script('woocommerce-finance-gateway-calculator', '//cdn.divido.com/widget/v3/' . $finance . '.calculator.js', false, 1.0, true);
             wp_enqueue_script('woocommerce-finance-gateway-calculator');
 
@@ -287,7 +287,7 @@ function woocommerce_finance_init()
             if ($this->api_key && is_product() || $this->api_key && is_checkout()) {
                 $key = preg_split('/\./', $this->api_key);
                 $protocol = (isset($_SERVER['HTTPS']) && 'on' === $_SERVER['HTTPS']) ? 'https' : 'http'; // Input var okay.
-                $finance = $this->get_finance_env($this->api_key, false);
+                $finance = $this->get_finance_env($this->api_key);
                 wp_register_script('woocommerce-finance-gateway-calculator', $protocol . '://cdn.divido.com/widget/v3/' . $finance . '.calculator.js', false, 1.0, true);
                 wp_register_script('woocoomerce-finance-gateway-calculator_price_update', plugins_url('', __FILE__) . '/js/widget_price_update.js', false, 1.0, true);
                 wp_register_style('woocommerce-finance-gateway-style', plugins_url('', __FILE__) . '/css/style.css', false, 1.0);
@@ -322,7 +322,7 @@ function woocommerce_finance_init()
                         apiKey: '<?php echo esc_attr(strtolower($key[0])); ?>'
                     };
 
-                    var <?php echo($this->get_finance_env($this->api_key, false))?>Key = '<?php echo esc_attr(strtolower($key[0])); ?>' </script>
+                    var <?php echo($this->get_finance_env($this->api_key))?>Key = '<?php echo esc_attr(strtolower($key[0])); ?>' </script>
                 <script>// <![CDATA[
                     function waitForElementToDisplay(selector, time) {
                         if (document.querySelector(selector) !== null) {
@@ -664,7 +664,7 @@ function woocommerce_finance_init()
         {
             global $product;
             if ($this->is_available($product)) {
-                $environment = $this->get_finance_env($this->api_key, false);
+                $environment = $this->get_finance_env($this->api_key);
                 $plans = $this->get_product_plans($product);
                 $price = $this->get_price_including_tax($product, '');
                 include_once WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)) . '/includes/calculator.php';
@@ -685,7 +685,7 @@ function woocommerce_finance_init()
             if ($this->api_key) {
                 $price = $this->get_price_including_tax($product, '');
                 $plans = $this->get_product_plans($product);
-                $environment = $this->get_finance_env($this->api_key, false);
+                $environment = $this->get_finance_env($this->api_key);
                 if ($this->is_available($product) && $price > ($this->widget_threshold * 100)) {
                     $button_text = '';
                     if (!empty(sanitize_text_field($this->buttonText))) {
@@ -715,7 +715,7 @@ function woocommerce_finance_init()
             if ('yes' !== $this->enabled) {
                 return false;
             }
-            $environment = $this->get_finance_env($this->api_key, false);
+            $environment = $this->get_finance_env($this->api_key);
             $tab_icon = 'https://s3-eu-west-1.amazonaws.com/content.divido.com/plugins/powered-by-divido/' . $environment . '/woocommerce/images/finance-icon.png';
 
             if (version_compare(WOOCOMMERCE_VERSION, '2.0.0') >= 0) {
@@ -1133,7 +1133,7 @@ function woocommerce_finance_init()
                     return;
                 endif;
                 $amount = WC()->cart->total * 100;
-                $environment = $this->get_finance_env($this->api_key, false);
+                $environment = $this->get_finance_env($this->api_key);
                 $plans = $this->get_checkout_plans();
                 $footnote = $this->footnote;
                 include_once WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)) . '/includes/checkout.php';
@@ -1448,10 +1448,8 @@ function woocommerce_finance_init()
 
         /**
          * Get Finance Platform Environment function
-         *
-         * @since 1.0.0
-         *
-         * @param [string] $api_key - The platform API key.
+         * @param $api_key
+         * @return mixed
          */
         public function get_finance_env($api_key)
         {
