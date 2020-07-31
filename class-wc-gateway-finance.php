@@ -113,7 +113,7 @@ function woocommerce_finance_init()
             $this->widget_threshold = (!empty($this->settings['widgetThreshold'])) ? $this->settings['widgetThreshold'] : 250;
             $this->secret = (!empty($this->settings['secret'])) ? $this->settings['secret'] : '';
             $this->product_select = (!empty($this->settings['productSelect'])) ? $this->settings['productSelect'] : '';
-            $this->icon = (empty($this->api_key)) ? 'https://cdn.divido.com/widget/themes/divido/logo.png' : "https://cdn.divido.com/widget/themes/". $this->get_finance_env($this->api_key, true) ."/logo.png";
+            $this->icon = (empty($this->api_key)) ? 'https://cdn.divido.com/widget/themes/divido/logo.png' : "https://cdn.divido.com/widget/themes/". $this->get_finance_env($this->api_key) ."/logo.png";
 
             // Load logger.
             if (version_compare(WC_VERSION, '2.7', '<')) {
