@@ -1474,7 +1474,6 @@ function woocommerce_finance_init()
                 $decoded = json_decode($finance_env);
                 $global = $decoded->data->environment;
                 set_transient($transient, $global, 60*5);
-                echo $global;
                 return $global;
                 }
             }
