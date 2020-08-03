@@ -4,4 +4,3 @@ vendor/divido/.DS_Store
 .vscode/
 wpcs/
 vendor/
-composer.lock
