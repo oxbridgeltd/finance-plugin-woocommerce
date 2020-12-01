@@ -6,9 +6,9 @@ Tags:              woothemes,woocommerce,payment gateway,payment,module,ecommerc
 Author URI:        integrations.divido.com
 Author:            Divido Financial Services Ltd
 Requires at least: 3.0.2
-Tested up to:      5.4.1
-Stable tag:        2.2.4
-Version:           2.2.4
+Tested up to:      5.5.3
+Stable tag:        2.2.5
+Version:           2.2.5
 
 License: GPLv2 or later
 
@@ -44,6 +44,9 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
+
+Version 2.2.5
+Fix: Updated tested up till version on Wordpress and Woocommerce
 
 Version 2.2.4
 Fix: Empty transient finance environment
