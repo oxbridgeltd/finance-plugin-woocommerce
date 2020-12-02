@@ -7,8 +7,8 @@ Author URI:        integrations.divido.com
 Author:            Divido Financial Services Ltd
 Requires at least: 3.0.2
 Tested up to:      5.5.3
-Stable tag:        2.2.5
-Version:           2.2.5
+Stable tag:        2.2.6
+Version:           2.2.6
 
 License: GPLv2 or later
 
@@ -44,6 +44,8 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
+Version 2.2.6
+Fix: resolves missing API key error header text issue
 
 Version 2.2.5
 Fix: Updated tested up till version on Wordpress and Woocommerce
