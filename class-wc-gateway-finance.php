@@ -113,9 +113,9 @@ function woocommerce_finance_init()
             $this->widget_threshold = (!empty($this->settings['widgetThreshold'])) ? $this->settings['widgetThreshold'] : 250;
             $this->secret = (!empty($this->settings['secret'])) ? $this->settings['secret'] : '';
             $this->product_select = (!empty($this->settings['productSelect'])) ? $this->settings['productSelect'] : '';
-            $this->icon = (empty($this->api_key)) ? 'https://cdn.divido.com/widget/themes/divido/logo.png' : "https://cdn.divido.com/widget/themes/". $this->get_finance_env($this->api_key) ."/logo.png";
             $this->useStoreLanguage = (!empty($this->settings['useStoreLanguage'])) ? $this->settings['useStoreLanguage'] : '';
 
+            add_filter( 'woocommerce_gateway_icon', array($this, 'custom_gateway_icon'), 10, 2 );
 
             // Load logger.
             if (version_compare(WC_VERSION, '2.7', '<')) {
@@ -171,6 +171,25 @@ function woocommerce_finance_init()
             add_shortcode('finance_widget', array($this, 'anypage_widget'));
             //Since 1.0.3
             add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'finance_gateway_settings_link'));
+        }
+
+        /**
+         * @param $icon
+         * @param $id
+         * @return string
+         */
+        public function custom_gateway_icon( $icon, $id ) {
+            if ( $id === 'finance' ) {
+                if (empty($this->api_key)) {
+                    return "<img style='float:right;' src='https://cdn.divido.com/widget/themes/divido/logo.png'/>";
+                } else if ($this->get_finance_env($this->api_key) === 'nordea' ){
+                     return "<img style='height:26px;float:right;' src='https://cdn.divido.com/widget/themes/" . $this->get_finance_env($this->api_key) . "/logo.png'/>";
+                } else {
+                    return "<img style='float:right;' src='https://cdn.divido.com/widget/themes/" . $this->get_finance_env($this->api_key) . "/logo.png'/>";
+                }
+            } else {
+                return $icon;
+            }
         }
 
         /**
