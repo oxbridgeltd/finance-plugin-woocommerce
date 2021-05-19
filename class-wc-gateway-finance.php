@@ -183,7 +183,7 @@ function woocommerce_finance_init()
                 if (empty($this->api_key)) {
                     return "<img style='float:right;' src='https://cdn.divido.com/widget/themes/divido/logo.png'/>";
                 } else if ($this->get_finance_env($this->api_key) === 'nordea' ){
-                     return "<img style='height:26px;float:right;' src='https://cdn.divido.com/widget/themes/" . $this->get_finance_env($this->api_key) . "/logo.png'/>";
+                     return "<img style='height:24px;float:right;' src='https://cdn.divido.com/widget/themes/" . $this->get_finance_env($this->api_key) . "/logo.png'/>";
                 } else {
                     return "<img style='float:right;' src='https://cdn.divido.com/widget/themes/" . $this->get_finance_env($this->api_key) . "/logo.png'/>";
                 }
