@@ -6,8 +6,8 @@ Tags:              woothemes,woocommerce,payment gateway,payment,module,ecommerc
 Author URI:        integrations.divido.com
 Author:            Divido Financial Services Ltd
 Requires at least: 3.0.2
-Tested up to:      5.5.3
-Stable tag:        2.2.6
+Tested up to:      5.7.2
+Stable tag:        2.2.7
 Version:           2.2.6
 
 License: GPLv2 or later
@@ -44,6 +44,9 @@ Enable/Disable Automatic Cancellation: Allows you to select if an "Cancellation"
 
 
  == Changelog ==
+Version 2.2.7
+Chore: Float payment gateway logo to the right and increase size for Nordea
+
 Version 2.2.6
 Fix: resolves missing API key error header text issue
 
