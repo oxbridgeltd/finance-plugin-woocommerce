@@ -457,6 +457,38 @@ function woocommerce_finance_init()
                         // Log status to order.
                         $order->add_order_note(__('backend/orderorder_status_label', 'woocommerce-finance-gateway').': ' . $data_json->status);
                         $this->logger->debug('Finance', 'STATUS UPDATE: ' . $data_json->status . ' Order: ' . $data_json->metadata->order_number . ' Finance Reference: ' . $finance_reference[0]);
+
+                        /**
+                         * @link https://divido.api-docs.io/1.0.9/api-help/webhooks
+                         * Send to my webhook
+                         *
+                         * $data_json->metadata->order_number (to compare with entry in Zoho)
+                         * $data_json->status (will be status data from Divido)
+                         */
+                        $endpoint = 'https://flow.zoho.eu/20068915141/flow/webhook/incoming?zapikey=1001.a1f0d5ee4fab3ba61073c5cee8c5299d.14f869a2398caf23e3281ee17d18b1fe&isdebug=false';
+
+                        $body = wp_json_encode([
+                            'order_number'  => $data_json->metadata->order_number,
+                            'status' => $data_json->status,
+                        ]);
+
+                        $options = [
+                            'body'        => $body,
+                            'headers'     => [
+                                'Content-Type' => 'application/json',
+                            ],
+                            'timeout'     => 60,
+                            'redirection' => 5,
+                            'blocking'    => true,
+                            'httpversion' => '1.0',
+                            'sslverify'   => false,
+                            'data_format' => 'body',
+                        ];
+
+                        wp_remote_post( $endpoint, $options );
+                        /**
+                         * End of custom integration with Zoho
+                         */
                     }
                 }
             }
