@@ -159,7 +159,17 @@ function woocommerce_finance_init()
             // ajax callback.
             add_action('wp_ajax_nopriv_woocommerce_finance_callback', array($this, 'callback'));
             add_action('wp_ajax_woocommerce_finance_callback', array($this, 'callback'));
-            add_action('wp_head', array($this, 'add_api_to_head'));
+            /**
+             * Hard Fix! We only need the finance widget on non-checkout pages.
+             * jQuery is not loaded throughout the rest of the website, and
+             * calling this generates a hard error.
+             * I'm wrapping this in is_checkout() to fix.
+             * ~ Greg
+             */
+            if (is_checkout()) {
+                add_action('wp_head', array($this, 'add_api_to_head'));
+            }
+
             add_action('woocommerce_order_status_completed', array($this, 'send_finance_fulfillment_request'), 10, 1);
             add_action('woocommerce_order_status_refunded', array($this, 'send_refund_request'), 10, 1);
             add_action('woocommerce_order_status_cancelled', array($this, 'send_cancellation_request'), 10, 1);
