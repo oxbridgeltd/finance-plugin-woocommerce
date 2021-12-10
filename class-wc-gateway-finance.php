@@ -175,10 +175,16 @@ function woocommerce_finance_init()
             add_action('woocommerce_order_status_cancelled', array($this, 'send_cancellation_request'), 10, 1);
 
             // scripts.
-            add_action('wp_enqueue_scripts', array($this, 'enqueue'));
+            if (is_checkout()) {
+                add_action('wp_enqueue_scripts', array($this, 'enqueue'));
+            }
+
             add_action('admin_enqueue_scripts', array($this, 'wpdocs_enqueue_custom_admin_style'));
             //Since 1.0.2
-            add_shortcode('finance_widget', array($this, 'anypage_widget'));
+            if (is_checkout()) {
+                add_shortcode('finance_widget', array($this, 'anypage_widget'));
+            }
+
             //Since 1.0.3
             add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'finance_gateway_settings_link'));
         }
